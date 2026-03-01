@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulatory Pathway Tool — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root { --bg-primary:#0A0F1E; --bg-secondary:#0f1628; --bg-card:#141B2D; --bg-card-hover:#1a2340; --blue:#1E6FFF; --teal:#00D4C8; --amber:#F5A623; --green:#00C48C; --white:#F0F4FF; --muted:#8A9BB8; --border:rgba(30,111,255,0.15); }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg-primary); color:var(--white); font-family:'IBM Plex Sans',sans-serif; min-height:100vh; }
+.pulse-line { position:fixed; top:0; left:0; width:100%; height:2px; z-index:1000; overflow:hidden; }
+.pulse-line::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,var(--teal),var(--blue),transparent); animation:pulse-sweep 3s ease-in-out infinite; }
+@keyframes pulse-sweep { 0%{left:-100%} 100%{left:100%} }
+nav { position:fixed; top:2px; left:0; width:100%; z-index:999; padding:0 40px; height:64px; display:flex; align-items:center; justify-content:space-between; background:rgba(10,15,30,0.9); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+.nav-logo { font-family:'Chakra Petch',sans-serif; font-size:1.2rem; font-weight:700; color:var(--white); text-decoration:none; }
+.nav-logo span { color:var(--teal); }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { color:var(--muted); text-decoration:none; font-size:0.82rem; font-weight:500; letter-spacing:0.04em; text-transform:uppercase; transition:color 0.2s; }
+.nav-links a:hover, .nav-links a.active { color:var(--white); }
+.nav-cta { background:transparent; border:1px solid var(--teal); color:var(--teal); padding:8px 20px; font-family:'IBM Plex Sans',sans-serif; font-size:0.82rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; border-radius:2px; transition:all 0.2s; text-decoration:none; }
+.nav-cta:hover { background:var(--teal); color:var(--bg-primary); }
+.page-header { padding:100px 40px 48px; max-width:1100px; margin:0 auto; }
+.page-label { font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--teal); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:12px; }
+.page-title { font-family:'Chakra Petch',sans-serif; font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700; margin-bottom:12px; }
+.page-desc { color:var(--muted); font-size:1rem; line-height:1.7; max-width:600px; }
+.main-content { max-width:1100px; margin:0 auto; padding:0 40px 80px; }
+
+/* JURISDICTION SELECTOR */
+.jur-selector { display:flex; gap:12px; margin-bottom:40px; flex-wrap:wrap; }
+.jur-btn { padding:10px 24px; border:1px solid var(--border); background:transparent; color:var(--muted); font-family:'Chakra Petch',sans-serif; font-size:0.85rem; font-weight:600; letter-spacing:0.05em; cursor:pointer; border-radius:2px; transition:all 0.2s; }
+.jur-btn:hover { border-color:var(--blue); color:var(--white); }
+.jur-btn.active { background:var(--blue); color:var(--white); border-color:var(--blue); box-shadow:0 0 20px rgba(30,111,255,0.25); }
+.jur-btn.eu.active { background:#c9a227; border-color:#c9a227; }
+
+/* TREE LAYOUT */
+.tree-layout { display:grid; grid-template-columns:1fr 340px; gap:40px; align-items:start; }
+
+/* QUESTION BOX */
+.question-box { background:var(--bg-card); border:1px solid var(--border); border-radius:3px; overflow:hidden; }
+.qb-header { background:rgba(30,111,255,0.06); border-bottom:1px solid var(--border); padding:20px 28px; }
+.qb-step { font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--blue); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
+.qb-question { font-size:1.05rem; font-weight:500; line-height:1.5; }
+.qb-body { padding:28px; }
+.answer-options { display:flex; flex-direction:column; gap:10px; }
+.answer-btn { display:flex; align-items:flex-start; gap:14px; padding:14px 18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:2px; cursor:pointer; transition:all 0.2s; font-size:0.9rem; line-height:1.5; color:var(--white); text-align:left; font-family:'IBM Plex Sans',sans-serif; }
+.answer-btn:hover { border-color:rgba(30,111,255,0.4); background:rgba(30,111,255,0.06); color:var(--white); }
+.answer-btn .ab-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+
+/* BREADCRUMB */
+.breadcrumb { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:28px; }
+.bc-item { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted); }
+.bc-sep { color:var(--border); font-size:0.8rem; }
+.bc-current { color:var(--blue); }
+
+/* RESULT CARD */
+.result-card { background:linear-gradient(135deg,rgba(30,111,255,0.08),rgba(0,212,200,0.06)); border:1px solid rgba(0,212,200,0.3); border-radius:3px; padding:36px; }
+.result-card.eu-result { background:linear-gradient(135deg,rgba(201,162,39,0.08),rgba(0,212,200,0.06)); border-color:rgba(201,162,39,0.35); }
+.result-header { margin-bottom:24px; }
+.result-pathway { font-family:'Chakra Petch',sans-serif; font-size:1.4rem; font-weight:700; margin-bottom:8px; color:var(--teal); }
+.result-pathway.eu { color:#FFD700; }
+.result-class { font-family:'JetBrains Mono',monospace; font-size:0.78rem; padding:4px 12px; background:rgba(0,212,200,0.1); border:1px solid rgba(0,212,200,0.3); color:var(--teal); display:inline-block; margin-bottom:16px; }
+.result-class.eu { background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3); color:#FFD700; }
+.result-desc { color:var(--muted); font-size:0.9rem; line-height:1.7; margin-bottom:24px; }
+.result-reqs { margin-bottom:24px; }
+.result-reqs h4 { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:12px; }
+.req-item { display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; font-size:0.87rem; line-height:1.5; }
+.req-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0; margin-top:6px; }
+.req-dot.eu { background:#FFD700; }
+.result-refs h4 { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px; }
+.ref-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:0.65rem; padding:3px 9px; margin:3px; background:rgba(30,111,255,0.1); border:1px solid rgba(30,111,255,0.25); color:var(--blue); border-radius:1px; }
+
+/* SIDEBAR */
+.sidebar { display:flex; flex-direction:column; gap:20px; }
+.sidebar-card { background:var(--bg-card); border:1px solid var(--border); border-radius:3px; padding:24px; }
+.sidebar-card h3 { font-family:'Chakra Petch',sans-serif; font-size:0.95rem; margin-bottom:16px; font-weight:600; }
+.journey-step { display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; }
+.journey-num { width:24px; height:24px; border-radius:50%; border:1px solid var(--blue); color:var(--blue); font-family:'JetBrains Mono',monospace; font-size:0.7rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.journey-num.completed { background:var(--blue); color:var(--white); }
+.journey-text { font-size:0.83rem; color:var(--muted); line-height:1.4; }
+.journey-text strong { color:var(--white); display:block; font-size:0.85rem; }
+
+.tip-item { display:flex; gap:10px; font-size:0.82rem; line-height:1.5; color:var(--muted); margin-bottom:10px; }
+.tip-icon { flex-shrink:0; }
+
+.btn { padding:12px 24px; font-family:'IBM Plex Sans',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; border-radius:2px; transition:all 0.2s; border:none; width:100%; margin-top:8px; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--muted); }
+.btn-outline:hover { border-color:var(--white); color:var(--white); }
+.btn-teal { background:var(--teal); color:var(--bg-primary); }
+.btn-teal:hover { background:#00ffe9; }
+
+.hidden { display:none; }
+@media(max-width:900px) {
+  nav { padding:0 20px; }
+  .nav-links { display:none; }
+  .page-header, .main-content { padding-left:20px; padding-right:20px; }
+  .tree-layout { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="medreg-academy.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="medreg-academy.html#pillars">Domains</a></li>
+    <li><a href="medreg-academy.html#tutor">AI Tutor</a></li>
+    <li><a href="medreg-academy.html#standards">Standards</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="pathway.html" class="active">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+  </ul>
+  <a href="medreg-academy.html#tutor" class="nav-cta">AI Tutor</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-label">// regulatory pathway tool</div>
+  <h1 class="page-title">Pathway Decision Tree</h1>
+  <p class="page-desc">Answer questions about your device or software to receive a recommended regulatory pathway with key requirements and references.</p>
+</div>
+
+<div class="main-content">
+  <div class="jur-selector">
+    <button class="jur-btn active" onclick="setJurisdiction('fda',this)">🇺🇸 FDA (United States)</button>
+    <button class="jur-btn eu" onclick="setJurisdiction('eu',this)">🇪🇺 EU MDR / IVDR</button>
+  </div>
+
+  <div class="tree-layout">
+    <div>
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div class="question-box" id="question-box"></div>
+      <div class="result-card hidden" id="result-card"></div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <h3>Your Journey</h3>
+        <div id="journey-steps"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>💡 Tips</h3>
+        <div class="tip-item"><span class="tip-icon">📌</span>Answer each question based on your device's PRIMARY intended use.</div>
+        <div class="tip-item"><span class="tip-icon">⚠️</span>This tool provides guidance only — always verify with a qualified RA consultant or regulatory authority.</div>
+        <div class="tip-item"><span class="tip-icon">🔄</span>Use the restart button to explore different pathways.</div>
+        <button class="btn btn-outline" onclick="restart()">↺ Start Over</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TREES = {
+  fda: {
+    id:'fda',
+    start:'q1',
+    questions: {
+      q1: {
+        step:'Step 1',
+        text:'Is your product software that performs medical functions independently of a hardware medical device?',
+        options:[
+          { label:'Yes — it is standalone software (mobile app, cloud-based, desktop)', icon:'💻', next:'q2' },
+          { label:'No — it is software embedded in or controlling a hardware device (SiMD)', icon:'🔧', next:'q_simd' },
+          { label:'It is a combination of both standalone and hardware-embedded software', icon:'🔀', next:'q_combo' },
+        ]
+      },
+      q2: {
+        step:'Step 2',
+        text:'Does the software meet the definition of a medical device under 21 CFR 880 — i.e., is it intended to diagnose, treat, cure, mitigate, or prevent disease?',
+        options:[
+          { label:'Yes — it has a clear medical purpose (diagnosis, treatment, monitoring)', icon:'🏥', next:'q3' },
+          { label:'No — it is wellness/fitness software with no disease-related claims', icon:'🏃', next:'r_wellness' },
+          { label:'It is clinical decision support software (CDS)', icon:'🧠', next:'q_cds' },
+        ]
+      },
+      q3: {
+        step:'Step 3',
+        text:'What is the primary risk level of your SaMD based on its intended use and the severity of the condition it addresses?',
+        options:[
+          { label:'Provides information for life-threatening or critical conditions (e.g., cancer dx, cardiac)', icon:'🔴', next:'q4_high' },
+          { label:'Provides information for serious but non-immediately life-threatening conditions', icon:'🟡', next:'q4_mod' },
+          { label:'Non-serious conditions; informational/low-risk function', icon:'🟢', next:'r_exempt_or_510k' },
+        ]
+      },
+      q4_high: {
+        step:'Step 4',
+        text:'For this high-risk SaMD: does a legally marketed device with substantially equivalent intended use and technology exist?',
+        options:[
+          { label:'Yes — a valid predicate device exists in the FDA 510(k) database', icon:'✅', next:'r_510k' },
+          { label:'No — this is a novel device type with no predicate', icon:'🆕', next:'r_denovo_or_pma' },
+          { label:'The device uses AI/ML with a continuously learning algorithm', icon:'🤖', next:'r_aiml_pma' },
+        ]
+      },
+      q4_mod: {
+        step:'Step 4',
+        text:'For this moderate-risk SaMD: does a legally marketed predicate device exist?',
+        options:[
+          { label:'Yes — a valid 510(k) predicate exists', icon:'✅', next:'r_510k' },
+          { label:'No — novel device type, first of kind', icon:'🆕', next:'r_denovo' },
+        ]
+      },
+      q_cds: {
+        step:'Step 2b',
+        text:'Does the CDS software meet ALL four non-device CDS criteria under the 21st Century Cures Act?',
+        options:[
+          { label:'Yes — it displays basis, allows independent review, and is not for serious conditions', icon:'✅', next:'r_non_device_cds' },
+          { label:'No — one or more criteria are not met (e.g., targets serious/critical conditions)', icon:'❌', next:'q3' },
+        ]
+      },
+      q_simd: {
+        step:'Step 2',
+        text:'What is the highest risk class of the hardware medical device that your software controls or is embedded in?',
+        options:[
+          { label:'Class III device (life-sustaining, life-supporting, or implantable)', icon:'🔴', next:'r_simd_pma' },
+          { label:'Class II device (moderate risk, special controls)', icon:'🟡', next:'r_simd_510k' },
+          { label:'Class I device (lowest risk, general controls only)', icon:'🟢', next:'r_simd_class1' },
+        ]
+      },
+      q_combo: {
+        step:'Step 2',
+        text:'For combination products, the most stringent pathway applies. What is the primary mode of action?',
+        options:[
+          { label:'Software function drives/controls hardware device action', icon:'🔧', next:'q_simd' },
+          { label:'Software provides standalone medical information that drives clinical decisions', icon:'💻', next:'q3' },
+        ]
+      }
+    },
+    results: {
+      r_510k: { pathway:'510(k) Premarket Notification', class:'Class II — Special Controls', isEU:false, desc:'Your SaMD likely requires a 510(k) submission demonstrating substantial equivalence to a legally marketed predicate device. This is the most common pathway for moderate-risk SaMD.', reqs:['Substantial equivalence demonstration to a valid predicate device','Software documentation per FDA Content of Premarket Submissions guidance (2023)','Risk management documentation (ISO 14971)','IEC 62304 software development lifecycle documentation','Cybersecurity documentation (SBOM, threat model, security controls) per FDA 2023 guidance','Clinical/analytical performance data supporting intended use','Labeling compliant with 21 CFR 801'], refs:['FDA 510(k) Guidance','Content of Premarket Submissions (2023)','FDA Cybersecurity Guidance (2023)','IEC 62304','ISO 14971','IMDRF N41:2017'] },
+      r_denovo: { pathway:'De Novo Request', class:'Class I or II — Novel Classification', isEU:false, desc:'Your device appears to be a novel, low-to-moderate risk SaMD with no predicate. The De Novo pathway creates a new classification that can serve as a predicate for future 510(k) submissions.', reqs:['Classification proposal with recommended special controls','Comprehensive risk-benefit analysis','Software documentation per 2023 FDA guidance','Performance testing and clinical data demonstrating safety and effectiveness','Proposed labeling and special controls for the new device type'], refs:['FDA De Novo Guidance','21 CFR Part 860','Content of Premarket Submissions (2023)','IEC 62304'] },
+      r_denovo_or_pma: { pathway:'De Novo or PMA Required', class:'Class II–III — High Risk Novel Device', isEU:false, desc:'Your high-risk novel SaMD may require either a De Novo (if low-moderate risk can be established) or a PMA (if Class III risk remains). Early engagement with FDA via Pre-Sub meeting is strongly recommended.', reqs:['Pre-Submission (Q-Sub) meeting with FDA highly recommended','Comprehensive clinical data demonstrating safety and effectiveness','Full software lifecycle documentation','Cybersecurity documentation','Risk management per ISO 14971','For PMA: pivotal clinical study data typically required'], refs:['FDA PMA Guidance','FDA Pre-Sub Guidance','Content of Premarket Submissions (2023)','FDA Cybersecurity Guidance 2023'] },
+      r_aiml_pma: { pathway:'PMA or De Novo with PCCP', class:'Class II–III — AI/ML Device', isEU:false, desc:'AI/ML SaMD with continuously learning algorithms requires careful regulatory strategy. A Predetermined Change Control Plan (PCCP) must be included to enable post-approval algorithm updates without new submissions.', reqs:['Predetermined Change Control Plan (PCCP) required','Algorithm transparency and explainability documentation','Representative and bias-mitigated training/test dataset description','Locked test set with independent performance evaluation','Post-market performance monitoring plan','Cybersecurity plan including model security considerations'], refs:['FDA AI/ML Action Plan','PCCP Draft Guidance','FDA Cybersecurity Guidance 2023','GMLP Principles (FDA/MHRA/HC)','IMDRF N41:2017'] },
+      r_wellness: { pathway:'Non-Device — Wellness/Fitness', class:'Not a Medical Device', isEU:false, desc:'Your software does not appear to meet the definition of a medical device. Wellness/fitness apps that do not make disease-related claims are generally not regulated by FDA. However, ensure no marketing claims imply medical device use.', reqs:['No FDA premarket submission required','Ensure labeling and marketing avoid disease treatment/diagnosis claims','Consider FTC regulations for health claims','Privacy (HIPAA) may still apply if health data is collected'], refs:['FDA Mobile Medical App Guidance','FTC Health Claims Policy','HIPAA'] },
+      r_non_device_cds: { pathway:'Non-Device CDS — No Submission Required', class:'Exempt from Device Regulation', isEU:false, desc:'Your CDS software meets all four criteria for non-device CDS under the 21st Century Cures Act and is exempt from FDA device regulation. Ensure you maintain documentation supporting this determination.', reqs:['Maintain documentation of CDS exemption criteria met','Ensure software displays the basis of its recommendations','Ensure users can independently review the basis and are not required to rely on it','Do not expand into serious/critical condition indications without re-evaluating status'], refs:['21st Century Cures Act','FDA CDS Guidance (2022)','FDA Digital Health Policy'] },
+      r_exempt_or_510k: { pathway:'Likely Exempt or 510(k)', class:'Class I or II — Low Risk', isEU:false, desc:'Low-risk SaMD may qualify for Class I exemption (general controls only, no premarket submission) or a 510(k) depending on the specific device type. Check the FDA device classification database for your specific product code.', reqs:['Search FDA 510(k) database for applicable product code and predicate','Class I exempt: register establishment and list device with FDA','If 510(k) required: software documentation and predicate comparison','Compliance with 21 CFR Part 820 QSR / QMSR'], refs:['FDA Device Classification Database','21 CFR Part 880','FDA 510(k) Guidance'] },
+      r_simd_pma: { pathway:'PMA (Software Component)', class:'Class III — Highest Risk', isEU:false, desc:'Software embedded in or controlling a Class III device is subject to PMA requirements. Software changes post-approval typically require a PMA supplement. Full software documentation per FDA guidance is required as part of the PMA.', reqs:['Full PMA submission required for the device','Software documentation per Content of Premarket Submissions (2023)','IEC 62304 full lifecycle compliance (Safety Class C likely)','Comprehensive cybersecurity documentation','Clinical study data demonstrating safety and effectiveness'], refs:['FDA PMA Guidance','Content of Premarket Submissions (2023)','IEC 62304','FDA Cybersecurity Guidance 2023'] },
+      r_simd_510k: { pathway:'510(k) (Software Component)', class:'Class II — Moderate Risk', isEU:false, desc:'Software embedded in or controlling a Class II device typically follows the 510(k) pathway. Ensure software documentation addresses both the hardware device requirements and FDA\'s software-specific guidance.', reqs:['510(k) for the device or supplemental 510(k) for software changes','Software documentation per Content of Premarket Submissions (2023)','IEC 62304 compliance appropriate to software safety class','Cybersecurity documentation per FDA 2023 guidance'], refs:['FDA 510(k) Guidance','Content of Premarket Submissions (2023)','IEC 62304','FDA Cybersecurity Guidance 2023'] },
+      r_simd_class1: { pathway:'Class I — General Controls', class:'Class I — Lowest Risk', isEU:false, desc:'Software controlling or embedded in a Class I device generally requires only General Controls compliance. Most Class I devices are exempt from premarket notification. Ensure compliance with applicable 21 CFR Part 820 QSR/QMSR requirements.', reqs:['Establishment registration and device listing with FDA','Compliance with applicable Quality System Regulation requirements','Basic software documentation appropriate to risk','Label compliance with 21 CFR 801'], refs:['21 CFR Part 820','FDA Device Registration Guidance'] },
+    }
+  },
+  eu: {
+    id:'eu',
+    start:'q1',
+    questions: {
+      q1: {
+        step:'Step 1',
+        text:'Is your product software intended to perform a medical purpose as defined in EU MDR Article 2(1) or EU IVDR Article 2(2)?',
+        options:[
+          { label:'Yes — diagnosis, monitoring, prediction, treatment, or alleviation of disease/injury', icon:'🏥', next:'q2' },
+          { label:'It is a standalone analytical software generating results used in IVD procedures', icon:'🧬', next:'q_ivdr' },
+          { label:'No — it is general wellness software with no medical claims', icon:'🏃', next:'r_not_mdsw' },
+        ]
+      },
+      q2: {
+        step:'Step 2',
+        text:'Under MDCG 2021-24 MDSW guidance, does the software qualify as Medical Device Software (MDSW) — i.e., does it create or modify medical information rather than just display/store/transmit it?',
+        options:[
+          { label:'Yes — it creates, modifies, or interprets medical information for decision-making', icon:'✅', next:'q3' },
+          { label:'No — it only stores, archives, communicates or simple searches data (non-MDSW)', icon:'📁', next:'r_not_mdsw' },
+          { label:'It is an AI/ML system making clinical decisions or recommendations', icon:'🤖', next:'q_ai' },
+        ]
+      },
+      q3: {
+        step:'Step 3',
+        text:'Apply EU MDR Rule 11. What is the severity of injury that could result if the software provides incorrect information?',
+        options:[
+          { label:'Death or irreversible deterioration of health (e.g., controls life-sustaining device, treatment decisions in critical care)', icon:'🔴', next:'r_class3' },
+          { label:'Serious deterioration of health or surgical intervention may result', icon:'🟠', next:'r_class2b' },
+          { label:'Non-serious injury or moderate health impact (e.g., delays in diagnosis of non-serious condition)', icon:'🟡', next:'r_class2a' },
+          { label:'No injury possible — purely administrative/informational with no clinical impact', icon:'🟢', next:'r_class1' },
+        ]
+      },
+      q_ai: {
+        step:'Step 3',
+        text:'For AI/ML MDSW: does the AI system qualify as a "high-risk AI system" under the EU AI Act Annex III?',
+        options:[
+          { label:'Yes — the AI is used as a safety component of a medical device or as a medical device itself', icon:'⚠️', next:'q_ai_risk' },
+          { label:'Uncertain — need to assess against Annex III criteria', icon:'🤔', next:'q3' },
+        ]
+      },
+      q_ai_risk: {
+        step:'Step 4',
+        text:'Under MDCG 2025-6, what is the intended clinical impact of the AI system?',
+        options:[
+          { label:'Informs life-critical decisions or controls life-sustaining functions', icon:'🔴', next:'r_ai_class3' },
+          { label:'Supports diagnosis, monitoring, or treatment planning for serious conditions', icon:'🟠', next:'r_ai_class2b' },
+          { label:'Provides informational support for non-critical clinical decisions', icon:'🟡', next:'r_ai_class2a' },
+        ]
+      },
+      q_ivdr: {
+        step:'Step 2',
+        text:'For IVD software: what is the intended use and the risk to individual and public health?',
+        options:[
+          { label:'Companion diagnostics or high individual/public health risk (e.g., oncology, infectious disease)', icon:'🔴', next:'r_ivdr_c' },
+          { label:'Moderate individual risk or high public health risk', icon:'🟠', next:'r_ivdr_b' },
+          { label:'Low individual and public health risk', icon:'🟢', next:'r_ivdr_a' },
+        ]
+      }
+    },
+    results: {
+      r_class3: { pathway:'EU MDR Class III', class:'Highest Risk — Notified Body Required', isEU:true, desc:'Your MDSW falls under Class III — the highest risk class under EU MDR Rule 11. A Notified Body assessment is mandatory. This applies to software that drives or influences life-critical decisions or controls life-sustaining devices.', reqs:['CE marking via Notified Body (NB) assessment — QMS audit + technical documentation review','Technical Documentation per MDR Annex II and III','Clinical Evaluation Report (CER) per MDR Annex XIV','Post-Market Clinical Follow-Up (PMCF) plan and report','Post-Market Surveillance (PMS) system and PMS Report (PMSR) or PSUR','IEC 62304 full lifecycle, ISO 14971 risk management','Cybersecurity per MDCG guidance — Annex I GSPR 17.2','UDI assignment, EUDAMED registration'], refs:['EU MDR 2017/745 Annex I, Rule 11','MDCG 2021-24 MDSW Guidance','IEC 62304','ISO 14971','MDCG Cybersecurity Guidance','MDCG 2025-6 (if AI)'] },
+      r_class2b: { pathway:'EU MDR Class IIb', class:'High Risk — Notified Body Required', isEU:true, desc:'Your MDSW falls under Class IIb under MDR Rule 11. Software providing information for decisions with serious health consequences. Notified Body assessment is required.', reqs:['CE marking via Notified Body assessment','Technical Documentation (Annex II & III)','Clinical Evaluation Report and PMCF plan','Post-Market Surveillance system and PSUR','IEC 62304 software lifecycle documentation','Risk management per ISO 14971','Cybersecurity documentation per MDCG guidance','UDI and EUDAMED registration'], refs:['EU MDR Rule 11','MDCG 2021-24','IEC 62304','ISO 14971','MDCG Cybersecurity Guidance'] },
+      r_class2a: { pathway:'EU MDR Class IIa', class:'Moderate Risk — Notified Body Required', isEU:true, desc:'Your MDSW is Class IIa under EU MDR. A Notified Body must assess either the QMS or at least one representative sample of technical documentation. This covers most diagnostic support and monitoring software.', reqs:['CE marking via Notified Body QMS audit or technical documentation sample review','Technical Documentation (Annex II)','Clinical Evaluation Report','Post-Market Surveillance system','IEC 62304 and ISO 14971 compliance','Basic cybersecurity documentation per MDCG guidance','UDI and EUDAMED registration'], refs:['EU MDR Rule 11','MDCG 2021-24','IEC 62304','ISO 14971'] },
+      r_class1: { pathway:'EU MDR Class I', class:'Lowest Risk — Self-Certification', isEU:true, desc:'Class I MDSW can be CE-marked via self-certification by the manufacturer. No Notified Body involvement is required unless the device is sterile or has a measuring function. The manufacturer must still prepare full technical documentation.', reqs:['Self-certification — no Notified Body required (unless sterile/measuring function)','Declaration of Conformity per MDR Annex IV','Technical Documentation per MDR Annex II','IEC 62304 compliance appropriate to software safety class','ISO 14971 risk management','EUDAMED registration and UDI assignment','Compliance with all applicable GSPRs (Annex I)'], refs:['EU MDR 2017/745','MDCG 2021-24','IEC 62304','ISO 14971'] },
+      r_ai_class3: { pathway:'EU MDR Class III + EU AI Act High-Risk', class:'Dual Compliance Required', isEU:true, desc:'Your AI medical device requires compliance with BOTH EU MDR Class III requirements AND EU AI Act high-risk AI obligations. This is the most demanding dual-compliance scenario addressed by MDCG 2025-6.', reqs:['All EU MDR Class III requirements (NB assessment, CER, PMCF, PMS)','EU AI Act high-risk requirements (Chapter III): data governance, bias analysis, robustness testing','Accuracy, reliability and cybersecurity testing beyond MDR clinical evaluation','Technical documentation integrating both MDR Annex II/III and AI Act Annex IV requirements','Human oversight provisions documented in IFU','Post-market monitoring covering both performance drift and MDR PMS obligations'], refs:['EU MDR 2017/745 Rule 11','EU AI Act Annex III','MDCG 2025-6','IEC 62304','ISO/IEC 23894','MDCG Cybersecurity Guidance'] },
+      r_ai_class2b: { pathway:'EU MDR Class IIb + EU AI Act High-Risk', class:'Dual Compliance — NB Required', isEU:true, desc:'Your AI MDSW is Class IIb under MDR and high-risk under EU AI Act. MDCG 2025-6 provides the framework for integrating both sets of requirements into a single technical documentation package.', reqs:['EU MDR Class IIb NB assessment','Clinical Evaluation Report with AI performance data','EU AI Act: data governance plan, bias mitigation documentation','Human oversight design and IFU documentation','Cybersecurity testing per AI Act Art. 15 and MDCG guidance','Post-market monitoring integrating PMS and AI performance drift monitoring'], refs:['EU MDR Rule 11','EU AI Act Art. 9–15','MDCG 2025-6','ISO/IEC 23894','GMLP Principles'] },
+      r_ai_class2a: { pathway:'EU MDR Class IIa + EU AI Act High-Risk', class:'Dual Compliance — NB QMS Audit', isEU:true, desc:'Class IIa MDSW with AI/ML must address MDR and AI Act requirements. MDCG 2025-6 guidance streamlines the dual-compliance documentation approach.', reqs:['EU MDR Class IIa NB assessment (QMS or tech doc sample)','Clinical Evaluation incorporating AI analytical/clinical validation','EU AI Act data governance and transparency obligations','Human oversight provisions in IFU','Post-market monitoring for performance drift'], refs:['EU MDR Rule 11','EU AI Act Annex III','MDCG 2025-6','MDCG 2021-24'] },
+      r_not_mdsw: { pathway:'Not MDSW — No CE Medical Device Marking Required', class:'Outside EU MDR Scope', isEU:true, desc:'Your software does not qualify as Medical Device Software (MDSW) under MDCG 2021-24 criteria, or does not have a medical intended purpose under EU MDR/IVDR. CE marking as a medical device is not required. Note: General Data Protection Regulation (GDPR) and other EU digital regulations may still apply.', reqs:['No EU MDR CE marking required','Ensure marketing and labeling do not imply medical device use','Consider GDPR compliance if processing health data','Consider EU AI Act if AI features are present (non-device high-risk categories may apply)'], refs:['MDCG 2021-24','EU MDR Art. 2(1)','EU AI Act','GDPR'] },
+      r_ivdr_c: { pathway:'EU IVDR Class C or D', class:'High Risk IVD Software', isEU:true, desc:'Your IVD software falls in Class C or D under EU IVDR — the higher risk classes for IVD software. Notified Body assessment is mandatory. Performance evaluation and scientific validity data are required.', reqs:['Notified Body assessment mandatory','Performance Evaluation Report per IVDR Annex XIII','Scientific Validity, Analytical Performance, Clinical Performance data','Post-Market Performance Follow-Up (PMPF) plan','IEC 62304, ISO 14971 compliance','UDI and EUDAMED registration'], refs:['EU IVDR 2017/746','MDCG 2021-24','IEC 62304','ISO 14971'] },
+      r_ivdr_b: { pathway:'EU IVDR Class B', class:'Moderate Risk IVD', isEU:true, desc:'Class B IVD software requires Notified Body involvement for QMS assessment. Performance evaluation documentation is required demonstrating scientific validity and analytical and clinical performance.', reqs:['Notified Body QMS assessment','Performance Evaluation per IVDR Annex XIII','Post-Market Surveillance system','IEC 62304 and ISO 14971 compliance','UDI and EUDAMED registration'], refs:['EU IVDR 2017/746','MDCG 2021-24','IEC 62304'] },
+      r_ivdr_a: { pathway:'EU IVDR Class A', class:'Lowest Risk IVD', isEU:true, desc:'Class A IVD software can be self-certified by the manufacturer. Technical documentation and a Declaration of Conformity are required. Performance evaluation demonstrating scientific validity is still needed.', reqs:['Self-certification — no Notified Body required','Technical Documentation and Declaration of Conformity','Performance Evaluation documentation','IEC 62304 compliance','EUDAMED registration and UDI'], refs:['EU IVDR 2017/746','MDCG 2021-24'] },
+    }
+  }
+};
+
+let currentJur = 'fda';
+let currentNode = null;
+let history = [];
+
+function setJurisdiction(j, btn) {
+  currentJur = j;
+  document.querySelectorAll('.jur-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  restart();
+}
+
+function restart() {
+  history = [];
+  currentNode = TREES[currentJur].start;
+  renderQuestion(currentNode);
+  document.getElementById('result-card').classList.add('hidden');
+  updateJourney();
+  updateBreadcrumb();
+}
+
+function renderQuestion(nodeId) {
+  const tree = TREES[currentJur];
+  const q = tree.questions[nodeId];
+  if (!q) return;
+  currentNode = nodeId;
+
+  const box = document.getElementById('question-box');
+  box.classList.remove('hidden');
+  document.getElementById('result-card').classList.add('hidden');
+
+  let html = `<div class="qb-header"><div class="qb-step">${q.step} of ${getDepth()}</div><div class="qb-question">${q.text}</div></div><div class="qb-body"><div class="answer-options">`;
+  q.options.forEach(opt => {
+    html += `<button class="answer-btn" onclick="selectAnswer('${opt.next}','${escHtml(opt.label)}')"><span class="ab-icon">${opt.icon}</span><span>${opt.label}</span></button>`;
+  });
+  html += '</div></div>';
+  box.innerHTML = html;
+}
+
+function escHtml(s) { return s.replace(/'/g, "\\'"); }
+
+function getDepth() {
+  const q = TREES[currentJur].questions;
+  return Object.keys(q).length;
+}
+
+function selectAnswer(next, label) {
+  history.push({ node: currentNode, label });
+  updateBreadcrumb();
+  updateJourney();
+
+  if (TREES[currentJur].results[next]) {
+    renderResult(next);
+  } else {
+    renderQuestion(next);
+  }
+}
+
+function renderResult(id) {
+  const r = TREES[currentJur].results[id];
+  document.getElementById('question-box').classList.add('hidden');
+
+  const isEU = r.isEU;
+  const card = document.getElementById('result-card');
+  card.className = 'result-card' + (isEU ? ' eu-result' : '');
+
+  let html = `
+    <div class="result-header">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:${isEU ? '#FFD700' : 'var(--teal)'};letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;">// Recommended Pathway</div>
+      <div class="result-pathway ${isEU?'eu':''}">${r.pathway}</div>
+      <div class="result-class ${isEU?'eu':''}">${r.class}</div>
+      <p class="result-desc">${r.desc}</p>
+    </div>
+    <div class="result-reqs">
+      <h4>Key Requirements</h4>
+      ${r.reqs.map(req => `<div class="req-item"><div class="req-dot ${isEU?'eu':''}"></div><div>${req}</div></div>`).join('')}
+    </div>
+    <div class="result-refs">
+      <h4>Applicable Standards & Guidance</h4>
+      ${r.refs.map(ref => `<span class="ref-tag">${ref}</span>`).join('')}
+    </div>
+    <button class="btn btn-outline" onclick="restart()" style="margin-top:24px;">↺ Start New Assessment</button>
+  `;
+  card.innerHTML = html;
+  card.classList.remove('hidden');
+  updateJourney(true);
+}
+
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  if (!history.length) { bc.innerHTML = ''; return; }
+  let html = '';
+  history.forEach((h, i) => {
+    const short = h.label.length > 40 ? h.label.substring(0, 40) + '...' : h.label;
+    if (i > 0) html += '<span class="bc-sep">›</span>';
+    html += `<span class="bc-item ${i === history.length-1 ? 'bc-current' : ''}">${short}</span>`;
+  });
+  bc.innerHTML = html;
+}
+
+function updateJourney(complete = false) {
+  const steps = document.getElementById('journey-steps');
+  const totalSteps = Object.keys(TREES[currentJur].questions).length;
+  let html = '';
+  const displaySteps = history.slice(0, 5);
+  displaySteps.forEach((h, i) => {
+    const short = h.label.length > 35 ? h.label.substring(0, 35) + '...' : h.label;
+    html += `<div class="journey-step"><div class="journey-num completed">${i+1}</div><div class="journey-text"><strong>Step ${i+1}</strong>${short}</div></div>`;
+  });
+  if (!complete) {
+    html += `<div class="journey-step"><div class="journey-num">${history.length+1}</div><div class="journey-text"><strong>Next question</strong>Awaiting your answer</div></div>`;
+  } else {
+    html += `<div class="journey-step"><div class="journey-num completed">✓</div><div class="journey-text"><strong>Complete</strong>Pathway identified</div></div>`;
+  }
+  steps.innerHTML = html;
+}
+
+restart();
+</script>
+</body>
+</html>

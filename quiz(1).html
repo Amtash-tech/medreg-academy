@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz & Flashcards — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0A0F1E;
+  --bg-secondary: #0f1628;
+  --bg-card: #141B2D;
+  --bg-card-hover: #1a2340;
+  --blue: #1E6FFF;
+  --teal: #00D4C8;
+  --amber: #F5A623;
+  --green: #00C48C;
+  --red: #FF4D6A;
+  --white: #F0F4FF;
+  --muted: #8A9BB8;
+  --border: rgba(30,111,255,0.15);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg-primary); color:var(--white); font-family:'IBM Plex Sans',sans-serif; min-height:100vh; }
+
+.pulse-line { position:fixed; top:0; left:0; width:100%; height:2px; z-index:1000; overflow:hidden; }
+.pulse-line::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,var(--teal),var(--blue),transparent); animation:pulse-sweep 3s ease-in-out infinite; }
+@keyframes pulse-sweep { 0%{left:-100%} 100%{left:100%} }
+
+nav { position:fixed; top:2px; left:0; width:100%; z-index:999; padding:0 40px; height:64px; display:flex; align-items:center; justify-content:space-between; background:rgba(10,15,30,0.9); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+.nav-logo { font-family:'Chakra Petch',sans-serif; font-size:1.2rem; font-weight:700; color:var(--white); text-decoration:none; }
+.nav-logo span { color:var(--teal); }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { color:var(--muted); text-decoration:none; font-size:0.82rem; font-weight:500; letter-spacing:0.04em; text-transform:uppercase; transition:color 0.2s; }
+.nav-links a:hover, .nav-links a.active { color:var(--white); }
+.nav-cta { background:transparent; border:1px solid var(--teal); color:var(--teal); padding:8px 20px; font-family:'IBM Plex Sans',sans-serif; font-size:0.82rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; border-radius:2px; transition:all 0.2s; text-decoration:none; }
+.nav-cta:hover { background:var(--teal); color:var(--bg-primary); }
+
+.page-header { padding:100px 40px 48px; max-width:1200px; margin:0 auto; }
+.page-label { font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--teal); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:12px; }
+.page-title { font-family:'Chakra Petch',sans-serif; font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700; margin-bottom:12px; }
+.page-desc { color:var(--muted); font-size:1rem; line-height:1.7; max-width:600px; }
+
+.main-content { max-width:1200px; margin:0 auto; padding:0 40px 80px; }
+
+/* DOMAIN TABS */
+.domain-tabs { display:flex; gap:4px; margin-bottom:40px; border-bottom:1px solid var(--border); }
+.dtab { padding:12px 24px; font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; border:none; background:transparent; color:var(--muted); border-bottom:2px solid transparent; margin-bottom:-1px; transition:all 0.2s; }
+.dtab:hover { color:var(--white); }
+.dtab.active.samd { color:var(--blue); border-bottom-color:var(--blue); }
+.dtab.active.cyber { color:var(--amber); border-bottom-color:var(--amber); }
+.dtab.active.aiml { color:var(--teal); border-bottom-color:var(--teal); }
+
+/* MODE TOGGLE */
+.mode-toggle { display:flex; gap:0; margin-bottom:40px; border:1px solid var(--border); border-radius:2px; overflow:hidden; width:fit-content; }
+.mode-btn { padding:10px 28px; font-family:'IBM Plex Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; border:none; background:transparent; color:var(--muted); transition:all 0.2s; }
+.mode-btn.active { background:var(--blue); color:var(--white); }
+
+/* QUIZ */
+.quiz-container { max-width:760px; }
+.quiz-progress { margin-bottom:32px; }
+.progress-info { display:flex; justify-content:space-between; margin-bottom:8px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--muted); }
+.progress-bar { height:3px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--blue); border-radius:2px; transition:width 0.4s ease; }
+.progress-fill.cyber { background:var(--amber); }
+.progress-fill.aiml { background:var(--teal); }
+
+.question-card { background:var(--bg-card); border:1px solid var(--border); padding:40px; border-radius:3px; margin-bottom:24px; }
+.q-type { font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:16px; }
+.q-text { font-size:1.1rem; line-height:1.6; font-weight:500; margin-bottom:32px; }
+.q-ref { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--blue); margin-top:8px; }
+
+.options { display:flex; flex-direction:column; gap:10px; }
+.option { display:flex; align-items:flex-start; gap:14px; padding:14px 18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:2px; cursor:pointer; transition:all 0.2s; font-size:0.92rem; line-height:1.5; }
+.option:hover { border-color:rgba(30,111,255,0.4); background:rgba(30,111,255,0.06); }
+.option.selected { border-color:var(--blue); background:rgba(30,111,255,0.1); }
+.option.correct { border-color:var(--green); background:rgba(0,196,140,0.1); }
+.option.incorrect { border-color:var(--red); background:rgba(255,77,106,0.08); }
+.option.reveal-correct { border-color:var(--green); background:rgba(0,196,140,0.06); }
+.option-letter { width:26px; height:26px; border:1px solid currentColor; border-radius:1px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:700; flex-shrink:0; color:var(--muted); }
+.option.selected .option-letter { color:var(--blue); }
+.option.correct .option-letter { color:var(--green); }
+.option.incorrect .option-letter { color:var(--red); }
+
+.tf-options { display:flex; gap:16px; }
+.tf-btn { flex:1; padding:20px; border:1px solid var(--border); background:transparent; color:var(--white); font-family:'Chakra Petch',sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:0.05em; cursor:pointer; border-radius:2px; transition:all 0.2s; }
+.tf-btn:hover { border-color:var(--blue); background:rgba(30,111,255,0.08); }
+.tf-btn.selected { border-color:var(--blue); background:rgba(30,111,255,0.15); }
+.tf-btn.correct { border-color:var(--green); background:rgba(0,196,140,0.15); color:var(--green); }
+.tf-btn.incorrect { border-color:var(--red); background:rgba(255,77,106,0.1); color:var(--red); }
+
+.explanation { background:rgba(0,212,200,0.06); border:1px solid rgba(0,212,200,0.2); border-radius:2px; padding:16px 20px; margin-top:16px; font-size:0.88rem; line-height:1.65; color:var(--white); display:none; }
+.explanation.show { display:block; animation:fadeIn 0.3s ease; }
+.explanation strong { color:var(--teal); }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+.quiz-actions { display:flex; justify-content:space-between; align-items:center; margin-top:24px; }
+.btn { padding:12px 28px; font-family:'IBM Plex Sans',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; border-radius:2px; transition:all 0.2s; letter-spacing:0.03em; border:none; }
+.btn-blue { background:var(--blue); color:var(--white); }
+.btn-blue:hover { background:#3a84ff; }
+.btn-blue:disabled { opacity:0.4; cursor:not-allowed; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--muted); }
+.btn-outline:hover { border-color:var(--white); color:var(--white); }
+
+/* SCORE CARD */
+.score-card { background:var(--bg-card); border:1px solid var(--border); padding:60px; border-radius:3px; text-align:center; max-width:560px; }
+.score-circle { width:120px; height:120px; border-radius:50%; border:3px solid var(--teal); display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 auto 32px; box-shadow:0 0 40px rgba(0,212,200,0.2); }
+.score-num { font-family:'Chakra Petch',sans-serif; font-size:2.2rem; font-weight:700; color:var(--teal); }
+.score-denom { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted); }
+.score-msg { font-family:'Chakra Petch',sans-serif; font-size:1.4rem; margin-bottom:12px; }
+.score-sub { color:var(--muted); font-size:0.9rem; margin-bottom:32px; }
+
+/* FLASHCARDS */
+.flashcard-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.flashcard-wrapper { perspective:1200px; height:220px; cursor:pointer; }
+.flashcard-inner { position:relative; width:100%; height:100%; transition:transform 0.55s cubic-bezier(0.4,0,0.2,1); transform-style:preserve-3d; }
+.flashcard-wrapper.flipped .flashcard-inner { transform:rotateY(180deg); }
+.flashcard-front, .flashcard-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:3px; padding:28px; display:flex; flex-direction:column; justify-content:space-between; }
+.flashcard-front { background:var(--bg-card); border:1px solid var(--border); }
+.flashcard-back { background:linear-gradient(135deg,rgba(30,111,255,0.1),rgba(0,212,200,0.08)); border:1px solid rgba(0,212,200,0.25); transform:rotateY(180deg); }
+.fc-label { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+.fc-back-label { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--teal); letter-spacing:0.1em; text-transform:uppercase; }
+.fc-term { font-family:'Chakra Petch',sans-serif; font-size:1rem; font-weight:600; line-height:1.3; margin-top:8px; }
+.fc-def { font-size:0.82rem; line-height:1.6; color:var(--white); margin-top:8px; }
+.fc-hint { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--muted); align-self:flex-end; }
+.fc-src { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--teal); align-self:flex-end; }
+
+.fc-controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.fc-count { font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--muted); }
+.hidden { display:none; }
+
+@media(max-width:768px) {
+  nav { padding:0 20px; }
+  .nav-links { display:none; }
+  .page-header, .main-content { padding-left:20px; padding-right:20px; }
+  .flashcard-grid { grid-template-columns:1fr; }
+  .tf-options { flex-direction:column; }
+  .question-card { padding:24px; }
+}
+</style>
+</head>
+<body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="medreg-academy.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="medreg-academy.html#pillars">Domains</a></li>
+    <li><a href="medreg-academy.html#tutor">AI Tutor</a></li>
+    <li><a href="medreg-academy.html#standards">Standards</a></li>
+    <li><a href="quiz.html" class="active">Quiz</a></li>
+    <li><a href="pathway.html">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="cases.html">Cases</a></li>
+    <li><a href="studyplan.html">Study Plan</a></li>
+  </ul>
+  <a href="medreg-academy.html#tutor" class="nav-cta">AI Tutor</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-label">// interactive learning</div>
+  <h1 class="page-title">Quiz & Flashcards</h1>
+  <p class="page-desc">Test your regulatory knowledge with curated questions and flashcard decks across all three domains.</p>
+</div>
+
+<div class="main-content">
+  <div class="domain-tabs">
+    <button class="dtab active samd" onclick="switchDomain('samd',this)">SaMD / SiMD</button>
+    <button class="dtab cyber" onclick="switchDomain('cyber',this)">Cybersecurity</button>
+    <button class="dtab aiml" onclick="switchDomain('aiml',this)">AI/ML & Datasets</button>
+  </div>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="switchMode('quiz',this)">📝 Quiz</button>
+    <button class="mode-btn" onclick="switchMode('flashcards',this)">🃏 Flashcards</button>
+  </div>
+
+  <!-- QUIZ MODE -->
+  <div id="quiz-mode">
+    <div class="quiz-container">
+      <div class="quiz-progress">
+        <div class="progress-info">
+          <span id="q-counter">Question 1 of 8</span>
+          <span id="q-score-live">Score: 0</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:12.5%"></div></div>
+      </div>
+
+      <div class="question-card" id="question-card">
+        <div class="q-type" id="q-type-label">Multiple Choice</div>
+        <div class="q-text" id="q-text"></div>
+        <div id="q-options"></div>
+        <div class="explanation" id="explanation"></div>
+      </div>
+
+      <div class="quiz-actions">
+        <button class="btn btn-outline" onclick="restartQuiz()">↺ Restart</button>
+        <button class="btn btn-blue" id="next-btn" onclick="nextQuestion()" disabled>Next →</button>
+      </div>
+
+      <!-- SCORE SCREEN -->
+      <div class="score-card hidden" id="score-card">
+        <div class="score-circle"><div class="score-num" id="final-score">0</div><div class="score-denom" id="final-denom">/ 8</div></div>
+        <div class="score-msg" id="score-msg"></div>
+        <p class="score-sub" id="score-sub"></p>
+        <button class="btn btn-blue" onclick="restartQuiz()" style="width:100%">Try Again →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASHCARD MODE -->
+  <div id="flashcard-mode" class="hidden">
+    <div class="fc-controls">
+      <span class="fc-count" id="fc-count">8 cards — click to flip</span>
+      <button class="btn btn-outline" onclick="shuffleCards()">⇄ Shuffle</button>
+    </div>
+    <div class="flashcard-grid" id="flashcard-grid"></div>
+  </div>
+</div>
+
+<script>
+const DOMAINS = {
+  samd: {
+    color: 'samd',
+    progressClass: '',
+    questions: [
+      { type:'mc', text:'According to IMDRF N10:2013, which of the following is the correct definition of Software as a Medical Device (SaMD)?', ref:'IMDRF N10:2013', options:['Software that is embedded or incorporated into a hardware medical device','Software intended to be used for one or more medical purposes that performs these purposes without being part of a hardware medical device','Any software used within a healthcare setting regardless of purpose','Software that controls or drives a hardware medical device'], correct:1, explanation:'<strong>IMDRF N10:2013</strong> defines SaMD as "software intended to be used for one or more medical purposes that perform these purposes without being part of a hardware medical device." This distinguishes SaMD from Software IN a Medical Device (SiMD), which is embedded in hardware.' },
+      { type:'mc', text:'Under the IMDRF N12 risk categorization framework, what two factors determine the risk category of a SaMD?', ref:'IMDRF N12:2014', options:['Intended use and device complexity','Significance of information provided by SaMD to healthcare decision and state of healthcare situation','Regulatory jurisdiction and market authorization status','Software architecture and data storage method'], correct:1, explanation:'<strong>IMDRF N12:2014</strong> uses two axes: (1) the significance of the information provided (treat/diagnose/drive vs inform), and (2) the state of the healthcare situation (critical/serious/non-serious). These two factors together determine the SaMD category (I–IV).' },
+      { type:'tf', text:'Under EU MDR, software that monitors physiological parameters in real-time to alert clinicians to life-threatening changes is classified as Class III under Rule 11.', ref:'EU MDR Rule 11', correct:false, explanation:'This would typically be <strong>Class IIb</strong> under EU MDR Rule 11 — software intended to provide information for decisions with serious consequences. Class III under Rule 11 is reserved for software whose decisions could cause death or irreversible deterioration of health, such as software directly controlling therapeutic devices.' },
+      { type:'mc', text:'IEC 62304 defines three software safety classes (A, B, C). What criterion places software in Class C?', ref:'IEC 62304', options:['Software that could contribute to a hazardous situation with possible severe injury','Software failure could result in death or serious injury','Software failure cannot contribute to a hazardous situation','Software used only for labeling purposes'], correct:1, explanation:'<strong>IEC 62304</strong> Class C applies when a software failure could result in death or serious injury. Class A: no injury possible; Class B: non-serious injury possible; Class C: death or serious injury possible. The class determines the rigor of required software development activities.' },
+      { type:'tf', text:'FDA\'s Clinical Decision Support (CDS) guidance exempts all clinical decision support software from device regulation, provided it displays the basis for its recommendations.', ref:'FDA CDS Guidance 2022', correct:false, explanation:'Not all CDS is exempt. Under the <strong>21st Century Cures Act and FDA\'s CDS Guidance</strong>, only CDS that meets all four criteria is non-device CDS. Software for serious/critical conditions does not qualify for the exemption regardless of whether it displays its basis.' },
+      { type:'mc', text:'The IMDRF SaMD Clinical Evaluation framework (N41) requires demonstration of which three building blocks?', ref:'IMDRF N41:2017', options:['Risk management, QMS, and design control','Valid clinical association, analytical validation, and clinical validation','Safety, effectiveness, and security','Pre-clinical data, clinical trial data, and real-world evidence'], correct:1, explanation:'<strong>IMDRF N41:2017</strong> establishes three building blocks: (1) Valid Clinical Association — the SaMD output correlates to a clinical condition; (2) Analytical Validation — SaMD correctly processes input data; (3) Clinical Validation — the SaMD output achieves its intended clinical purpose.' },
+      { type:'mc', text:'Under FDA guidance, what is the primary distinguishing factor between a 510(k) and a De Novo request for a SaMD?', ref:'FDA De Novo Guidance', options:['The complexity of the software algorithm','Whether there is a legally marketed predicate device with the same intended use','The price of the device','Whether the manufacturer is US-based'], correct:1, explanation:'A <strong>510(k)</strong> requires demonstration of substantial equivalence to a legally marketed predicate device. A <strong>De Novo request</strong> is for novel, low-to-moderate risk devices with no valid predicate — it establishes a new device classification that can serve as a predicate for future 510(k)s.' },
+      { type:'tf', text:'ISO 13485:2016 certification is legally required before submitting any SaMD premarket application to FDA.', ref:'ISO 13485 / FDA QSR', correct:false, explanation:'<strong>ISO 13485</strong> certification is NOT a legal FDA requirement for premarket submissions. FDA requires compliance with 21 CFR Part 820, which is being harmonized with ISO 13485 via the QMSR effective February 2026. ISO 13485 certification may help demonstrate compliance but is not mandatory.' },
+      { type:'mc', text:'IMDRF N12 Category IV applies to SaMD that is intended to:', ref:'IMDRF N12:2014', options:['Inform clinical management decisions for non-serious conditions','Drive clinical management decisions for serious conditions','Treat or diagnose conditions where incorrect information may cause death or irreversible health deterioration in critical situations','Store and retrieve patient records in the ICU'], correct:2, explanation:'<strong>IMDRF N12 Category IV</strong> is the highest risk category, applying to SaMD that treats or diagnoses conditions where erroneous information could directly cause death or irreversible deterioration of health in a critical situation. This warrants the highest level of regulatory scrutiny and clinical evidence.' },
+      { type:'tf', text:'IMDRF N41 analytical validation requires the SaMD to be tested on the same dataset used for training the algorithm.', ref:'IMDRF N41:2017', correct:false, explanation:'<strong>IMDRF N41 analytical validation</strong> requires demonstrating that the SaMD correctly and accurately processes input data. The validation must use data that is <strong>independent</strong> from training data. Using training data for validation creates data leakage, inflates performance metrics, and is not acceptable to regulators.' },
+      { type:'mc', text:'Under the 21st Century Cures Act, which type of software is explicitly excluded from the FDA\'s definition of a "device"?', ref:'21st Century Cures Act / FDA CDS Guidance', options:['Software that helps a clinician interpret ECG waveforms','Software for billing and administrative healthcare functions','Software that recommends specific drug therapy for critically ill patients','Software that analyzes radiology images to detect tumors'], correct:1, explanation:'The <strong>21st Century Cures Act</strong> explicitly excludes from device regulation: administrative/operational software, software for general patient communication, EHR software used for storing/retrieving/transmitting health information, and CDS software meeting specific criteria. Billing and administrative software are clearly excluded non-device functions.' },
+      { type:'mc', text:'A manufacturer is developing SaMD that recommends specific antibiotic therapy for sepsis patients in the ICU. Under IMDRF N12, this would most likely be categorized as:', ref:'IMDRF N12:2014', options:['Category I — lowest risk, informs clinical management for non-serious conditions','Category II — drives clinical management for non-serious situations','Category III — drives clinical management for serious situations','Category IV — treats/diagnoses in critical situations with life-threatening stakes'], correct:3, explanation:'Recommending specific antibiotic therapy for sepsis (a life-threatening condition) in the ICU drives clinical management in a <strong>critical healthcare situation</strong>. Under IMDRF N12, this places it at <strong>Category IV</strong> — the highest risk category — because incorrect recommendations could directly cause patient death.' },
+      { type:'tf', text:'Under EU MDR, a Class I MDSW manufacturer can self-certify and affix CE marking without Notified Body involvement.', ref:'EU MDR Rule 11 / Annex I', correct:true, explanation:'Under EU MDR, <strong>Class I devices</strong> (including Class I MDSW) may be self-certified by the manufacturer without Notified Body involvement, provided they comply with all applicable General Safety and Performance Requirements in Annex I. However, if Class I devices have a measuring function or are reusable surgical instruments, NB involvement is required.' },
+      { type:'mc', text:'What is the primary purpose of a Pre-Submission (Q-Sub) meeting with FDA for a novel SaMD?', ref:'FDA Pre-Sub Guidance', options:['To obtain early conditional clearance before completing development','To receive FDA feedback on classification, submission pathway, and clinical study requirements before formal submission','To negotiate reduced user fees for innovative devices','To register the device in FDA\'s database'], correct:1, explanation:'A <strong>Pre-Submission (Q-Sub) meeting</strong> allows manufacturers to ask specific questions of FDA before investing in a full submission. FDA provides non-binding written feedback on classification, the appropriate regulatory pathway, clinical evidence requirements, and study design — helping avoid costly misdirection. Strongly recommended for novel or complex SaMD.' },
+      { type:'mc', text:'IEC 62304 requires management of "SOUP." What does SOUP stand for and why does it matter?', ref:'IEC 62304', options:['Software Of Unknown Provenance — third-party/open-source software that must be identified and assessed for safety','Systematic Output Uncertainty Procedure — a testing methodology for complex algorithms','Software Operations Uptime Protocol — requirements for device availability','Structured Output Uncertainty Parameter — a statistical measure'], correct:0, explanation:'<strong>SOUP (Software Of Unknown Provenance)</strong> refers to software items that are not developed under a documented software development plan, including COTS, open-source libraries, and third-party components. IEC 62304 requires manufacturers to identify all SOUP, document requirements for its use, assess known anomalies, and verify acceptable performance — because SOUP quality cannot be assumed.' },
+      { type:'tf', text:'Post-market clinical follow-up (PMCF) is only required under EU MDR if the device has caused a serious adverse event.', ref:'EU MDR Annex XIV', correct:false, explanation:'Under EU MDR <strong>Annex XIV Part B</strong>, PMCF is a proactive, planned activity required for all CE-marked devices as part of the post-market surveillance system — not just triggered by adverse events. The PMCF plan must specify methods for collecting clinical data to confirm safety and performance, identify emerging risks, and update the clinical evaluation throughout the device\'s lifecycle.' },
+      { type:'mc', text:'What does "substantial equivalence" mean in the context of an FDA 510(k) for SaMD?', ref:'FDA 510(k) Guidance', options:['The new device must be identical in every way to the predicate device','The new device has the same intended use as, and is as safe and effective as, a legally marketed predicate device','The new device must have the same software architecture as an existing device','The new device manufacturer must be located in the same country as the predicate manufacturer'], correct:1, explanation:'<strong>Substantial equivalence</strong> means the new device (1) has the same intended use as the predicate, and (2) has the same technological characteristics OR different tech that does not raise new safety/effectiveness questions and performs at least as well. This allows market access without the full clinical trial burden of a PMA.' },
+      { type:'mc', text:'Which of the following best describes the role of ISO 14971 in SaMD development?', ref:'ISO 14971', options:['It defines software coding standards for safety-critical functions','It provides a framework for risk management — identifying, estimating, evaluating, controlling, and monitoring risks throughout the product lifecycle','It specifies the required clinical evidence for each SaMD risk category','It defines CE marking requirements for EU medical devices'], correct:1, explanation:'<strong>ISO 14971</strong> provides the internationally recognized framework for medical device risk management — applicable to hardware and software (including SaMD). It defines requirements for hazard identification, risk estimation, risk evaluation, risk control, and post-production monitoring. IEC 62304 explicitly requires risk management to be conducted per ISO 14971 throughout the software lifecycle.' },
+      { type:'tf', text:'MDCG 2021-24 establishes that software which only stores, archives, communicates, or searches medical information qualifies as Medical Device Software (MDSW) requiring CE marking.', ref:'MDCG 2021-24', correct:false, explanation:'<strong>MDCG 2021-24</strong> establishes a two-step qualification test. Software must: (1) have a medical purpose AND (2) create or modify medical information (not merely store, archive, communicate, or search data). Software that only stores or displays existing data without interpretation or creation of new information does not qualify as MDSW and does not require CE marking.' },
+      { type:'mc', text:'A SaMD manufacturer receives a 510(k) Not Substantially Equivalent (NSE) determination. What are their options?', ref:'FDA 510(k) / De Novo', options:['They must immediately stop development of the device permanently','They can request a De Novo classification, submit a PMA, or appeal the NSE determination to FDA','They must resubmit the same 510(k) with no changes within 30 days','They automatically receive De Novo classification'], correct:1, explanation:'Following an NSE determination, the manufacturer has several options: (1) <strong>De Novo request</strong> — if the device is low-to-moderate risk and could establish a new classification; (2) <strong>PMA</strong> — if the device is high risk and clinical data supports it; (3) <strong>Appeal</strong> the NSE determination to FDA\'s CDRH if they believe the determination was made in error; or (4) modify the device and resubmit.' },
+      { type:'mc', text:'Under EU MDR, the Clinical Evaluation Report (CER) for a SaMD must be updated:', ref:'EU MDR Annex XIV', options:['Only when the device design changes significantly','Once at initial CE marking and never again','Continuously throughout the device lifecycle as new post-market clinical data becomes available','Every 10 years as part of the license renewal'], correct:2, explanation:'Under EU MDR <strong>Annex XIV</strong>, the CER must be continuously updated throughout the device\'s lifecycle. As post-market clinical data accumulates through PMCF studies, vigilance reporting, and real-world evidence, the CER must be updated to incorporate this data, re-evaluate the benefit-risk profile, and confirm ongoing conformity with applicable requirements.' },
+      { type:'mc', text:'What is the "state of the art" concept in EU MDR, and how does it affect SaMD manufacturers?', ref:'EU MDR Annex I GSPR', options:['A marketing claim that a device uses cutting-edge technology','The developed stage of technical capability at a given time — manufacturers must demonstrate their device meets current SOTA to satisfy GSPRs','A requirement to file patents before CE marking','An FDA concept not applicable to EU MDR'], correct:1, explanation:'<strong>State of the art (SOTA)</strong> in EU MDR refers to the developed stage of technical capability at a given time. MDR\'s General Safety and Performance Requirements (Annex I) require devices to achieve a performance level reflecting the SOTA — meaning manufacturers must benchmark their device against currently available alternatives and demonstrate that the benefit-risk profile is at least as favorable. SOTA must be reviewed regularly as technology evolves.' },
+    ],
+    flashcards: [
+      { term:'SaMD (Software as a Medical Device)', def:'Software intended to be used for one or more medical purposes, performing these purposes without being part of a hardware medical device.', src:'IMDRF N10:2013' },
+      { term:'SiMD (Software in a Medical Device)', def:'Software embedded in or part of a hardware medical device that controls or drives the hardware device functions.', src:'IEC 62304' },
+      { term:'IMDRF N12 Risk Categories', def:'Four categories (I–IV) based on significance of information output and healthcare situation severity. Category IV = highest risk (treat/diagnose in critical situation).', src:'IMDRF N12:2014' },
+      { term:'Valid Clinical Association', def:'The first building block of SaMD clinical evaluation — the relationship between the SaMD output and the targeted clinical condition is clinically accepted or scientifically valid.', src:'IMDRF N41:2017' },
+      { term:'Analytical Validation', def:'Second IMDRF N41 building block — confirms the SaMD correctly and accurately processes input data to generate accurate, reliable, precise output data.', src:'IMDRF N41:2017' },
+      { term:'Clinical Validation', def:'Third IMDRF N41 building block — demonstrates the SaMD output achieves its intended clinical purpose and leads to improved health outcomes in the intended population.', src:'IMDRF N41:2017' },
+      { term:'IEC 62304 Safety Class C', def:'Software whose failure could result in death or serious injury. Requires most rigorous lifecycle activities: full traceability, detailed design, unit/integration/system testing, regression testing.', src:'IEC 62304' },
+      { term:'SOUP (Software of Unknown Provenance)', def:'Third-party, COTS, or open-source software incorporated into a medical device. Must be identified, assessed, and managed under IEC 62304 — quality cannot be assumed.', src:'IEC 62304' },
+      { term:'De Novo Request', def:'FDA pathway for novel, low-to-moderate risk SaMD with no legally marketed predicate. Creates new classification with special controls — can serve as predicate for future 510(k)s.', src:'FDA De Novo Guidance' },
+      { term:'EU MDR Rule 11', def:'Classification rule for MDSW. Class I: informational, no serious risk. Class IIa: decisions with minor clinical impact. Class IIb: serious decisions. Class III: controls life-sustaining therapy.', src:'EU MDR 2017/745' },
+      { term:'PMCF (Post-Market Clinical Follow-Up)', def:'EU MDR requirement — proactive, planned activity to collect clinical data post-CE marking to confirm safety and performance, identify emerging risks, and update the Clinical Evaluation Report.', src:'EU MDR Annex XIV' },
+      { term:'Substantial Equivalence', def:'FDA 510(k) standard — a new device is substantially equivalent if it has the same intended use as, and is as safe and effective as, a legally marketed predicate device.', src:'FDA 510(k) Guidance' },
+    ]
+  },
+  cyber: {
+    color: 'cyber',
+    progressClass: 'cyber',
+    questions: [
+      { type:'mc', text:'According to FDA\'s 2023 Cybersecurity Premarket Guidance, what is an SBOM and why is it required?', ref:'FDA Cybersecurity Guidance 2023', options:['Software Build Output Matrix — to document build pipelines','Software Bill of Materials — to identify all software components and enable vulnerability tracking','Security Baseline Operations Manual — to document security controls','System Backup Operations Map — for disaster recovery planning'], correct:1, explanation:'An <strong>SBOM (Software Bill of Materials)</strong> is a machine-readable inventory of all software components and dependencies. FDA\'s 2023 guidance requires it to enable rapid identification of vulnerabilities (CVEs) in third-party components throughout the device lifecycle.' },
+      { type:'tf', text:'Under FDA\'s 2023 final cybersecurity guidance, manufacturers are only required to address cybersecurity during premarket development, not during postmarket surveillance.', ref:'FDA Cyber Guidance 2023 + Postmarket', correct:false, explanation:'FDA requires a <strong>Total Product Lifecycle (TPLC) approach</strong>. Premarket guidance covers submission requirements; the separate Postmarket Cybersecurity Guidance requires ongoing vulnerability monitoring, coordinated disclosure, and timely patching throughout the device\'s entire marketed life.' },
+      { type:'mc', text:'IEC 81001-5-1 is specifically applicable to which type of product?', ref:'IEC 81001-5-1', options:['Industrial control systems in manufacturing facilities','Health software and health IT systems security engineering','Physical security for medical device storage facilities','Network infrastructure for hospital buildings'], correct:1, explanation:'<strong>IEC 81001-5-1:2021</strong> provides cybersecurity engineering requirements specifically for health software and health IT systems. It defines security activities throughout the software lifecycle, complementing IEC 62304, and is the primary device-level cybersecurity standard referenced by FDA, MDCG, and TGA.' },
+      { type:'mc', text:'What does the "Cybersecurity Management Plan" required in FDA premarket submissions primarily cover?', ref:'FDA Cybersecurity Guidance 2023', options:['Only the encryption algorithm used for data at rest','Post-market monitoring, vulnerability identification, assessment and remediation, and coordinated vulnerability disclosure','The HR training plan for cybersecurity staff','Backup and disaster recovery procedures'], correct:1, explanation:'FDA\'s 2023 guidance requires a <strong>Cybersecurity Management Plan</strong> demonstrating how the manufacturer will monitor, identify, assess, and remediate post-market vulnerabilities — including timelines for patch deployment and coordinated vulnerability disclosure processes.' },
+      { type:'tf', text:'Under MDCG cybersecurity guidance, minimum IT security measures in labeling are required even for Class I medical device software.', ref:'MDCG Cybersecurity Guidance', correct:true, explanation:'<strong>MDCG cybersecurity guidance</strong> requires that all MDSW — including Class I — include minimum IT security measures in labeling/IFU. This covers network requirements, configuration guidance, and user responsibilities. The depth of technical security requirements scales with risk class.' },
+      { type:'mc', text:'In threat modeling using the STRIDE framework, what threat does "Elevation of Privilege" refer to?', ref:'FDA Cybersecurity Guidance 2023 / STRIDE', options:['Increasing device memory allocation for performance','An attacker gaining unauthorized higher-level access than intended','Regulatory approval being granted faster than expected','Data being encrypted at a higher level than required'], correct:1, explanation:'In <strong>STRIDE</strong>, Elevation of Privilege (the "E") refers to an attacker gaining capabilities or access rights beyond what was intended — for example, a low-privilege user gaining root/admin access to a SaMD server, enabling them to modify algorithm parameters, access patient data, or disrupt device operation.' },
+      { type:'tf', text:'ISO/IEC 27001 certification directly fulfills FDA\'s medical device cybersecurity premarket submission requirements.', ref:'ISO 27001 / FDA Cyber', correct:false, explanation:'<strong>ISO/IEC 27001</strong> addresses organizational information security management and does NOT fulfill FDA\'s device-specific requirements (SBOM, threat model, security architecture documentation, penetration testing evidence, vulnerability disclosure policy). Device-level standards like <strong>IEC 81001-5-1</strong> are required for FDA submissions.' },
+      { type:'mc', text:'What is the FDA\'s expected timeframe for manufacturers to deploy patches for critical cybersecurity vulnerabilities (CVSS ≥ 9.0) in marketed devices?', ref:'FDA Postmarket Cyber Guidance', options:['Within 72 hours of discovery','Within 30 days for critical vulnerabilities','Within 1 year as part of the next device revision','No specific timeframe — manufacturers determine this internally'], correct:1, explanation:'FDA\'s <strong>Postmarket Cybersecurity Guidance</strong> expects critical vulnerabilities (CVSS ≥ 9.0) to be patched within <strong>30 days</strong>. High severity vulnerabilities (CVSS 7.0–8.9) should be addressed within 60 days. Longer timelines require documented justification and demonstrably effective interim compensating controls.' },
+      { type:'mc', text:'Under Section 524B of the FD&C Act (2023), what is a "cyber device"?', ref:'Section 524B FD&C Act / FDA 2023', options:['Any device that displays information on a screen','A device that includes software validated to a cybersecurity standard','A device that contains software, is intended to connect to the internet, and has technological characteristics that could be vulnerable to cybersecurity threats','Only devices classified as Class III by FDA'], correct:2, explanation:'<strong>Section 524B</strong> defines a "cyber device" as one that: (1) includes software (validated, installed, or authorized by the manufacturer); (2) has the ability to connect to the internet; and (3) contains technological characteristics that could be vulnerable to cybersecurity threats. This triggers mandatory cybersecurity documentation requirements in premarket submissions.' },
+      { type:'tf', text:'The EU NIS2 Directive classifies healthcare organizations as "essential entities," requiring mandatory cybersecurity incident reporting within 72 hours.', ref:'EU NIS2 Directive 2022/2555', correct:true, explanation:'Under <strong>EU NIS2 (2022/2555)</strong>, healthcare is classified as an essential sector. Essential entities must report significant cybersecurity incidents: an early warning within <strong>24 hours</strong> of becoming aware, and a full incident notification within <strong>72 hours</strong> to the relevant national competent authority — including impact assessment and initial mitigations.' },
+      { type:'mc', text:'What SBOM format(s) does FDA recommend for machine-readable SBOMs in medical device submissions?', ref:'FDA Cyber Guidance 2023 / NTIA', options:['PDF and Word document formats','SPDX or CycloneDX — standardized machine-readable formats','Proprietary manufacturer formats only','Excel spreadsheets with SHA-256 hashes'], correct:1, explanation:'FDA and NTIA guidance recommends machine-readable SBOM formats, specifically <strong>SPDX (Software Package Data Exchange)</strong> and <strong>CycloneDX</strong>. These open standards enable automated vulnerability scanning by matching SBOM component entries against CVE databases — something proprietary or document-based formats cannot efficiently support.' },
+      { type:'mc', text:'What is the purpose of a "Coordinated Vulnerability Disclosure" (CVD) policy required by FDA?', ref:'FDA Postmarket Cyber Guidance', options:['To coordinate marketing announcements with FDA before device launch','A process where vulnerabilities are privately reported to the manufacturer, who develops a fix before public disclosure','A requirement to disclose all device vulnerabilities in the device labeling','An agreement between FDA and manufacturers to keep vulnerabilities confidential permanently'], correct:1, explanation:'<strong>Coordinated Vulnerability Disclosure (CVD)</strong> is a structured process where external security researchers report discovered vulnerabilities privately to the manufacturer. The manufacturer has a defined period to develop and deploy a fix before the vulnerability is publicly disclosed. FDA requires manufacturers to have a published CVD policy and participate in the broader vulnerability disclosure ecosystem including CISA ICS-CERT.' },
+      { type:'tf', text:'A medical device manufacturer whose device is used in a hospital network is solely responsible for the cybersecurity of the entire hospital network under FDA regulations.', ref:'FDA Cyber Guidance 2023', correct:false, explanation:'Responsibility is <strong>shared</strong> but distinct. The manufacturer is responsible for the cybersecurity of their specific device — including its security architecture, SBOM, vulnerability management, and patching. The hospital (as the operator) is responsible for their network infrastructure and environment. Neither party can delegate their own obligations to the other.' },
+      { type:'mc', text:'Which of the following best describes "security by design" in medical device development?', ref:'FDA Cyber Guidance 2023 / IEC 81001-5-1', options:['Adding a security password to the device after development is complete','Integrating security considerations, controls, and testing throughout the entire development lifecycle from design through post-market','Relying on hospital firewalls and IT systems to provide all security for the device','Publishing a user manual with security recommendations'], correct:1, explanation:'"<strong>Security by Design</strong>" means that cybersecurity is not an afterthought but is systematically integrated from initial design through post-market: threat modeling during design, security requirements alongside functional requirements, security testing alongside functional testing, and vulnerability management post-market. FDA\'s TPLC approach embodies security by design.' },
+      { type:'mc', text:'Under EU MDR Annex I GSPR 17.2, manufacturers of electronic programmable medical devices are required to:', ref:'EU MDR Annex I GSPR 17.2', options:['Obtain ISO 27001 certification before CE marking','Implement and document minimum IT security measures and include them in the device labeling','Submit a cybersecurity threat model to the European Commission','Ensure the device is not connected to hospital networks'], correct:1, explanation:'EU MDR <strong>GSPR 17.2</strong> requires manufacturers of devices incorporating electronic programmable systems, including software, to set out minimum requirements for hardware, IT networks characteristics, and IT security measures — including protection against unauthorized access — and document these in the labeling/IFU. This applies across all risk classes.' },
+      { type:'tf', text:'CVSS (Common Vulnerability Scoring System) scores are used to prioritize cybersecurity vulnerability remediation in medical devices.', ref:'FDA Postmarket Cyber Guidance / NIST', correct:true, explanation:'<strong>CVSS</strong> provides a standardized numerical severity score for cybersecurity vulnerabilities (0–10). FDA\'s postmarket guidance uses CVSS thresholds to set patching expectations: critical (≥9.0) within 30 days, high (7.0–8.9) within 60 days. CVSS scores from NVD (National Vulnerability Database) are used to assess the risk level of CVEs affecting SBOM components.' },
+      { type:'mc', text:'What is the difference between a "controlled risk" and an "uncontrolled risk" vulnerability under FDA postmarket cybersecurity guidance?', ref:'FDA Postmarket Cyber Guidance', options:['Controlled risk = discovered internally, uncontrolled risk = discovered externally','Controlled risk can be adequately mitigated by compensating controls without a patch; uncontrolled risk cannot be adequately mitigated without a patch','Controlled risk involves hardware, uncontrolled risk involves software only','Controlled risk requires FDA reporting, uncontrolled risk does not'], correct:1, explanation:'Under FDA postmarket guidance: <strong>Controlled risk</strong> — the vulnerability\'s exploitability and potential harm can be adequately reduced through compensating controls (network isolation, access restrictions) without deploying a patch. <strong>Uncontrolled risk</strong> — compensating controls are insufficient and a software patch is required. Uncontrolled risk triggers the 30/60-day patch timeline expectations.' },
+      { type:'mc', text:'What cybersecurity testing evidence is FDA expecting to see in a premarket submission for a cyber device?', ref:'FDA Cybersecurity Guidance 2023', options:['Only user acceptance testing results','Evidence from static analysis (SAST), dynamic analysis (DAST), fuzz testing, and penetration testing, with documented findings and resolutions','Annual antivirus scan results','Only FDA-approved third-party security lab certifications'], correct:1, explanation:'FDA\'s 2023 guidance expects security testing evidence covering: <strong>Static Application Security Testing (SAST)</strong>, <strong>Dynamic Application Security Testing (DAST)</strong>, <strong>fuzz testing</strong>, and <strong>penetration testing</strong>. All discovered vulnerabilities must be documented, and either remediated or accepted with a documented risk rationale. The testing scope and methodology must be described.' },
+      { type:'tf', text:'A medical device manufacturer must update their SBOM only once at initial FDA submission and is not required to maintain it throughout the device\'s marketed life.', ref:'FDA Cybersecurity Guidance 2023', correct:false, explanation:'The <strong>SBOM must be maintained throughout the device\'s entire lifecycle</strong>. As software components are updated, replaced, or added, the SBOM must be updated accordingly. A current, accurate SBOM is essential for rapid response to newly discovered CVEs — an outdated SBOM defeats its core purpose of enabling vulnerability monitoring.' },
+      { type:'mc', text:'Under IEC 81001-5-1, cybersecurity activities must be integrated with which other medical device lifecycle standard?', ref:'IEC 81001-5-1 / IEC 62304', options:['ISO 9001 (Quality Management Systems)','IEC 62304 (Medical device software lifecycle processes)','ISO 45001 (Occupational health and safety)','IEC 60601 (Medical electrical equipment safety)'], correct:1, explanation:'<strong>IEC 81001-5-1</strong> is designed to be used alongside <strong>IEC 62304</strong>. IEC 62304 defines the software development lifecycle activities; IEC 81001-5-1 adds security engineering activities to those same lifecycle phases. Together they provide a comprehensive framework: IEC 62304 ensures software is developed safely and correctly; IEC 81001-5-1 ensures it is developed securely.' },
+      { type:'mc', text:'What does the EU CRA (Cyber Resilience Act) add to cybersecurity obligations for medical device manufacturers in the EU?', ref:'EU CRA / NIS2', options:['It replaces EU MDR cybersecurity requirements entirely','It introduces mandatory cybersecurity requirements for products with digital elements, potentially requiring CE marking for cybersecurity in addition to MDR CE marking','It only applies to consumer electronics, not medical devices','It eliminates the need for SBOM documentation'], correct:1, explanation:'The <strong>EU Cyber Resilience Act (CRA)</strong> introduces mandatory cybersecurity requirements for all products with digital elements placed on the EU market — including many medical devices. It requires manufacturers to ensure products are designed securely, address vulnerabilities during the support period, and provide an SBOM. Medical device manufacturers may face dual obligations under both MDR (device safety) and CRA (cybersecurity) — similar to the MDR/AI Act dual compliance challenge.' },
+    ],
+    flashcards: [
+      { term:'SBOM (Software Bill of Materials)', def:'Machine-readable inventory of all software components, libraries, and dependencies in a medical device. Required by FDA 2023. Enables rapid CVE response. Common formats: SPDX, CycloneDX.', src:'FDA Cyber Guidance 2023' },
+      { term:'TPLC (Total Product Lifecycle)', def:'FDA\'s cybersecurity approach — security must be designed in from initial development and maintained through premarket, postmarket, and decommissioning. Not a one-time submission activity.', src:'FDA 2023' },
+      { term:'STRIDE Framework', def:'Threat modeling methodology: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege. Required approach or equivalent in FDA cyber premarket submissions.', src:'FDA Cyber Guidance 2023' },
+      { term:'Coordinated Vulnerability Disclosure', def:'Process where external researchers privately report vulnerabilities to the manufacturer, who develops a fix before public disclosure. Required by FDA postmarket guidance. Works with CISA ICS-CERT.', src:'FDA Postmarket Cyber' },
+      { term:'IEC 81001-5-1', def:'Cybersecurity engineering standard for health software. Defines security activities alongside IEC 62304 development activities. Referenced globally by FDA, MDCG, TGA as the primary device-level cybersecurity standard.', src:'IEC 81001-5-1:2021' },
+      { term:'Section 524B FD&C Act', def:'Statutory authority granting FDA power to require cybersecurity information in premarket submissions for "cyber devices" and to refuse-to-file submissions lacking required documentation. Effective 2023.', src:'Consolidated Appropriations Act 2023' },
+      { term:'Controlled vs. Uncontrolled Risk', def:'Controlled: vulnerability risk can be adequately mitigated by compensating controls (no patch needed). Uncontrolled: compensating controls insufficient — patch required within FDA\'s 30/60-day timelines.', src:'FDA Postmarket Cyber' },
+      { term:'CVSS Score', def:'Common Vulnerability Scoring System — numerical severity rating 0–10 for cybersecurity vulnerabilities. FDA uses CVSS thresholds: ≥9.0 = critical (30-day patch expectation); 7.0–8.9 = high (60-day expectation).', src:'NIST / FDA Postmarket Cyber' },
+      { term:'NIS2 Directive', def:'EU Network and Information Security Directive 2 — healthcare is an "essential sector." Requires cybersecurity risk management and incident reporting: 24h early warning, 72h full report to national authorities.', src:'EU NIS2 2022/2555' },
+      { term:'Cybersecurity Management Plan', def:'FDA-required document detailing how the manufacturer will monitor, identify, assess, and remediate post-market vulnerabilities — including disclosure processes, escalation paths, and patch deployment timelines.', src:'FDA Cyber Guidance 2023' },
+      { term:'Penetration Testing', def:'Simulated cyberattack against a medical device to identify exploitable vulnerabilities. Evidence of penetration testing results must be included in FDA premarket cybersecurity submissions.', src:'FDA Cyber Guidance 2023' },
+      { term:'EU GSPR 17.2', def:'EU MDR Annex I requirement for electronic programmable devices: minimum IT security measures must be implemented, documented, and included in device labeling — applies to all risk classes of MDSW.', src:'EU MDR 2017/745 Annex I' },
+    ]
+  },
+  aiml: {
+    color: 'aiml',
+    progressClass: 'aiml',
+    questions: [
+      { type:'mc', text:'What is a "Predetermined Change Control Plan" (PCCP) in the context of AI/ML SaMD regulation?', ref:'FDA AI/ML Action Plan / PCCP Draft Guidance', options:['A plan for changing the device manufacturer post-approval','A pre-specified plan describing anticipated AI/ML algorithm changes and the methodology to validate those changes without requiring a new premarket submission for each update','A disaster recovery plan for AI system failures','A plan for updating device labeling only'], correct:1, explanation:'A <strong>PCCP (Predetermined Change Control Plan)</strong> describes: (1) specific changes anticipated in the AI/ML algorithm; (2) the validation methodology and performance criteria for each change; (3) controls ensuring patient safety. It allows iterative AI improvement without a new 510(k) for each qualifying update.' },
+      { type:'tf', text:'MDCG 2025-6 states that a CE-marked AI medical device that complies with EU MDR/IVDR is automatically compliant with the EU AI Act.', ref:'MDCG 2025-6', correct:false, explanation:'<strong>MDCG 2025-6</strong> explicitly states the opposite — EU MDR/IVDR compliance does NOT automatically satisfy EU AI Act requirements. Medical device AI that qualifies as high-risk under Annex III must comply with BOTH sets of requirements. The AI Act adds obligations on data governance, bias analysis, transparency, human oversight, and AI-specific cybersecurity.' },
+      { type:'mc', text:'Under GMLP (Good Machine Learning Practice) principles, what is the primary purpose of requiring "representative datasets"?', ref:'FDA/HC/MHRA GMLP Principles', options:['To maximize dataset size for computational performance','To ensure training and test data adequately represent the intended use population, reducing bias and supporting generalization across subgroups','To meet HIPAA de-identification requirements','To reduce storage costs for device manufacturers'], correct:1, explanation:'<strong>GMLP principles</strong> require representative datasets to ensure the AI/ML model performs reliably across the full intended use population, including demographic subgroups. Non-representative training data leads to biased models that may systematically fail for underrepresented groups — a direct patient safety concern addressed across FDA, Health Canada, and MHRA guidance.' },
+      { type:'mc', text:'Under the EU AI Act, which category do most CE-marked AI-based medical devices fall into?', ref:'EU AI Act Annex III', options:['Minimal risk — no specific requirements apply','High-risk — listed in Annex III as AI systems used as safety components of medical devices','Prohibited AI practices','General purpose AI (GPAI) only'], correct:1, explanation:'EU AI Act <strong>Annex III</strong> lists AI systems used as safety components of medical devices, or as medical devices themselves, as <strong>high-risk</strong>. These must comply with Chapter III: risk management, data governance, transparency, human oversight, accuracy/robustness, and post-market monitoring — in addition to existing MDR/IVDR requirements.' },
+      { type:'tf', text:'FDA requires that AI/ML SaMD training datasets and test datasets must be completely separate, with no data overlap, to ensure valid performance evaluation.', ref:'FDA AI/ML / GMLP Principle 4', correct:true, explanation:'A fundamental AI/ML validation requirement is <strong>training-test independence</strong>. Using training data in test evaluation causes "data leakage" and inflates reported performance metrics. FDA, GMLP principles (Principle 4), and MDCG 2025-6 all require locked, independent test sets that the model has never seen during training or validation.' },
+      { type:'mc', text:'What does "Algorithm Transparency" require manufacturers to provide under EU AI Act Article 13?', ref:'EU AI Act Art. 13 / MDCG 2025-6', options:['Full disclosure of proprietary source code to regulators and all users','IFU enabling users to interpret outputs appropriately, including the AI\'s scope, limitations, performance metrics, and what it cannot do','A public registry of all training data used','Real-time performance monitoring dashboards accessible to all end users'], correct:1, explanation:'<strong>EU AI Act Article 13</strong> requires high-risk AI systems to be sufficiently transparent that deployers can interpret and use outputs appropriately. For medical AI, the IFU must describe: intended purpose, performance metrics across subgroups, known limitations, intended user qualifications, and guidance on appropriate clinical oversight — enabling informed, safe use.' },
+      { type:'mc', text:'ISO/IEC 23894 primarily addresses which aspect of AI systems?', ref:'ISO/IEC 23894:2023', options:['Software coding standards for AI development','Risk management guidance for AI systems — including AI-specific hazards like bias, performance drift, and emergent behavior','Data privacy requirements for AI training datasets','Cybersecurity penetration testing specifically for AI systems'], correct:1, explanation:'<strong>ISO/IEC 23894:2023</strong> provides risk management guidance for AI systems, complementing ISO 14971. It covers AI-specific risk concepts: emergent risks from learned behavior, performance degradation over time, bias-related harms, explainability challenges, and data quality risks — providing the AI risk management framework to integrate with ISO 14971 for medical device AI.' },
+      { type:'tf', text:'Post-market performance monitoring for AI/ML SaMD is only required if the device uses a "continuously learning" adaptive algorithm.', ref:'FDA AI/ML Action Plan / GMLP Principle 10', correct:false, explanation:'Post-market monitoring is required for <strong>ALL AI/ML SaMD</strong> — including locked algorithms. Even locked algorithms can experience <strong>performance drift</strong> as clinical practice, patient populations, imaging equipment, or data acquisition methods evolve. GMLP Principle 10 and FDA expectations require ongoing real-world performance monitoring regardless of whether the algorithm automatically updates.' },
+      { type:'mc', text:'Under GMLP Principle 7, "Human-AI Team Performance," what does FDA/MHRA/Health Canada expect manufacturers to consider?', ref:'GMLP Principles FDA/HC/MHRA 2021', options:['The computational speed of the human-AI system combined','How clinicians will interact with, interpret, and act on AI outputs — evaluating the overall human-AI team performance, not just the algorithm in isolation','The number of human reviewers required per AI recommendation','Whether AI should replace human decision-making entirely for efficiency'], correct:1, explanation:'<strong>GMLP Principle 7</strong> requires that performance evaluation consider the <strong>human-AI team</strong> — not just the algorithm\'s standalone technical performance. This means studying how clinicians actually use and respond to the AI output in real clinical workflows, including how they handle AI errors, override recommendations, or are anchored by AI suggestions.' },
+      { type:'mc', text:'What is the primary regulatory challenge posed by "adaptive" (continuously learning) AI/ML medical device algorithms?', ref:'FDA AI/ML Action Plan', options:['They require more server storage than locked algorithms','Their performance and behavior can change after regulatory clearance without manufacturer intervention, potentially affecting safety and effectiveness in unpredictable ways','They are automatically classified as Class III devices by FDA','They cannot be used in any medical device under current regulations'], correct:1, explanation:'<strong>Adaptive algorithms</strong> that continue learning from real-world data can change their behavior after regulatory clearance — meaning the performance demonstrated in the premarket submission may no longer reflect actual performance. This creates a fundamental challenge for traditional regulatory frameworks designed for fixed devices, requiring enhanced post-market monitoring and adaptive regulatory approaches like PCCP.' },
+      { type:'mc', text:'Under EU AI Act Article 10, what are the data governance requirements for training datasets used in high-risk AI medical devices?', ref:'EU AI Act Art. 10 / MDCG 2025-6', options:['Training data must be collected from at least three EU member states','Training, validation, and test data must be relevant, representative, free of errors and complete; bias must be examined; data management practices documented','Training data must be stored in EU-certified data centers only','Training datasets must be publicly available for third-party review'], correct:1, explanation:'<strong>EU AI Act Article 10</strong> requires that training, validation, and test datasets for high-risk AI be: relevant for the intended purpose, sufficiently representative of the intended population, as free of errors and complete as possible. Manufacturers must document data governance practices, examine for biases (particularly those relevant to the intended purpose), and in some cases may use special categories of personal data under strict conditions.' },
+      { type:'tf', text:'A PCCP approved by FDA in a 510(k) allows the manufacturer to make any algorithm change they choose without further regulatory oversight.', ref:'FDA PCCP Draft Guidance', correct:false, explanation:'A PCCP is <strong>not a blank check</strong>. It only pre-approves the specific types of changes described in the plan, using the specific validation methodology and meeting the defined performance criteria agreed with FDA. Changes outside the PCCP scope, changes that fail to meet the pre-defined performance criteria, or new intended uses still require a new premarket submission.' },
+      { type:'mc', text:'What does "performance drift" mean in the context of AI/ML medical device post-market monitoring?', ref:'GMLP / FDA AI/ML Action Plan', options:['The device\'s physical drift due to temperature changes in hospital environments','Gradual degradation of AI algorithm performance over time due to changes in real-world data distributions, clinical practice, equipment, or patient populations','A planned decrease in performance metrics to extend device battery life','The delay between AI recommendation and clinician action'], correct:1, explanation:'<strong>Performance drift</strong> refers to gradual changes in AI/ML algorithm performance after deployment — typically degradation — caused by shifts in real-world data distributions that differ from the training data. Causes include: changes in clinical practice, new patient populations, updated imaging equipment, seasonal disease patterns, or evolving diagnostic coding. Post-market monitoring is required to detect and address drift.' },
+      { type:'mc', text:'Which of the following best describes the relationship between FDA\'s PCCP and EU MDR\'s change management requirements for AI devices?', ref:'MDCG 2025-6 / FDA PCCP', options:['They are identical requirements — a PCCP approved by FDA is automatically accepted by EU NB','The PCCP is an FDA-specific mechanism; EU MDR requires change assessment through the QMS but does not have an equivalent formal pre-approved change framework under MDCG 2025-6','EU MDR has no change management requirements for AI devices','PCCP is required by both FDA and EU MDR for all AI medical devices'], correct:1, explanation:'The <strong>PCCP</strong> is an FDA-specific regulatory mechanism. EU MDR does not have an equivalent formal pre-approved change control plan. Under EU MDR and MDCG 2025-6, algorithm modifications must be managed through the manufacturer\'s QMS and assessed to determine if they constitute a "significant change" requiring Notified Body involvement or a new conformity assessment. Health Canada is currently aligning its approach with the FDA PCCP framework.' },
+      { type:'tf', text:'GMLP principles were jointly issued by FDA, the European Medicines Agency (EMA), and WHO as a trilateral international harmonization initiative.', ref:'GMLP Principles 2021', correct:false, explanation:'The GMLP principles were jointly issued by <strong>FDA (US), Health Canada, and MHRA (UK)</strong> in October 2021 — not by EMA or WHO. EMA regulates pharmaceuticals, not medical devices. The joint FDA/HC/MHRA initiative represents significant alignment across three major Anglophone jurisdictions, though the EU (via MDCG) has since addressed similar principles in MDCG 2025-6.' },
+      { type:'mc', text:'What is "bias" in the context of AI/ML medical device regulation, and why is it a patient safety concern?', ref:'GMLP / EU AI Act Art. 10 / MDCG 2025-6', options:['Statistical bias in measurement instruments — unrelated to AI regulation','Systematic errors in AI/ML model outputs that disproportionately affect specific subgroups (e.g., demographic, clinical) — leading to differential performance and potential harm for underrepresented populations','Bias in favor of one manufacturer\'s products by regulatory bodies','A temporary performance issue during model training that resolves automatically'], correct:1, explanation:'In AI/ML regulation, <strong>bias</strong> refers to systematic errors that cause the model to perform differently (typically worse) for specific patient subgroups — often demographic groups underrepresented in training data. This is a direct patient safety concern because patients from underrepresented groups may receive less accurate diagnoses or recommendations. FDA, GMLP, EU AI Act Art. 10, and MDCG 2025-6 all require bias examination and mitigation.' },
+      { type:'mc', text:'What is the purpose of a "locked" independent test set in AI/ML SaMD validation?', ref:'FDA AI/ML / GMLP Principle 8', options:['To prevent unauthorized access to the AI algorithm during testing','A dataset held separate from all development activities and used only for final performance reporting — ensuring performance metrics are not inflated by overfitting or data leakage','A contractual lock preventing the test site from publishing results without manufacturer approval','A regulatory database maintained by FDA of approved test scenarios'], correct:1, explanation:'A <strong>locked independent test set</strong> is held completely separate from training and validation data and used only for final performance evaluation. "Locking" means it is never seen during development, preventing the algorithm from being inadvertently optimized against it. This ensures reported performance metrics (sensitivity, specificity, AUC) reflect true real-world performance, not training optimization artifacts.' },
+      { type:'tf', text:'Under EU AI Act Article 14, high-risk AI medical devices must be designed so that human clinicians can meaningfully understand, monitor, and override the AI system\'s outputs.', ref:'EU AI Act Art. 14', correct:true, explanation:'<strong>EU AI Act Article 14</strong> requires that high-risk AI systems be designed to allow effective human oversight. For medical AI this means: (1) clinicians can understand the AI\'s outputs and their basis; (2) clinicians can monitor the AI for anomalous behavior; (3) override mechanisms are available; and (4) the AI can be paused or disabled if needed. Designs that prevent meaningful human oversight do not comply with Article 14.' },
+      { type:'mc', text:'A manufacturer of an FDA-cleared AI/ML SaMD wants to add a completely new intended use not covered in the original 510(k). Is this covered by their existing PCCP?', ref:'FDA PCCP Draft Guidance', options:['Yes — a PCCP covers all future changes to the device indefinitely','No — a new intended use requires a new premarket submission (510(k), De Novo, or PMA) regardless of any existing PCCP','Yes — if the new use is in the same clinical specialty','Only if the new intended use was listed in the original 510(k) labeling'], correct:1, explanation:'A <strong>PCCP does not cover new intended uses</strong>. The PCCP only covers the specific algorithm modification types described within it. Adding a new intended use — expanding from one diagnostic application to another — requires a new premarket submission (typically a new 510(k) or De Novo). This is explicitly stated in FDA\'s PCCP draft guidance.' },
+      { type:'mc', text:'What is "valid clinical association" in the IMDRF N41 framework for AI/ML SaMD?', ref:'IMDRF N41:2017', options:['A legally binding contract between the SaMD manufacturer and a clinical site','The scientific/clinical basis establishing that the relationship between the AI output and the targeted clinical condition is clinically meaningful — i.e., that the output actually relates to the condition it claims to assess','FDA\'s formal approval of the clinical study protocol before studies begin','A validated patient consent form for AI-assisted diagnosis'], correct:1, explanation:'Under <strong>IMDRF N41</strong>, Valid Clinical Association (Building Block 1) establishes the scientific foundation: is there a clinically accepted, evidence-based relationship between what the AI outputs and the clinical condition it targets? For example, if an AI analyzes retinal images to detect diabetic retinopathy, there must be established evidence that the retinal features the AI detects are clinically associated with diabetic retinopathy. Without this, the AI has no clinical rationale.' },
+    ],
+    flashcards: [
+      { term:'PCCP (Predetermined Change Control Plan)', def:'Pre-specified plan filed with FDA describing anticipated AI/ML algorithm modifications, validation methodology, and performance criteria — enabling qualifying algorithm updates without new 510(k) submissions.', src:'FDA PCCP Draft Guidance' },
+      { term:'GMLP (Good Machine Learning Practice)', def:'10 principles adopted jointly by FDA, Health Canada, and MHRA for responsible AI/ML development: representative data, bias control, training-test independence, human oversight, ongoing monitoring.', src:'FDA/HC/MHRA 2021' },
+      { term:'Performance Drift', def:'Gradual degradation of AI/ML model performance after deployment due to shifts in real-world data, clinical practice, equipment, or patient populations. Requires post-market monitoring even for locked algorithms.', src:'GMLP / FDA' },
+      { term:'Locked Algorithm', def:'AI algorithm whose parameters are fixed at deployment and do not change automatically. Any modification requires regulatory assessment and likely a new submission or PCCP-covered update.', src:'FDA AI/ML Action Plan' },
+      { term:'Adaptive Algorithm', def:'AI algorithm that continues learning from real-world data after deployment. Highest regulatory scrutiny — performance may change without manufacturer action, requiring robust post-market monitoring.', src:'FDA AI/ML Action Plan' },
+      { term:'EU AI Act Annex III — High-Risk AI', def:'List of AI systems classified as high-risk under the EU AI Act, including AI used as safety components of medical devices or as medical devices. Subject to full Chapter III compliance requirements.', src:'EU AI Act 2024' },
+      { term:'MDCG 2025-6', def:'EU guidance on medical device AI — establishes dual compliance framework (MDR + AI Act) and addresses data governance, bias, transparency, human oversight, AI-specific cybersecurity for MDAI.', src:'MDCG April 2025' },
+      { term:'Data Governance (Art. 10)', def:'EU AI Act requirement: training/validation/test data must be relevant, representative, free of errors; biases examined; data management practices documented. Adds to MDR clinical evidence requirements.', src:'EU AI Act Art. 10' },
+      { term:'Human Oversight (Art. 14)', def:'EU AI Act requirement: high-risk AI must be designed so deployers can understand, monitor, and override the AI system. Medical AI must include override mechanisms and support informed clinical decision-making.', src:'EU AI Act Art. 14' },
+      { term:'ISO/IEC 23894', def:'Risk management guidance for AI systems — addresses AI-specific hazards: emergent behavior, bias, performance degradation, explainability limits, data quality risks. Complements ISO 14971 for medical device AI.', src:'ISO/IEC 23894:2023' },
+      { term:'Valid Clinical Association', def:'IMDRF N41 Building Block 1 — scientific basis that the relationship between AI output and the targeted clinical condition is clinically meaningful and evidence-based.', src:'IMDRF N41:2017' },
+      { term:'Bias (AI/ML)', def:'Systematic errors causing AI performance to differ across patient subgroups — typically worse for underrepresented groups. A patient safety concern requiring examination and mitigation under GMLP, EU AI Act Art. 10, and MDCG 2025-6.', src:'GMLP / EU AI Act / MDCG 2025-6' },
+    ]
+  }
+};
+
+let currentDomain = 'samd';
+let currentMode = 'quiz';
+let currentQIdx = 0;
+let score = 0;
+let answered = false;
+let shuffledCards = [];
+
+function switchDomain(d, el) {
+  currentDomain = d;
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active','samd','cyber','aiml'));
+  el.classList.add('active', d);
+  restartQuiz();
+  if (currentMode === 'flashcards') renderFlashcards();
+  document.getElementById('progress-fill').className = 'progress-fill ' + DOMAINS[d].progressClass;
+}
+
+function switchMode(m, el) {
+  currentMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('quiz-mode').classList.toggle('hidden', m !== 'quiz');
+  document.getElementById('flashcard-mode').classList.toggle('hidden', m !== 'flashcards');
+  if (m === 'flashcards') renderFlashcards();
+}
+
+function renderQuestion() {
+  const domain = DOMAINS[currentDomain];
+  const qs = domain.questions;
+  const q = qs[currentQIdx];
+  answered = false;
+
+  document.getElementById('score-card').classList.add('hidden');
+  document.getElementById('question-card').classList.remove('hidden');
+  document.querySelector('.quiz-progress').style.display = '';
+  document.querySelector('.quiz-actions').style.display = '';
+
+  document.getElementById('q-counter').textContent = `Question ${currentQIdx+1} of ${qs.length}`;
+  document.getElementById('q-score-live').textContent = `Score: ${score}`;
+  document.getElementById('progress-fill').style.width = `${((currentQIdx+1)/qs.length)*100}%`;
+  document.getElementById('q-type-label').textContent = q.type === 'mc' ? 'Multiple Choice' : 'True / False';
+  document.getElementById('q-text').innerHTML = q.text + (q.ref ? `<div class="q-ref">Ref: ${q.ref}</div>` : '');
+  document.getElementById('explanation').className = 'explanation';
+  document.getElementById('explanation').innerHTML = '';
+  document.getElementById('next-btn').disabled = true;
+
+  const optEl = document.getElementById('q-options');
+  optEl.innerHTML = '';
+
+  if (q.type === 'mc') {
+    const letters = ['A','B','C','D'];
+    q.options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 'option';
+      div.innerHTML = `<div class="option-letter">${letters[i]}</div><div>${opt}</div>`;
+      div.onclick = () => selectOption(i, div, q);
+      optEl.appendChild(div);
+    });
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'tf-options';
+    ['True','False'].forEach((label, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tf-btn';
+      btn.textContent = label;
+      btn.onclick = () => selectTF(i === 0, btn, q);
+      wrap.appendChild(btn);
+    });
+    optEl.appendChild(wrap);
+  }
+}
+
+function selectOption(i, el, q) {
+  if (answered) return;
+  answered = true;
+  const correct = i === q.correct;
+  if (correct) { score++; el.classList.add('correct'); }
+  else { el.classList.add('incorrect'); }
+  document.querySelectorAll('.option').forEach((o, idx) => {
+    if (idx === q.correct) o.classList.add('reveal-correct');
+    o.onclick = null;
+  });
+  showExplanation(q, correct);
+}
+
+function selectTF(val, el, q) {
+  if (answered) return;
+  answered = true;
+  const correct = val === q.correct;
+  if (correct) { score++; el.classList.add('correct'); }
+  else { el.classList.add('incorrect'); }
+  document.querySelectorAll('.tf-btn').forEach(b => { b.onclick = null; if ((b.textContent === 'True') === q.correct) b.classList.add('reveal-correct'); });
+  showExplanation(q, correct);
+}
+
+function showExplanation(q, correct) {
+  const el = document.getElementById('explanation');
+  el.innerHTML = `<strong>${correct ? '✓ Correct' : '✗ Incorrect'}</strong> — ${q.explanation}`;
+  el.classList.add('show');
+  document.getElementById('next-btn').disabled = false;
+  document.getElementById('q-score-live').textContent = `Score: ${score}`;
+}
+
+function nextQuestion() {
+  currentQIdx++;
+  const qs = DOMAINS[currentDomain].questions;
+  if (currentQIdx >= qs.length) showScore();
+  else renderQuestion();
+}
+
+function showScore() {
+  document.getElementById('question-card').classList.add('hidden');
+  document.querySelector('.quiz-progress').style.display = 'none';
+  document.querySelector('.quiz-actions').style.display = 'none';
+  const total = DOMAINS[currentDomain].questions.length;
+  const pct = Math.round((score/total)*100);
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('final-denom').textContent = `/ ${total}`;
+  const msgs = pct >= 80 ? ['Excellent!','You have strong command of this domain.'] : pct >= 60 ? ['Good Progress','Review the explanations for missed questions.'] : ['Keep Studying','Revisit the learning modules and try again.'];
+  document.getElementById('score-msg').textContent = msgs[0];
+  document.getElementById('score-sub').textContent = msgs[1];
+  document.getElementById('score-card').classList.remove('hidden');
+}
+
+function restartQuiz() {
+  currentQIdx = 0;
+  score = 0;
+  document.getElementById('score-card').classList.add('hidden');
+  document.getElementById('question-card').classList.remove('hidden');
+  document.querySelector('.quiz-progress').style.display = '';
+  document.querySelector('.quiz-actions').style.display = '';
+  renderQuestion();
+}
+
+function renderFlashcards() {
+  const cards = [...DOMAINS[currentDomain].flashcards];
+  shuffledCards = cards;
+  document.getElementById('fc-count').textContent = `${cards.length} cards — click to flip`;
+  const grid = document.getElementById('flashcard-grid');
+  grid.innerHTML = '';
+  cards.forEach(c => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flashcard-wrapper';
+    wrapper.innerHTML = `
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <div><div class="fc-label">Term</div><div class="fc-term">${c.term}</div></div>
+          <div class="fc-hint">↕ Click to reveal definition</div>
+        </div>
+        <div class="flashcard-back">
+          <div><div class="fc-back-label">Definition</div><div class="fc-def">${c.def}</div></div>
+          <div class="fc-src">${c.src}</div>
+        </div>
+      </div>`;
+    wrapper.onclick = () => wrapper.classList.toggle('flipped');
+    grid.appendChild(wrapper);
+  });
+}
+
+function shuffleCards() {
+  const grid = document.getElementById('flashcard-grid');
+  const cards = [...grid.children];
+  for (let i = cards.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    grid.appendChild(cards[j]);
+    cards.splice(j, 1);
+  }
+  grid.querySelectorAll('.flashcard-wrapper').forEach(w => w.classList.remove('flipped'));
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

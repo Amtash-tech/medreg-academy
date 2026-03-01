@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Plan — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-primary:#0A0F1E;--bg-card:#141B2D;--bg-card-hover:#1a2340;--blue:#1E6FFF;--teal:#00D4C8;--amber:#F5A623;--green:#00C48C;--red:#FF4D6A;--white:#F0F4FF;--muted:#8A9BB8;--border:rgba(30,111,255,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--white);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;}
+.pulse-line{position:fixed;top:0;left:0;width:100%;height:2px;z-index:1000;overflow:hidden;}
+.pulse-line::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--teal),var(--blue),transparent);animation:ps 3s ease-in-out infinite;}
+@keyframes ps{0%{left:-100%}100%{left:100%}}
+nav{position:fixed;top:2px;left:0;width:100%;z-index:999;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,15,30,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--teal);}
+.nav-links{display:flex;gap:22px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--white);}
+.nav-cta{background:transparent;border:1px solid var(--teal);color:var(--teal);padding:8px 20px;font-family:'IBM Plex Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all 0.2s;text-decoration:none;}
+.nav-cta:hover{background:var(--teal);color:var(--bg-primary);}
+
+.page-header{padding:100px 40px 48px;max-width:1200px;margin:0 auto;}
+.page-label{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;}
+.page-title{font-family:'Chakra Petch',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin-bottom:12px;}
+.page-desc{color:var(--muted);font-size:1rem;line-height:1.7;max-width:640px;}
+
+/* PROFILE SELECTOR */
+.profile-section{max-width:1200px;margin:0 auto;padding:0 40px 48px;}
+.profile-label{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--teal);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;}
+.profile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:48px;}
+.profile-card{background:var(--bg-card);border:2px solid var(--border);padding:24px 20px;border-radius:2px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.profile-card:hover{background:var(--bg-card-hover);border-color:rgba(0,212,200,0.3);}
+.profile-card.selected{border-color:var(--teal);background:rgba(0,212,200,0.06);}
+.pc-icon{font-size:2rem;margin-bottom:12px;}
+.pc-title{font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:6px;}
+.pc-desc{font-size:0.75rem;color:var(--muted);line-height:1.5;}
+
+/* PLAN DISPLAY */
+.plan-section{max-width:1200px;margin:0 auto;padding:0 40px 80px;display:none;}
+.plan-section.visible{display:block;}
+
+.plan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:16px;}
+.plan-title{font-family:'Chakra Petch',sans-serif;font-size:1.4rem;font-weight:700;}
+.plan-meta{display:flex;gap:16px;}
+.pm-item{text-align:center;padding:12px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:2px;}
+.pm-num{font-family:'Chakra Petch',sans-serif;font-size:1.4rem;font-weight:700;color:var(--teal);line-height:1;}
+.pm-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+
+/* PHASE */
+.phase{margin-bottom:48px;}
+.phase-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.phase-num{width:40px;height:40px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-size:1rem;font-weight:700;flex-shrink:0;}
+.ph-1 .phase-num{background:rgba(30,111,255,0.12);border:1px solid rgba(30,111,255,0.3);color:var(--blue);}
+.ph-2 .phase-num{background:rgba(0,212,200,0.1);border:1px solid rgba(0,212,200,0.25);color:var(--teal);}
+.ph-3 .phase-num{background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25);color:var(--amber);}
+.ph-4 .phase-num{background:rgba(0,196,140,0.1);border:1px solid rgba(0,196,140,0.25);color:var(--green);}
+.phase-title-wrap{}
+.phase-name{font-family:'Chakra Petch',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:3px;}
+.phase-subtitle{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.06em;}
+.phase-duration{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);padding:5px 12px;border:1px solid var(--border);border-radius:1px;}
+
+/* STEP CARDS */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.step-card{background:var(--bg-card);border:1px solid var(--border);padding:20px;border-radius:2px;position:relative;transition:all 0.2s;}
+.step-card:hover{background:var(--bg-card-hover);}
+.step-card a{text-decoration:none;color:inherit;display:block;}
+.sc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.sc-domain{font-family:'JetBrains Mono',monospace;font-size:0.6rem;padding:2px 7px;border-radius:1px;text-transform:uppercase;letter-spacing:0.05em;}
+.d-samd{background:rgba(30,111,255,0.1);color:var(--blue);border:1px solid rgba(30,111,255,0.2);}
+.d-cyber{background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.2);}
+.d-aiml{background:rgba(0,212,200,0.1);color:var(--teal);border:1px solid rgba(0,212,200,0.2);}
+.d-all{background:rgba(138,155,184,0.1);color:var(--muted);border:1px solid rgba(138,155,184,0.2);}
+.sc-type{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);}
+.sc-title{font-family:'Chakra Petch',sans-serif;font-size:0.88rem;font-weight:600;line-height:1.2;margin-bottom:6px;}
+.sc-desc{font-size:0.78rem;color:var(--muted);line-height:1.55;margin-bottom:12px;}
+.sc-link{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--teal);border:1px solid rgba(0,212,200,0.2);padding:4px 10px;border-radius:1px;transition:all 0.2s;}
+.sc-link:hover{background:rgba(0,212,200,0.08);border-color:rgba(0,212,200,0.4);}
+.sc-time{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);margin-top:8px;}
+
+/* PROGRESS TRACKER */
+.progress-sidebar{position:fixed;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:100;}
+.ps-dot{width:8px;height:8px;border-radius:50%;background:var(--border);border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;}
+.ps-dot:hover{background:var(--muted);}
+.ps-dot.active{background:var(--teal);border-color:var(--teal);}
+
+/* TIPS BANNER */
+.tips-banner{background:rgba(0,212,200,0.05);border:1px solid rgba(0,212,200,0.15);padding:20px 28px;margin-bottom:32px;border-radius:2px;display:flex;gap:16px;align-items:flex-start;}
+.tb-icon{font-size:1.4rem;flex-shrink:0;}
+.tb-text h4{font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:600;margin-bottom:4px;}
+.tb-text p{font-size:0.83rem;color:var(--muted);line-height:1.65;}
+
+/* WEEKLY SCHEDULE */
+.weekly-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px;}
+.wday{background:var(--bg-card);border:1px solid var(--border);padding:14px 10px;text-align:center;border-radius:1px;}
+.wd-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.wd-activity{font-size:0.75rem;line-height:1.4;color:var(--white);}
+.wd-time{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--teal);margin-top:6px;}
+
+/* RESOURCES BOX */
+.resources-box{background:var(--bg-card);border:1px solid var(--border);padding:28px;margin-top:32px;border-radius:2px;}
+.rb-title{font-family:'Chakra Petch',sans-serif;font-size:1rem;font-weight:700;margin-bottom:16px;}
+.rb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.rb-item{padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:1px;font-size:0.8rem;}
+.rb-item a{color:var(--teal);text-decoration:none;}
+.rb-item a:hover{text-decoration:underline;}
+.rb-source{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:3px;}
+
+@media(max-width:960px){nav{padding:0 20px;}.nav-links{display:none;}.page-header,.profile-section,.plan-section{padding-left:20px;padding-right:20px;}.profile-grid{grid-template-columns:repeat(2,1fr);}.steps-grid{grid-template-columns:1fr;}.weekly-grid{grid-template-columns:1fr;}.rb-grid{grid-template-columns:1fr;}.progress-sidebar{display:none;}.plan-meta{flex-wrap:wrap;}}
+</style>
+</head>
+<body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="index.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#pillars">Domains</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="pathway.html">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="cases.html">Cases</a></li>
+    <li><a href="studyplan.html" class="active">Study Plan</a></li>
+  </ul>
+  <a href="index.html#tutor" class="nav-cta">AI Tutor</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-label">// personalized learning path</div>
+  <h1 class="page-title">Study Plan & Learning Path</h1>
+  <p class="page-desc">Select your profile to get a structured, phase-by-phase learning path through MedReg Academy — tailored to your experience level and regulatory goals.</p>
+</div>
+
+<div class="profile-section">
+  <div class="profile-label">// Select your profile to generate your learning path</div>
+  <div class="profile-grid">
+    <div class="profile-card" onclick="selectProfile('beginner', this)">
+      <div class="pc-icon">🎓</div>
+      <div class="pc-title">Complete Beginner</div>
+      <div class="pc-desc">No prior regulatory experience. Starting from scratch in medical device RA.</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('engineer', this)">
+      <div class="pc-icon">⚙️</div>
+      <div class="pc-title">Software Engineer</div>
+      <div class="pc-desc">Strong technical background, new to medical device regulatory requirements.</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('experienced', this)">
+      <div class="pc-icon">🏥</div>
+      <div class="pc-title">Experienced RA Professional</div>
+      <div class="pc-desc">Regulatory affairs background, looking to specialise in SaMD, Cyber, and AI/ML.</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('aiml', this)">
+      <div class="pc-icon">🤖</div>
+      <div class="pc-title">AI/ML Specialist</div>
+      <div class="pc-desc">Data scientist or ML engineer needing to understand regulatory requirements for AI medical devices.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANS (hidden until profile selected) -->
+
+<!-- BEGINNER PLAN -->
+<div class="plan-section" id="plan-beginner">
+  <div class="plan-header">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">🎓 Complete Beginner Path</div>
+      <div class="plan-title">From Zero to Regulatory Foundations</div>
+    </div>
+    <div class="plan-meta">
+      <div class="pm-item"><div class="pm-num">4</div><div class="pm-label">Phases</div></div>
+      <div class="pm-item"><div class="pm-num">8–10</div><div class="pm-label">Weeks</div></div>
+      <div class="pm-item"><div class="pm-num">~3h</div><div class="pm-label">Per Week</div></div>
+    </div>
+  </div>
+  <div class="tips-banner"><div class="tb-icon">💡</div><div class="tb-text"><h4>Beginner Tip</h4><p>Don't try to memorize every standard number immediately. Focus first on understanding the <em>purpose</em> of each framework — why it exists and what problem it solves. The document references will become natural as you work through real scenarios in the Case Studies.</p></div></div>
+
+  <div class="phase ph-1">
+    <div class="phase-header">
+      <div class="phase-num">1</div>
+      <div class="phase-title-wrap"><div class="phase-name">What is SaMD? Core Definitions & Frameworks</div><div class="phase-subtitle">Weeks 1–2 · Build your regulatory vocabulary</div></div>
+      <div class="phase-duration">~2 weeks</div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">What is SaMD vs SiMD?</div><div class="sc-desc">Start with the foundational definition. Understand what makes software a medical device and how it differs from embedded device software.</div><a class="sc-link" href="domain-samd.html#definition">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">IMDRF N12 Risk Categories</div><div class="sc-desc">Learn the two-axis risk framework (I–IV) used globally to categorize SaMD. This underpins all subsequent regulatory decisions.</div><a class="sc-link" href="domain-samd.html#imdrf-framework">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">Glossary</span><span class="sc-type">📚 Reference</span></div><div class="sc-title">Build Your Vocabulary</div><div class="sc-desc">Search key terms: SaMD, SiMD, IMDRF, 510(k), CE marking, QMS. Understanding acronyms is half the battle in regulatory affairs.</div><a class="sc-link" href="glossary.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">🃏 Flashcards</span></div><div class="sc-title">SaMD Flashcard Set</div><div class="sc-desc">Reinforce core definitions with the SaMD flashcard set. Aim for 3 complete passes before moving on.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 01: Is This App a Medical Device?</div><div class="sc-desc">Apply your new knowledge to a real scenario: a cardiac risk calculator mobile app. Is it regulated or not?</div><a class="sc-link" href="cases.html">→ Case 01</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Explore the Pathway Decision Tree</div><div class="sc-desc">Run a simple SaMD through the FDA pathway tree. Don't worry about mastering it — just get familiar with the structure.</div><a class="sc-link" href="pathway.html">→ Open</a><div class="sc-time">⏱ 15 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-2">
+    <div class="phase-header">
+      <div class="phase-num">2</div>
+      <div class="phase-title-wrap"><div class="phase-name">Software Lifecycle & Clinical Evidence</div><div class="phase-subtitle">Weeks 3–4 · How SaMD is developed and validated</div></div>
+      <div class="phase-duration">~2 weeks</div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">IEC 62304: Software Lifecycle</div><div class="sc-desc">Understand the Safety Class system (A, B, C) and the lifecycle activities required for each class. This is foundational for any SaMD role.</div><a class="sc-link" href="domain-samd.html#lifecycle">→ Open</a><div class="sc-time">⏱ 35 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Clinical Evaluation (IMDRF N41)</div><div class="sc-desc">Learn the three building blocks: valid clinical association, analytical validation, and clinical validation. These define the evidence standard for all SaMD.</div><a class="sc-link" href="domain-samd.html#clinical-eval">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">SaMD Quiz — Introductory Questions</div><div class="sc-desc">Take the SaMD quiz. Focus on understanding explanations for any questions you get wrong — these reveal key regulatory principles.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">FDA vs EU MDR Pathways</div><div class="sc-desc">Compare the 510(k)/De Novo/PMA system vs EU MDR Rule 11 class system. Use the jurisdiction comparison tool for side-by-side view.</div><a class="sc-link" href="compare.html">→ Compare Tool</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 02: EU MDR Rule 11 Classification Error</div><div class="sc-desc">A manufacturer incorrectly self-certified their ICU software as Class I. Walk through how Rule 11 should have been applied.</div><a class="sc-link" href="cases.html">→ Case 02</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">Ask the AI Tutor: Lifecycle Questions</div><div class="sc-desc">Use the SaMD domain AI tutor. Ask: "What is the difference between IEC 62304 Safety Class B and C, with an example of each?"</div><a class="sc-link" href="domain-samd.html#tutor-widget">→ Ask Tutor</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-3">
+    <div class="phase-header">
+      <div class="phase-num">3</div>
+      <div class="phase-title-wrap"><div class="phase-name">Cybersecurity & AI/ML Foundations</div><div class="phase-subtitle">Weeks 5–7 · The two emerging critical domains</div></div>
+      <div class="phase-duration">~3 weeks</div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">TPLC & FDA Premarket Cyber Overview</div><div class="sc-desc">Understand the Total Product Lifecycle (TPLC) concept and what FDA requires in premarket submissions for cyber devices in 2023+.</div><a class="sc-link" href="domain-cyber.html#overview">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">🃏 Flashcards</span></div><div class="sc-title">Cybersecurity Flashcard Set</div><div class="sc-desc">Build core vocabulary: SBOM, STRIDE, CVE, CVSS, coordinated disclosure, controlled vs uncontrolled risk. Run through twice.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 03: 510(k) Refused — Missing SBOM</div><div class="sc-desc">A manufacturer's 510(k) was refused because of missing cybersecurity documentation. Learn what was missing and what must be provided.</div><a class="sc-link" href="cases.html">→ Case 03</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">AI/ML Overview & GMLP Principles</div><div class="sc-desc">Introduction to how regulators approach AI. Read through all 10 GMLP principles — these define the global minimum standard for medical AI development.</div><a class="sc-link" href="domain-aiml.html#gmlp">→ Open</a><div class="sc-time">⏱ 35 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">🃏 Flashcards</span></div><div class="sc-title">AI/ML Flashcard Set</div><div class="sc-desc">Core vocabulary: PCCP, GMLP, locked vs adaptive, performance drift, bias, EU AI Act high-risk classification.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 08: Locked Algorithm — Do I Need a New 510(k)?</div><div class="sc-desc">Perfect introductory AI case — a manufacturer wants to retrain their AI model but isn't sure if a new submission is needed.</div><a class="sc-link" href="cases.html">→ Case 08</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-4">
+    <div class="phase-header">
+      <div class="phase-num">4</div>
+      <div class="phase-title-wrap"><div class="phase-name">Integration & Assessment</div><div class="phase-subtitle">Weeks 8–10 · Connect the frameworks and test your knowledge</div></div>
+      <div class="phase-duration">~2–3 weeks</div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Full Jurisdiction Comparison</div><div class="sc-desc">Use the comparison tool to map requirements across FDA, EU MDR, IMDRF, Health Canada, and TGA. See the global regulatory landscape.</div><a class="sc-link" href="compare.html">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">Full Quiz — All Three Domains</div><div class="sc-desc">Take all three quizzes back-to-back. Target 80%+ in each domain before moving to advanced content. Review explanations for all incorrect answers.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 60 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">📰 News</span></div><div class="sc-title">Regulatory News Feed</div><div class="sc-desc">Read the latest regulatory updates. Understanding current developments puts your foundational knowledge in real context.</div><a class="sc-link" href="news.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 05: AI Bias Discovered Post-Launch</div><div class="sc-desc">Advanced case connecting GMLP principles to real-world consequences. A retinal AI performs poorly for South Asian patients. What happens next?</div><a class="sc-link" href="cases.html">→ Case 05</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">Deep Dive: Ask Anything</div><div class="sc-desc">Use the AI Tutor for any remaining gaps in your knowledge. Ask: "What are the top 5 regulatory mistakes SaMD manufacturers make?"</div><a class="sc-link" href="index.html#tutor">→ Ask Tutor</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">GPT</span><span class="sc-type">💬 ChatGPT</span></div><div class="sc-title">Practice with Custom GPT</div><div class="sc-desc">Use the custom ChatGPT assistant for complex consulting scenarios, document review practice, and submission strategy questions.</div><a class="sc-link" href="https://chatgpt.com/g/g-681c8f731d4c8191b9d37183af0495eb-sw-cyber-and-ai-ml-expert" target="_blank">→ Launch GPT</a><div class="sc-time">⏱ Open-ended</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENGINEER PLAN -->
+<div class="plan-section" id="plan-engineer">
+  <div class="plan-header">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">⚙️ Software Engineer Path</div>
+      <div class="plan-title">Technical Expert → Regulatory Practitioner</div>
+    </div>
+    <div class="plan-meta">
+      <div class="pm-item"><div class="pm-num">4</div><div class="pm-label">Phases</div></div>
+      <div class="pm-item"><div class="pm-num">6–8</div><div class="pm-label">Weeks</div></div>
+      <div class="pm-item"><div class="pm-num">~3h</div><div class="pm-label">Per Week</div></div>
+    </div>
+  </div>
+  <div class="tips-banner"><div class="tb-icon">⚙️</div><div class="tb-text"><h4>Engineer Tip</h4><p>Your technical skills are a major asset. You already understand software architecture, testing, and security concepts — the regulatory layer is applying these in a specific compliance context. Focus on <em>how</em> regulators interpret your existing technical work, not learning entirely new concepts.</p></div></div>
+
+  <div class="phase ph-1">
+    <div class="phase-header"><div class="phase-num">1</div><div class="phase-title-wrap"><div class="phase-name">Regulatory Context for Technical Work</div><div class="phase-subtitle">Weeks 1–2 · Map your technical knowledge to regulatory requirements</div></div><div class="phase-duration">~2 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">IEC 62304 Software Lifecycle</div><div class="sc-desc">You likely already do most of this — requirements, architecture, testing, version control. Learn how regulators frame these activities and what documentation is required.</div><a class="sc-link" href="domain-samd.html#lifecycle">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">SaMD Classification: Why It Matters for Engineers</div><div class="sc-desc">Classification determines how rigorous your development processes must be. Higher risk class = more required documentation and testing rigor.</div><a class="sc-link" href="domain-samd.html#classification">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">FDA Cybersecurity Premarket Requirements</div><div class="sc-desc">This is where your security knowledge directly maps to regulatory submissions: SBOM, threat modeling, SAST/DAST results, penetration testing. Read what FDA actually requires.</div><a class="sc-link" href="domain-cyber.html#premarket">→ Open</a><div class="sc-time">⏱ 35 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 03: Missing SBOM — 510(k) RTF</div><div class="sc-desc">An engineering team's cybersecurity work was insufficient for FDA. Learn exactly what was missing from a technical perspective.</div><a class="sc-link" href="cases.html">→ Case 03</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">Cybersecurity Quiz</div><div class="sc-desc">Test your regulatory cybersecurity knowledge. Most engineers score well on technical questions but may need to review postmarket obligations.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 01: Is This App a Medical Device?</div><div class="sc-desc">Engineers often build medical apps without realising they've built a regulated device. Understand the intended use test that determines regulation.</div><a class="sc-link" href="cases.html">→ Case 01</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-2">
+    <div class="phase-header"><div class="phase-num">2</div><div class="phase-title-wrap"><div class="phase-name">AI/ML Engineering for Regulated Devices</div><div class="phase-subtitle">Weeks 3–4 · Your ML skills in a regulatory context</div></div><div class="phase-duration">~2 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">GMLP: Engineering Best Practices as Regulation</div><div class="sc-desc">The 10 GMLP principles formalize what good ML engineering already does — representative data, independent test sets, monitoring. See how regulators codify your practices.</div><a class="sc-link" href="domain-aiml.html#gmlp">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Dataset Requirements & Bias Analysis</div><div class="sc-desc">What you must document about your training data for FDA. Dataset governance, representativeness, subgroup performance — regulatory vs. typical ML practice.</div><a class="sc-link" href="domain-aiml.html#datasets">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">PCCP: Pre-Approving Algorithm Updates</div><div class="sc-desc">For engineers who will maintain ML models post-launch: how PCCP lets you update algorithms without a new 510(k) for each improvement.</div><a class="sc-link" href="domain-aiml.html#pccp">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 08: Retraining an AI Model — New 510(k)?</div><div class="sc-desc">An engineering team wants to retrain their cleared AI on new data. What are the regulatory implications? Directly relevant to any engineer maintaining a medical AI.</div><a class="sc-link" href="cases.html">→ Case 08</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 05: Bias Discovered Post-Launch</div><div class="sc-desc">What happens when your AI performs worse for certain patient groups than your test set showed? Real-world consequences for an engineering failure.</div><a class="sc-link" href="cases.html">→ Case 05</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">AI/ML Regulatory Quiz</div><div class="sc-desc">Test your AI/ML regulatory knowledge. Engineers typically have strong technical foundations but may need to focus on EU AI Act dual compliance questions.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-3">
+    <div class="phase-header"><div class="phase-num">3</div><div class="phase-title-wrap"><div class="phase-name">Postmarket Obligations & International Requirements</div><div class="phase-subtitle">Weeks 5–6 · Your product's obligations after launch</div></div><div class="phase-duration">~2 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Postmarket Vulnerability Management</div><div class="sc-desc">After launch: CVE monitoring via SBOM, 30/60-day patch timelines, coordinated disclosure obligations. What engineers must build into their postmarket processes.</div><a class="sc-link" href="domain-cyber.html#postmarket">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 04: Critical CVE in Marketed Device</div><div class="sc-desc">CVSS 9.4 vulnerability discovered — 2,000 hospitals affected. Patch takes 90 days. Walk through all regulatory obligations and timelines.</div><a class="sc-link" href="cases.html">→ Case 04</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Post-Market AI Performance Monitoring</div><div class="sc-desc">How to monitor deployed AI for performance drift, subgroup degradation, and real-world vs. pre-market performance gaps.</div><a class="sc-link" href="domain-aiml.html#postmarket-ai">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">EU AI Act — What It Adds for Engineers</div><div class="sc-desc">If you build AI medical devices for EU markets: Article 10 data governance, Article 14 human oversight design, Article 15 adversarial robustness testing.</div><a class="sc-link" href="domain-aiml.html#eu-aiact">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Jurisdiction Comparison: Cyber & AI/ML</div><div class="sc-desc">Compare cybersecurity and AI/ML requirements across FDA, EU, IMDRF — see where requirements overlap and where they diverge.</div><a class="sc-link" href="compare.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">📰 News</span></div><div class="sc-title">Latest Regulatory Developments</div><div class="sc-desc">Stay current. MDCG 2025-6, EU CRA, FDA QMSR — these directly affect engineering decisions in regulated products.</div><a class="sc-link" href="news.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-4">
+    <div class="phase-header"><div class="phase-num">4</div><div class="phase-title-wrap"><div class="phase-name">Advanced Scenarios & Integration</div><div class="phase-subtitle">Weeks 7–8 · Complex real-world applications</div></div><div class="phase-duration">~2 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 06: MDR CE Mark ≠ EU AI Act Compliance</div><div class="sc-desc">Advanced dual compliance challenge for engineers building AI for EU markets. What MDCG 2025-6 actually requires beyond MDR.</div><a class="sc-link" href="cases.html">→ Case 06</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 07: De Novo vs 510(k) for Novel AI</div><div class="sc-desc">When an AI algorithm is too different from existing predicates for 510(k). Real pathway selection decision engineers face with novel products.</div><a class="sc-link" href="cases.html">→ Case 07</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">Full Assessment — All Three Domains</div><div class="sc-desc">Take all three quizzes. Target 85%+ for engineers with good technical foundations. Review every explanation carefully.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 60 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">GPT</span><span class="sc-type">💬 ChatGPT</span></div><div class="sc-title">Technical Regulatory Scenarios</div><div class="sc-desc">Use the custom GPT for complex engineering/regulatory intersection questions: PCCP design, threat model structure, SBOM implementation.</div><a class="sc-link" href="https://chatgpt.com/g/g-681c8f731d4c8191b9d37183af0495eb-sw-cyber-and-ai-ml-expert" target="_blank">→ Launch GPT</a><div class="sc-time">⏱ Open-ended</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">Deep Dive: Engineering Regulatory Questions</div><div class="sc-desc">Ask: "How does a security engineer's penetration test report need to be structured for an FDA 510(k) cybersecurity submission?"</div><a class="sc-link" href="domain-cyber.html#tutor-widget">→ Ask Tutor</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Regulatory Pathway Decision Tree</div><div class="sc-desc">Run multiple products through the pathway tree. This builds intuition for classification and pathway decisions you'll face in product development.</div><a class="sc-link" href="pathway.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPERIENCED RA PLAN -->
+<div class="plan-section" id="plan-experienced">
+  <div class="plan-header">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">🏥 Experienced RA Professional Path</div>
+      <div class="plan-title">RA Expert → SaMD/Cyber/AI Specialist</div>
+    </div>
+    <div class="plan-meta">
+      <div class="pm-item"><div class="pm-num">3</div><div class="pm-label">Phases</div></div>
+      <div class="pm-item"><div class="pm-num">4–5</div><div class="pm-label">Weeks</div></div>
+      <div class="pm-item"><div class="pm-num">~4h</div><div class="pm-label">Per Week</div></div>
+    </div>
+  </div>
+  <div class="tips-banner"><div class="tb-icon">🏥</div><div class="tb-text"><h4>RA Professional Tip</h4><p>Your regulatory affairs foundation is solid. This path focuses on the three domains where traditional RA expertise has the biggest gaps: SaMD-specific frameworks (IMDRF N10/N12/N41), medical device cybersecurity (completely new regulatory terrain from 2023), and AI/ML regulation (the fastest-evolving area in global RA). Go deep, not broad.</p></div></div>
+
+  <div class="phase ph-1">
+    <div class="phase-header"><div class="phase-num">1</div><div class="phase-title-wrap"><div class="phase-name">SaMD-Specific Frameworks (Deep Dive)</div><div class="phase-subtitle">Week 1–2 · What's different about software regulation</div></div><div class="phase-duration">~1.5 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Full SaMD Domain Page</div><div class="sc-desc">Read all sections. Focus on IMDRF N12 risk categorization (different from EU MDR/FDA classification), IMDRF N41 clinical evaluation (software-specific evidence standard), and PCCP for AI updates.</div><a class="sc-link" href="domain-samd.html">→ Full Domain</a><div class="sc-time">⏱ 60 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">SaMD Quiz — Target 90%+</div><div class="sc-desc">Experienced RA professionals should aim for 90%+ in SaMD. Any missed questions reveal knowledge gaps worth investigating. Read every explanation.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Cases 01, 02, 07 — SaMD Trilogy</div><div class="sc-desc">Work through all three SaMD cases: device determination, EU MDR Rule 11 classification, and De Novo vs 510(k) pathway selection.</div><a class="sc-link" href="cases.html">→ Open</a><div class="sc-time">⏱ 45 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Jurisdiction Comparison — SaMD Focus</div><div class="sc-desc">Run the SaMD classification row across all five jurisdictions. Note key differences between FDA class system, EU Rule 11, IMDRF N12, Health Canada, TGA.</div><a class="sc-link" href="compare.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">Submission Strategy Deep Dive</div><div class="sc-desc">Ask tutor: "What are the key differences between FDA 510(k), De Novo, and PMA evidentiary standards for SaMD, with specific documentation requirements for each?"</div><a class="sc-link" href="domain-samd.html#tutor-widget">→ Ask Tutor</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">📰 News</span></div><div class="sc-title">Current SaMD Regulatory Developments</div><div class="sc-desc">Filter news by SaMD. Key recent developments: FDA QMSR final rule, IMDRF updates, MDCG 2021-24 implementation.</div><a class="sc-link" href="news.html">→ Open</a><div class="sc-time">⏱ 15 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-2">
+    <div class="phase-header"><div class="phase-num">2</div><div class="phase-title-wrap"><div class="phase-name">Cybersecurity & AI/ML Intensive</div><div class="phase-subtitle">Weeks 2–4 · The two emerging specialisms</div></div><div class="phase-duration">~2.5 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Full Cybersecurity Domain Page</div><div class="sc-desc">Read all sections with focus on: Section 524B statutory authority (new for 2023), complete premarket submission requirements, postmarket CVE obligations and timelines.</div><a class="sc-link" href="domain-cyber.html">→ Full Domain</a><div class="sc-time">⏱ 50 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Cases 03 & 04 — Cyber Cases</div><div class="sc-desc">510(k) RTF for missing SBOM, and a critical CVE postmarket response across US and EU. These two cases cover the full cyber regulatory lifecycle.</div><a class="sc-link" href="cases.html">→ Open</a><div class="sc-time">⏱ 40 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Full AI/ML Domain Page</div><div class="sc-desc">Read all sections. Prioritise: PCCP structure and requirements, EU AI Act dual compliance (MDCG 2025-6), dataset and bias requirements, post-market AI monitoring.</div><a class="sc-link" href="domain-aiml.html">→ Full Domain</a><div class="sc-time">⏱ 60 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Cases 05, 06, 08 — AI/ML Cases</div><div class="sc-desc">Bias post-launch, EU AI Act dual compliance gap analysis, algorithm retraining submission decision. Three cases that span the AI/ML regulatory lifecycle.</div><a class="sc-link" href="cases.html">→ Open</a><div class="sc-time">⏱ 45 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">Cyber & AI/ML Quizzes</div><div class="sc-desc">Target 85%+ in both domains. Experienced RA professionals often find cyber most challenging — don't rush past the explanations for missed questions.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 50 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">MDCG 2025-6 Deep Dive</div><div class="sc-desc">Ask tutor: "Explain exactly what MDCG 2025-6 requires beyond EU MDR for a Class IIb AI medical device seeking CE marking in 2025."</div><a class="sc-link" href="domain-aiml.html#tutor-widget">→ Ask Tutor</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-3">
+    <div class="phase-header"><div class="phase-num">3</div><div class="phase-title-wrap"><div class="phase-name">Expert Integration & Consulting Practice</div><div class="phase-subtitle">Weeks 4–5 · Synthesise and apply at consulting level</div></div><div class="phase-duration">~1.5 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Full Jurisdiction Comparison</div><div class="sc-desc">All five jurisdictions × all five topics. Build the complete global regulatory map in your head. Note where requirements are harmonised vs. divergent.</div><a class="sc-link" href="compare.html">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">📰 News</span></div><div class="sc-title">Full Regulatory News Review</div><div class="sc-desc">Read all 12 news items. An experienced RA professional must be current on all developments — these are the questions clients and colleagues will ask.</div><a class="sc-link" href="news.html">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">💬 ChatGPT</span></div><div class="sc-title">Advanced Consulting Scenarios</div><div class="sc-desc">The custom GPT is optimised for complex consulting scenarios. Use it to practice responding to difficult client questions on submission strategy and regulatory risk.</div><a class="sc-link" href="https://chatgpt.com/g/g-681c8f731d4c8191b9d37183af0495eb-sw-cyber-and-ai-ml-expert" target="_blank">→ Launch GPT</a><div class="sc-time">⏱ Open-ended</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">Full Assessment — All Three Domains</div><div class="sc-desc">Complete all three quizzes. Any score below 85% in a domain means revisiting that domain's content. Target 90%+ for expert-level proficiency.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 60 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">Complex Multi-Domain Questions</div><div class="sc-desc">Ask: "A client has a locked AI imaging SaMD cleared 510(k) in the US and CE-marked Class IIb in the EU. They want to retrain on 100k new images and add a new indication. What regulatory strategy do you recommend?"</div><a class="sc-link" href="index.html#tutor">→ Ask Tutor</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">📚 Reference</span></div><div class="sc-title">Standards Library Review</div><div class="sc-desc">Review all standards and guidance documents across the three domain pages. Verify you can cite the correct document for any regulatory question in each domain.</div><a class="sc-link" href="domain-samd.html#standards-list">→ SaMD Standards</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI/ML SPECIALIST PLAN -->
+<div class="plan-section" id="plan-aiml">
+  <div class="plan-header">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">🤖 AI/ML Specialist Path</div>
+      <div class="plan-title">ML Expert → Medical AI Regulatory Practitioner</div>
+    </div>
+    <div class="plan-meta">
+      <div class="pm-item"><div class="pm-num">4</div><div class="pm-label">Phases</div></div>
+      <div class="pm-item"><div class="pm-num">5–6</div><div class="pm-label">Weeks</div></div>
+      <div class="pm-item"><div class="pm-num">~3h</div><div class="pm-label">Per Week</div></div>
+    </div>
+  </div>
+  <div class="tips-banner"><div class="tb-icon">🤖</div><div class="tb-text"><h4>AI/ML Specialist Tip</h4><p>Your ML expertise is highly valuable in regulated medical AI. The key shift is understanding that regulators treat AI/ML models not as research artifacts but as <em>devices</em> — with ongoing safety obligations. Every ML decision you make has a regulatory implication. This path maps your existing skills to their regulatory equivalents and fills the gaps.</p></div></div>
+
+  <div class="phase ph-1">
+    <div class="phase-header"><div class="phase-num">1</div><div class="phase-title-wrap"><div class="phase-name">Regulatory Context: What Makes Medical AI Different</div><div class="phase-subtitle">Week 1 · Understand the regulatory stakes</div></div><div class="phase-duration">~1 week</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">AI/ML Regulatory Overview</div><div class="sc-desc">Why medical AI is different from general AI. Locked vs adaptive algorithms, the TPLC obligation, and why your model is legally a "device" once it has a medical intended use.</div><a class="sc-link" href="domain-aiml.html#overview">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">SaMD Definition & Why Your Model is a Device</div><div class="sc-desc">The intended use test. If your ML model is intended to diagnose, treat, or inform clinical decisions — it's a regulated device regardless of whether it "just" runs on a phone.</div><a class="sc-link" href="domain-samd.html#definition">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 01: Is This AI App a Medical Device?</div><div class="sc-desc">Ground yourself with the fundamental question every medical AI team must answer before building. A cardiac risk calculator case makes the device determination concrete.</div><a class="sc-link" href="cases.html">→ Case 01</a><div class="sc-time">⏱ 15 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">All 10 GMLP Principles</div><div class="sc-desc">The global minimum standard for medical AI development. As an ML specialist, you'll recognise most of these as good ML practice — see how regulators have codified them.</div><a class="sc-link" href="domain-aiml.html#gmlp">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">🃏 Flashcards</span></div><div class="sc-title">AI/ML Regulatory Vocabulary</div><div class="sc-desc">Build the regulatory vocabulary: PCCP, GMLP, locked/adaptive, performance drift, bias (regulatory definition), valid clinical association, analytical validation.</div><a class="sc-link" href="quiz.html">→ Flashcards</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 08: Algorithm Retraining — Regulatory Implications</div><div class="sc-desc">You retrain your model on new data — do you need a new FDA clearance? This is the most common question ML teams face. Get the definitive regulatory answer.</div><a class="sc-link" href="cases.html">→ Case 08</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-2">
+    <div class="phase-header"><div class="phase-num">2</div><div class="phase-title-wrap"><div class="phase-name">Dataset Governance, Bias & PCCP</div><div class="phase-subtitle">Weeks 2–3 · Where your ML decisions have regulatory consequences</div></div><div class="phase-duration">~2 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Dataset Requirements Deep Dive</div><div class="sc-desc">Training/validation/test split requirements, representativeness obligations, subgroup performance reporting, data provenance documentation — what regulators require beyond standard ML practice.</div><a class="sc-link" href="domain-aiml.html#datasets">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Bias Analysis & Mitigation</div><div class="sc-desc">Regulatory definition of bias, required subgroup analysis, mitigation strategies, and what happens when bias is discovered post-launch. Directly maps to your ML workflow.</div><a class="sc-link" href="domain-aiml.html#bias">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 05: Retinal AI Bias Discovered Post-Launch</div><div class="sc-desc">The consequences of inadequate pre-market bias analysis. A diabetic retinopathy AI performs worse for South Asian patients. Walk through all regulatory obligations.</div><a class="sc-link" href="cases.html">→ Case 05</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">PCCP: Pre-Approving Your Algorithm Updates</div><div class="sc-desc">The PCCP is the mechanism that lets your ML team deploy algorithm improvements without a new FDA submission for each update. Learn how to structure it from the start.</div><a class="sc-link" href="domain-aiml.html#pccp">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">Post-Market AI Performance Monitoring</div><div class="sc-desc">How to monitor deployed models for performance drift and subgroup degradation. What needs to be built into your MLOps pipeline to satisfy regulatory requirements.</div><a class="sc-link" href="domain-aiml.html#postmarket-ai">→ Open</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">AI/ML Quiz — Target 85%+</div><div class="sc-desc">Test your AI/ML regulatory knowledge. ML specialists typically score well on technical questions — focus especially on EU AI Act and PCCP questions which are pure regulatory.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 30 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-3">
+    <div class="phase-header"><div class="phase-num">3</div><div class="phase-title-wrap"><div class="phase-name">EU AI Act & International Requirements</div><div class="phase-subtitle">Weeks 3–4 · Global regulatory requirements for medical AI</div></div><div class="phase-duration">~1.5 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">EU AI Act Articles 9–15 & MDCG 2025-6</div><div class="sc-desc">The global game-changer for medical AI. If your model will be used in Europe, these are mandatory requirements that go beyond FDA. Data governance, human oversight design, adversarial robustness.</div><a class="sc-link" href="domain-aiml.html#eu-aiact">→ Open</a><div class="sc-time">⏱ 40 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 06: MDR CE Mark ≠ EU AI Act Compliance</div><div class="sc-desc">A CE-marked AI pathology device assumes EU AI Act compliance is automatic. It isn't. MDCG 2025-6 adds specific requirements your ML model must meet beyond MDR.</div><a class="sc-link" href="cases.html">→ Case 06</a><div class="sc-time">⏱ 25 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Jurisdiction Comparison — AI/ML Row</div><div class="sc-desc">Compare AI/ML requirements across FDA, EU (MDR + AI Act), IMDRF, Health Canada, TGA. See which requirements are harmonised via GMLP and where they diverge.</div><a class="sc-link" href="compare.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">📰 News</span></div><div class="sc-title">AI/ML Regulatory News</div><div class="sc-desc">Filter news to AI/ML items. MDCG 2025-6, EU AI Act, FDA PCCP draft guidance, GMLP — these are the current regulatory developments your ML work must respond to.</div><a class="sc-link" href="news.html">→ Open</a><div class="sc-time">⏱ 15 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">EU AI Act Data Governance Deep Dive</div><div class="sc-desc">Ask tutor: "What specific documentation does EU AI Act Article 10 require for training datasets of a high-risk medical AI? Walk through each requirement with examples."</div><a class="sc-link" href="domain-aiml.html#tutor-widget">→ Ask Tutor</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-samd">SaMD</span><span class="sc-type">📋 Case Study</span></div><div class="sc-title">Case 07: Novel AI — De Novo vs 510(k)</div><div class="sc-desc">A novel sepsis prediction AI has no good predicate for 510(k). When does the technology gap make De Novo the right pathway? Critical pathway selection decision.</div><a class="sc-link" href="cases.html">→ Case 07</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+
+  <div class="phase ph-4">
+    <div class="phase-header"><div class="phase-num">4</div><div class="phase-title-wrap"><div class="phase-name">Full Integration & Expert-Level Practice</div><div class="phase-subtitle">Weeks 5–6 · Apply everything at expert level</div></div><div class="phase-duration">~2 weeks</div></div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-cyber">Cybersecurity</span><span class="sc-type">📖 Reading</span></div><div class="sc-title">AI-Specific Cybersecurity (Art. 15)</div><div class="sc-desc">EU AI Act Article 15 requires resilience against adversarial attacks on AI models — image perturbation attacks on medical imaging AI, model poisoning, adversarial inputs. Different from standard cybersecurity.</div><a class="sc-link" href="domain-cyber.html#eu-cyber">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🎯 Quiz</span></div><div class="sc-title">Full Assessment — All Three Domains</div><div class="sc-desc">Complete all three quizzes. AI/ML specialists often score well on AI questions but may find SaMD and cybersecurity regulatory questions more challenging — worth full review.</div><a class="sc-link" href="quiz.html">→ Open</a><div class="sc-time">⏱ 60 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">GPT</span><span class="sc-type">💬 ChatGPT</span></div><div class="sc-title">Complex Medical AI Scenarios</div><div class="sc-desc">Use the custom GPT for complex ML/regulatory intersection: "I'm building a continuously adaptive sepsis prediction model for ICU deployment in the US and EU. What regulatory strategy do I need?"</div><a class="sc-link" href="https://chatgpt.com/g/g-681c8f731d4c8191b9d37183af0495eb-sw-cyber-and-ai-ml-expert" target="_blank">→ Launch GPT</a><div class="sc-time">⏱ Open-ended</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-aiml">AI/ML</span><span class="sc-type">🤖 Tutor</span></div><div class="sc-title">PCCP Design Question</div><div class="sc-desc">Ask tutor: "How should I structure a PCCP for a radiology AI that will be retrained annually on new site data and periodically updated to support new imaging modalities?"</div><a class="sc-link" href="domain-aiml.html#tutor-widget">→ Ask Tutor</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">📚 Reference</span></div><div class="sc-title">Standards Deep Dive: ISO/IEC 23894</div><div class="sc-desc">Read the AI risk management standard summary and ask the AI tutor to walk through how it integrates with ISO 14971 for a medical device AI risk management plan.</div><a class="sc-link" href="domain-aiml.html#standards-list">→ Standards</a><div class="sc-time">⏱ 20 min</div></div>
+      <div class="step-card"><div class="sc-top"><span class="sc-domain d-all">All Domains</span><span class="sc-type">🗺️ Tool</span></div><div class="sc-title">Full Pathway Tree Exploration</div><div class="sc-desc">Run 3 different AI medical device scenarios through the pathway decision tree — a diagnostic AI, a therapeutic recommendation AI, and a CDS tool. Compare the pathway determinations.</div><a class="sc-link" href="pathway.html">→ Open</a><div class="sc-time">⏱ 20 min</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function selectProfile(profile, card) {
+  document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  document.querySelectorAll('.plan-section').forEach(p => p.classList.remove('visible'));
+  const plan = document.getElementById('plan-' + profile);
+  if (plan) {
+    plan.classList.add('visible');
+    setTimeout(() => plan.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+}
+</script>
+</body>
+</html>

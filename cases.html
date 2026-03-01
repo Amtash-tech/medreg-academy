@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study Library — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-primary:#0A0F1E;--bg-secondary:#0f1628;--bg-card:#141B2D;--bg-card-hover:#1a2340;--blue:#1E6FFF;--teal:#00D4C8;--amber:#F5A623;--green:#00C48C;--red:#FF4D6A;--white:#F0F4FF;--muted:#8A9BB8;--border:rgba(30,111,255,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--white);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;}
+.pulse-line{position:fixed;top:0;left:0;width:100%;height:2px;z-index:1000;overflow:hidden;}
+.pulse-line::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--teal),var(--blue),transparent);animation:ps 3s ease-in-out infinite;}
+@keyframes ps{0%{left:-100%}100%{left:100%}}
+nav{position:fixed;top:2px;left:0;width:100%;z-index:999;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,15,30,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--teal);}
+.nav-links{display:flex;gap:22px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--white);}
+.nav-cta{background:transparent;border:1px solid var(--teal);color:var(--teal);padding:8px 20px;font-family:'IBM Plex Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all 0.2s;text-decoration:none;}
+.nav-cta:hover{background:var(--teal);color:var(--bg-primary);}
+
+.page-header{padding:100px 40px 48px;max-width:1200px;margin:0 auto;}
+.page-label{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;}
+.page-title{font-family:'Chakra Petch',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin-bottom:12px;}
+.page-desc{color:var(--muted);font-size:1rem;line-height:1.7;max-width:620px;}
+
+.main-content{max-width:1200px;margin:0 auto;padding:0 40px 80px;}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.filter-btn{padding:7px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border-radius:1px;transition:all 0.2s;}
+.filter-btn:hover{color:var(--white);border-color:rgba(255,255,255,0.3);}
+.filter-btn.active{color:var(--white);border-color:var(--blue);background:rgba(30,111,255,0.1);}
+.filter-btn.samd.active{border-color:var(--blue);color:var(--blue);}
+.filter-btn.cyber.active{border-color:var(--amber);color:var(--amber);}
+.filter-btn.aiml.active{border-color:var(--teal);color:var(--teal);}
+
+.difficulty-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
+.diff-btn{padding:5px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.63rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:1px;transition:all 0.2s;}
+.diff-btn:hover{color:var(--white);}
+.diff-btn.active{color:var(--white);border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);}
+
+/* CASE GRID */
+.cases-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;}
+
+/* CASE CARD */
+.case-card{background:var(--bg-card);border:1px solid var(--border);cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.case-card:hover{background:var(--bg-card-hover);}
+.case-card.hidden{display:none;}
+.case-card.open{grid-column:1/-1;background:var(--bg-card-hover);}
+
+.card-top{padding:28px 28px 20px;}
+.ct-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+
+.domain-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-samd{background:var(--blue);}
+.dot-cyber{background:var(--amber);}
+.dot-aiml{background:var(--teal);}
+
+.domain-tag{font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:2px 8px;border-radius:1px;text-transform:uppercase;letter-spacing:0.06em;}
+.t-samd{background:rgba(30,111,255,0.1);color:var(--blue);border:1px solid rgba(30,111,255,0.2);}
+.t-cyber{background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.2);}
+.t-aiml{background:rgba(0,212,200,0.1);color:var(--teal);border:1px solid rgba(0,212,200,0.2);}
+
+.jur-tag{font-family:'JetBrains Mono',monospace;font-size:0.6rem;padding:2px 7px;border-radius:1px;text-transform:uppercase;}
+.j-fda{background:rgba(30,111,255,0.07);color:rgba(30,111,255,0.9);border:1px solid rgba(30,111,255,0.15);}
+.j-eu{background:rgba(255,215,0,0.07);color:#FFD700;border:1px solid rgba(255,215,0,0.15);}
+.j-multi{background:rgba(138,155,184,0.07);color:var(--muted);border:1px solid rgba(138,155,184,0.15);}
+
+.diff-badge{font-family:'JetBrains Mono',monospace;font-size:0.6rem;padding:2px 7px;border-radius:1px;text-transform:uppercase;margin-left:auto;}
+.d-intro{background:rgba(0,196,140,0.1);color:var(--green);border:1px solid rgba(0,196,140,0.2);}
+.d-inter{background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.2);}
+.d-adv{background:rgba(255,77,106,0.1);color:var(--red);border:1px solid rgba(255,77,106,0.2);}
+
+.case-num{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+.case-title{font-family:'Chakra Petch',sans-serif;font-size:1.05rem;font-weight:700;line-height:1.25;margin-bottom:10px;}
+.case-scenario{font-size:0.86rem;color:var(--muted);line-height:1.65;margin-bottom:16px;}
+
+.card-footer{padding:0 28px 20px;display:flex;align-items:center;justify-content:space-between;}
+.learning-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.ltag{font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:2px 6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--muted);border-radius:1px;}
+.expand-btn{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--teal);border:1px solid rgba(0,212,200,0.2);padding:5px 12px;border-radius:1px;white-space:nowrap;transition:all 0.2s;background:transparent;}
+.expand-btn:hover{background:rgba(0,212,200,0.08);}
+.case-card.open .expand-btn{color:var(--muted);border-color:var(--border);}
+
+/* EXPANDED CONTENT */
+.case-expanded{display:none;padding:0 28px 32px;border-top:1px solid var(--border);margin-top:4px;}
+.case-card.open .case-expanded{display:block;animation:fadeIn 0.25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;}
+.exp-section h4{font-family:'Chakra Petch',sans-serif;font-size:0.88rem;font-weight:600;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.exp-section p{font-size:0.84rem;color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.exp-section p strong{color:var(--white);}
+
+.analysis-block{margin-top:24px;}
+.analysis-block h4{font-family:'Chakra Petch',sans-serif;font-size:0.88rem;font-weight:600;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.step-list{display:flex;flex-direction:column;gap:10px;}
+.exp-step{display:flex;gap:14px;align-items:flex-start;}
+.exp-step-num{width:24px;height:24px;border-radius:1px;background:rgba(0,212,200,0.1);border:1px solid rgba(0,212,200,0.25);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--teal);flex-shrink:0;}
+.exp-step p{font-size:0.84rem;color:var(--muted);line-height:1.65;margin:0;}
+.exp-step p strong{color:var(--white);}
+
+.outcome-box{background:rgba(0,212,200,0.04);border:1px solid rgba(0,212,200,0.15);padding:18px 20px;margin-top:20px;border-radius:2px;}
+.outcome-box.amber{background:rgba(245,166,35,0.04);border-color:rgba(245,166,35,0.15);}
+.outcome-box.red{background:rgba(255,77,106,0.04);border-color:rgba(255,77,106,0.15);}
+.ob-label{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+.ob-label.amber{color:var(--amber);}
+.ob-label.red{color:var(--red);}
+.ob-text{font-size:0.85rem;line-height:1.7;color:var(--white);}
+
+.refs-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
+.ref-chip{font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:3px 9px;background:rgba(30,111,255,0.08);border:1px solid rgba(30,111,255,0.2);color:var(--blue);border-radius:1px;}
+
+.tutor-prompt-row{margin-top:20px;display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(0,212,200,0.04);border:1px solid rgba(0,212,200,0.12);border-radius:2px;}
+.tp-text{font-size:0.82rem;color:var(--muted);flex:1;}
+.tp-btn{background:var(--teal);color:var(--bg-primary);border:none;padding:8px 18px;font-family:'IBM Plex Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;border-radius:2px;white-space:nowrap;text-decoration:none;display:inline-block;}
+
+@media(max-width:900px){nav{padding:0 20px;}.nav-links{display:none;}.page-header,.main-content{padding-left:20px;padding-right:20px;}.cases-grid{grid-template-columns:1fr;}.exp-grid{grid-template-columns:1fr;}.case-card.open{grid-column:auto;}}
+</style>
+</head>
+<body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="index.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#pillars">Domains</a></li>
+    <li><a href="index.html#tutor">AI Tutor</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="pathway.html">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="cases.html" class="active">Cases</a></li>
+  </ul>
+  <a href="index.html#tutor" class="nav-cta">AI Tutor</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-label">// regulatory case studies</div>
+  <h1 class="page-title">Case Study Library</h1>
+  <p class="page-desc">Real-world regulatory scenarios across SaMD, cybersecurity, and AI/ML. Each case presents a situation, walks through the regulatory analysis, and identifies the correct path and key standards. Click any case to expand the full analysis.</p>
+</div>
+
+<div class="main-content">
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterCases('all',this,'domain')">All Domains</button>
+    <button class="filter-btn samd" onclick="filterCases('samd',this,'domain')">🔵 SaMD / SiMD</button>
+    <button class="filter-btn cyber" onclick="filterCases('cyber',this,'domain')">🟡 Cybersecurity</button>
+    <button class="filter-btn aiml" onclick="filterCases('aiml',this,'domain')">🟢 AI/ML</button>
+  </div>
+
+  <div class="difficulty-row">
+    <button class="diff-btn active" onclick="filterCases('all',this,'diff')">All Levels</button>
+    <button class="diff-btn" onclick="filterCases('intro',this,'diff')">Introductory</button>
+    <button class="diff-btn" onclick="filterCases('inter',this,'diff')">Intermediate</button>
+    <button class="diff-btn" onclick="filterCases('adv',this,'diff')">Advanced</button>
+  </div>
+
+  <div class="cases-grid" id="cases-grid">
+
+    <!-- CASE 01 -->
+    <div class="case-card" data-domain="samd" data-diff="intro" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-samd"></span>
+          <span class="domain-tag t-samd">SaMD</span>
+          <span class="jur-tag j-fda">FDA</span>
+          <span class="diff-badge d-intro">Introductory</span>
+        </div>
+        <div class="case-num">Case 01</div>
+        <div class="case-title">Is This App a Medical Device? A Cardiac Risk Calculator</div>
+        <div class="case-scenario">A software developer builds a mobile app that calculates 10-year cardiovascular risk using the Framingham Risk Score based on user-entered values (age, cholesterol, blood pressure, smoking status). The app displays a percentage risk score and recommends "consult your doctor if score > 20%." The developer believes this is a wellness app and not subject to FDA regulation. Are they correct?</div>
+      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">SaMD Definition</span><span class="ltag">Intended Use</span><span class="ltag">CDS Exemption</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Product:</strong> Mobile app calculating cardiovascular risk score from user-entered clinical values</p>
+            <p><strong>Output:</strong> 10-year CVD risk percentage with a threshold-based recommendation to consult a physician</p>
+            <p><strong>Claim:</strong> Developer believes it is a wellness app, not a regulated medical device</p>
+            <p><strong>Question:</strong> Does this software meet the definition of a medical device under 21 USC 321(h) and IMDRF N10?</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>Step 1 — Device definition test:</strong> Is it intended to diagnose, cure, mitigate, treat, or prevent disease? The Framingham Risk Score is a validated clinical tool for predicting cardiovascular disease risk — a disease-related purpose. This is not general wellness.</p>
+            <p><strong>Step 2 — CDS exemption test:</strong> Under FDA's 2022 CDS Guidance, the app must meet ALL four criteria to be exempt. Does it display the basis for its recommendation so a clinician can independently review? Does a clinician act as intermediary?</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 Regulatory Analysis — Step by Step</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">1</div><p><strong>Medical purpose confirmed:</strong> The Framingham Risk Score is explicitly intended to assess cardiovascular disease risk. The 21 USC 321(h) device definition is met — this software has a disease-related intended purpose.</p></div>
+            <div class="exp-step"><div class="exp-step-num">2</div><p><strong>IMDRF N10 SaMD definition met:</strong> The app is "software intended to be used for one or more medical purposes that perform these purposes without being part of a hardware medical device." It is SaMD by definition.</p></div>
+            <div class="exp-step"><div class="exp-step-num">3</div><p><strong>CDS exemption analysis:</strong> The app does NOT meet all four CDS criteria. It provides a risk score for cardiovascular disease — a serious condition. FDA's CDS Guidance states that CDS for serious or critical conditions does not qualify for the non-device CDS exemption regardless of whether it displays its basis.</p></div>
+            <div class="exp-step"><div class="exp-step-num">4</div><p><strong>Classification:</strong> This SaMD likely falls in IMDRF N12 Category II (informs clinical management for a serious condition). Under FDA, it would likely be Class II, requiring a 510(k) or potentially qualifying as a De Novo if no predicate exists.</p></div>
+            <div class="exp-step"><div class="exp-step-num">5</div><p><strong>Developer's assumption is incorrect:</strong> This is a regulated medical device. The developer must register, list the device, and seek 510(k) clearance or De Novo authorization before marketing in the US.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box">
+          <div class="ob-label">// Correct Determination</div>
+          <div class="ob-text">The app IS a medical device. The developer must obtain FDA clearance (most likely 510(k)) before marketing. The CDS exemption does not apply because cardiovascular disease is a serious condition. Continuing to market without clearance constitutes unlawful distribution of an uncleared device under 21 USC 331.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">21 USC 321(h)</span><span class="ref-chip">IMDRF N10:2013</span><span class="ref-chip">FDA CDS Guidance 2022</span><span class="ref-chip">21st Century Cures Act</span><span class="ref-chip">IMDRF N12:2014</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "What are all four CDS exemption criteria under FDA's 2022 guidance, and how do I test whether my software qualifies?"</span>
+          <a class="tp-btn" href="domain-samd.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE 02 -->
+    <div class="case-card" data-domain="samd" data-diff="inter" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-samd"></span>
+          <span class="domain-tag t-samd">SaMD</span>
+          <span class="jur-tag j-eu">EU MDR</span>
+          <span class="diff-badge d-inter">Intermediate</span>
+        </div>
+        <div class="case-num">Case 02</div>
+        <div class="case-title">EU MDR Rule 11 Classification: ICU Deterioration Alert Software</div>
+        <div class="case-scenario">A hospital software company develops a cloud-based SaMD that continuously analyzes vital sign streams from ICU patients and generates real-time alerts when the patient's condition suggests deterioration. The alert is reviewed by a nurse who then decides whether to escalate to a physician. The manufacturer self-certified the software as Class I under EU MDR, arguing that the nurse makes the final decision. Is this classification correct?</div>
+      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">EU MDR Rule 11</span><span class="ltag">MDSW Qualification</span><span class="ltag">Class IIb</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Product:</strong> Cloud SaMD analyzing ICU vital sign streams, generating deterioration alerts</p>
+            <p><strong>User:</strong> Nurse reviews alert and decides whether to escalate</p>
+            <p><strong>Claimed class:</strong> Class I (self-certified by manufacturer)</p>
+            <p><strong>Justification given:</strong> Human clinician makes the final action decision, not the software</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>MDCG 2021-24 Step 1 — MDSW Qualification:</strong> Does the software have a medical purpose? Yes — patient monitoring for clinical deterioration. Does it create or modify medical information rather than just store/display? Yes — it analyzes data and generates alerts. MDSW confirmed.</p>
+            <p><strong>EU MDR Rule 11 — Classification:</strong> The classification depends on the intended purpose and severity of potential harm from incorrect information, not on whether a human reviews the output.</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 Regulatory Analysis — Step by Step</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">1</div><p><strong>MDSW qualification confirmed:</strong> The software has a medical intended purpose (monitoring critically ill patients for deterioration) and creates new medical information (deterioration alerts) rather than merely displaying raw data. It qualifies as MDSW under MDCG 2021-24.</p></div>
+            <div class="exp-step"><div class="exp-step-num">2</div><p><strong>Rule 11 severity analysis:</strong> What is the clinical state? ICU patients are in critical or serious condition. What is the potential harm of a missed or false alert in an ICU? A missed deterioration alert in an ICU patient could result in death or irreversible harm. This is clearly a serious healthcare situation.</p></div>
+            <div class="exp-step"><div class="exp-step-num">3</div><p><strong>Human intermediary does NOT reduce classification:</strong> EU MDR Rule 11 classification is based on the intended purpose and potential consequences of incorrect information — not whether a clinician is in the loop. The MDCG guidance explicitly states that the involvement of a healthcare professional in reviewing output does not lower the risk class.</p></div>
+            <div class="exp-step"><div class="exp-step-num">4</div><p><strong>Correct classification — Class IIb:</strong> Software providing information used to make decisions with serious health consequences qualifies as Class IIb under Rule 11. ICU deterioration alerts clearly meet this threshold. The manufacturer's Class I self-certification is incorrect.</p></div>
+            <div class="exp-step"><div class="exp-step-num">5</div><p><strong>Consequence:</strong> The manufacturer must engage a Notified Body for conformity assessment, prepare a full Technical Documentation package per Annex II, conduct a Clinical Evaluation, and implement a PMS system before CE marking.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box amber">
+          <div class="ob-label amber">// Correct Classification: Class IIb</div>
+          <div class="ob-text">The software is Class IIb under EU MDR Rule 11, not Class I. The manufacturer's self-certification is invalid. A Notified Body must assess conformity. The manufacturer must retract the CE marking, engage an NB, and complete full conformity assessment before legally marketing the device in the EU.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">EU MDR 2017/745 Rule 11</span><span class="ref-chip">MDCG 2021-24</span><span class="ref-chip">EU MDR Annex II & IX</span><span class="ref-chip">IEC 62304</span><span class="ref-chip">ISO 14971</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "Walk me through all the Rule 11 classification criteria with examples for each class level."</span>
+          <a class="tp-btn" href="domain-samd.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE 03 -->
+    <div class="case-card" data-domain="cyber" data-diff="inter" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-cyber"></span>
+          <span class="domain-tag t-cyber">Cybersecurity</span>
+          <span class="jur-tag j-fda">FDA</span>
+          <span class="diff-badge d-inter">Intermediate</span>
+        </div>
+        <div class="case-num">Case 03</div>
+        <div class="case-title">510(k) Refused to File: Missing SBOM and Cybersecurity Documentation</div>
+        <div class="case-scenario">A manufacturer submits a 510(k) for a cloud-connected SaMD that integrates with hospital EHR systems for diagnostic imaging analysis. FDA issues a Refuse to File (RTF) letter citing deficiencies in cybersecurity documentation. The manufacturer included only a one-page "cybersecurity summary" describing their password policy and encryption. They are surprised, believing cybersecurity is an IT issue handled by the hospital, not them. What went wrong and what must be corrected?</div>
+      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">SBOM</span><span class="ltag">FDA RTF</span><span class="ltag">Premarket Cyber</span><span class="ltag">Section 524B</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Product:</strong> Cloud-connected SaMD, EHR integration, diagnostic imaging analysis</p>
+            <p><strong>Submission:</strong> 510(k) premarket notification</p>
+            <p><strong>Cybersecurity provided:</strong> One-page summary covering password policy and encryption only</p>
+            <p><strong>FDA action:</strong> Refuse to File (RTF) — submission not accepted for substantive review</p>
+            <p><strong>Manufacturer belief:</strong> Hospital IT is responsible for cybersecurity, not the device manufacturer</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>Section 524B FD&C Act (2023):</strong> Manufacturers of "cyber devices" — devices with software that connect to the internet — must submit cybersecurity information. FDA may refuse to file submissions that lack required cybersecurity documentation. This is now statutory, not just guidance.</p>
+            <p><strong>FDA Cybersecurity Guidance 2023:</strong> Specifies six required documentation elements. A one-page summary does not satisfy any of them. The "hospital is responsible" belief is legally incorrect.</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 What Was Missing and What Is Required</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">1</div><p><strong>SBOM not provided:</strong> A machine-readable Software Bill of Materials listing all software components, libraries, versions, and dependencies is required. Without it, FDA cannot assess the vulnerability profile. The SBOM must use a standard format (SPDX or CycloneDX).</p></div>
+            <div class="exp-step"><div class="exp-step-num">2</div><p><strong>Threat model absent:</strong> A structured threat analysis (STRIDE or equivalent) identifying assets, threat actors, attack surfaces, and mitigations is required. Password policy is a control, not a threat model.</p></div>
+            <div class="exp-step"><div class="exp-step-num">3</div><p><strong>Security architecture not documented:</strong> Data flow diagrams showing all network interfaces, authentication mechanisms, encryption implementation, and trust boundaries must be provided.</p></div>
+            <div class="exp-step"><div class="exp-step-num">4</div><p><strong>Security testing evidence missing:</strong> Results from SAST, DAST, and penetration testing must be provided with documented findings and resolutions.</p></div>
+            <div class="exp-step"><div class="exp-step-num">5</div><p><strong>No cybersecurity management plan:</strong> A plan detailing post-market vulnerability monitoring, patch timelines (30 days critical, 60 days high), and coordinated vulnerability disclosure policy must be submitted.</p></div>
+            <div class="exp-step"><div class="exp-step-num">6</div><p><strong>Manufacturer responsibility is non-delegable:</strong> Under Section 524B, the device manufacturer — not the hospital — bears statutory responsibility for cybersecurity of their device. The hospital manages its network; the manufacturer is responsible for the device's own security posture.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box red">
+          <div class="ob-label red">// What Must Happen Next</div>
+          <div class="ob-text">The manufacturer must resubmit with a complete cybersecurity package: machine-readable SBOM, threat model, security architecture diagrams, penetration test results, cybersecurity management plan, and vulnerability disclosure policy. They should conduct a full cybersecurity engineering review per FDA 2023 guidance before resubmitting to avoid a second RTF.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">Section 524B FD&C Act</span><span class="ref-chip">FDA Cybersecurity Guidance 2023</span><span class="ref-chip">IEC 81001-5-1</span><span class="ref-chip">NTIA SBOM Guidance</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "What exactly must be in a complete FDA cybersecurity submission package for a 510(k)?"</span>
+          <a class="tp-btn" href="domain-cyber.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE 04 -->
+    <div class="case-card" data-domain="cyber" data-diff="adv" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-cyber"></span>
+          <span class="domain-tag t-cyber">Cybersecurity</span>
+          <span class="jur-tag j-multi">Multi-Jurisdiction</span>
+          <span class="diff-badge d-adv">Advanced</span>
+        </div>
+        <div class="case-num">Case 04</div>
+        <div class="case-title">Critical CVE Discovered in Marketed Device — What Are the Obligations?</div>
+        <div class="case-scenario">A manufacturer has a FDA-cleared infusion pump controller SaMD that has been on the market for two years. A security researcher discloses a critical vulnerability (CVSS 9.4) in an open-source networking library listed in their SBOM. The vulnerability would allow a network-adjacent attacker to execute arbitrary code. The device is deployed in over 2,000 hospitals in the US and EU. The manufacturer's engineering team estimates a patch will take 90 days to develop and test. What must the manufacturer do, in what timeframe, and under which regulations?      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">CVE Response</span><span class="ltag">Patch Timelines</span><span class="ltag">NIS2</span><span class="ltag">Postmarket Cyber</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Device:</strong> FDA-cleared infusion pump controller SaMD, marketed 2 years</p>
+            <p><strong>Vulnerability:</strong> CVSS 9.4 critical in open-source networking library (in SBOM)</p>
+            <p><strong>Threat:</strong> Network-adjacent arbitrary code execution — direct patient safety risk</p>
+            <p><strong>Scale:</strong> 2,000+ hospitals in US and EU</p>
+            <p><strong>Patch timeline:</strong> 90 days estimated by engineering</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>FDA Postmarket Cybersecurity Guidance:</strong> Critical vulnerabilities (CVSS ≥9.0) require patch deployment within 30 days. 90 days exceeds this — requires documented justification and interim mitigations.</p>
+            <p><strong>NIS2 Directive (EU):</strong> If hospital customers qualify as essential entities, significant cyber incidents must be reported within 24 hours (early warning) and 72 hours (full notification) to national authorities.</p>
+            <p><strong>FDA MDR Reporting:</strong> If the vulnerability creates a reasonable probability of serious patient harm, MDR reporting obligations may be triggered under 21 CFR Part 803.</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 Required Actions by Timeframe</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">24h</div><p><strong>Internal escalation and risk assessment:</strong> Convene the cybersecurity incident response team. Assess exploitability in the device's typical network deployment. What patient harm could result from arbitrary code execution on this device? Document the risk determination thoroughly.</p></div>
+            <div class="exp-step"><div class="exp-step-num">72h</div><p><strong>EU NIS2 reporting:</strong> If EU hospital customers qualify as essential entities and this constitutes a significant incident, notify relevant national competent authorities — early warning within 24 hours, full report within 72 hours with impact assessment and initial mitigations.</p></div>
+            <div class="exp-step"><div class="exp-step-num">7d</div><p><strong>Customer communication and interim mitigations:</strong> Notify affected hospitals of the vulnerability and provide specific compensating controls — network isolation recommendations, firewall rules restricting device network access, enhanced monitoring protocols. Document all customer communications.</p></div>
+            <div class="exp-step"><div class="exp-step-num">30d</div><p><strong>FDA 30-day critical patch deadline:</strong> FDA expects critical CVE patches within 30 days. Since 90 days is required, the manufacturer must document justification, demonstrate interim compensating controls adequately reduce risk, and proactively communicate this assessment to FDA's CDRH cybersecurity team.</p></div>
+            <div class="exp-step"><div class="exp-step-num">90d</div><p><strong>Patch release and deployment:</strong> Release validated patch with full IEC 62304 testing documentation. Deploy to all affected devices. Track deployment rates — unpatched devices remain at elevated risk and require continued interim mitigations until patched.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box red">
+          <div class="ob-label red">// Key Regulatory Risk</div>
+          <div class="ob-text">The 90-day patch timeline exceeds FDA's 30-day critical CVE expectation. Without documented justification and demonstrably effective interim compensating controls, this creates significant regulatory exposure. If the vulnerability is actively exploited and patient harm results during the 90-day window, MDR reporting obligations and potential recall liability both apply. Proactive engagement with FDA is strongly recommended rather than waiting for FDA to identify the gap.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">FDA Postmarket Cyber Guidance</span><span class="ref-chip">EU NIS2 Directive</span><span class="ref-chip">21 CFR Part 803 MDR</span><span class="ref-chip">IEC 81001-5-1</span><span class="ref-chip">CISA CVD Framework</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "What are all the regulatory obligations when a critical CVE is discovered in a marketed medical device?"</span>
+          <a class="tp-btn" href="domain-cyber.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE 05 -->
+    <div class="case-card" data-domain="aiml" data-diff="inter" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-aiml"></span>
+          <span class="domain-tag t-aiml">AI/ML</span>
+          <span class="jur-tag j-fda">FDA</span>
+          <span class="diff-badge d-inter">Intermediate</span>
+        </div>
+        <div class="case-num">Case 05</div>
+        <div class="case-title">AI Retinal Screening App — Dataset Bias Identified Post-Launch</div>
+        <div class="case-scenario">A company has FDA-cleared AI software that screens retinal images for diabetic retinopathy. Six months post-launch, a hospital network reports that the software's sensitivity is significantly lower in patients of South Asian descent compared to the overall performance metrics in the 510(k). The training dataset was predominantly composed of images from North American and European clinical sites. What are the manufacturer's obligations, and what should have been done pre-market?</div>
+      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">Bias Analysis</span><span class="ltag">GMLP</span><span class="ltag">Post-Market Monitoring</span><span class="ltag">510(k) Supplement</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Device:</strong> FDA-cleared AI retinal screening SaMD for diabetic retinopathy</p>
+            <p><strong>Issue:</strong> Significantly lower sensitivity for South Asian patients discovered post-launch</p>
+            <p><strong>Root cause:</strong> Training data predominantly North American and European — South Asian patients underrepresented</p>
+            <p><strong>GMLP principles implicated:</strong> Principle 5 (representative datasets) and Principle 10 (post-market monitoring)</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>GMLP Principles 4 & 5:</strong> Training datasets must be representative of the intended use population including relevant subgroups. Diabetic retinopathy affects South Asian populations at high rates — underrepresentation is a foreseeable and preventable gap.</p>
+            <p><strong>FDA Pre-Market Expectation:</strong> Subgroup performance analysis is expected in AI/ML submissions. Performance gaps should be either mitigated or disclosed as known limitations in device labeling.</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 Pre-Market Failures and Post-Market Obligations</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">Pre-1</div><p><strong>Dataset composition analysis should have been performed:</strong> The manufacturer should have analyzed the demographic composition of training data and identified underrepresentation of South Asian patients before submission. GMLP Principle 5 requires this analysis explicitly.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Pre-2</div><p><strong>Subgroup performance reporting should have been included:</strong> The 510(k) submission should have included sensitivity/specificity broken down by demographic subgroups. FDA's AI/ML guidance expects subgroup metrics for foreseeable user populations.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Pre-3</div><p><strong>IFU limitation disclosure should have been made:</strong> If the gap existed and could not be mitigated, it should have been disclosed in labeling: "Performance in South Asian populations has not been fully validated; clinical judgment should not rely solely on this system for this population."</p></div>
+            <div class="exp-step"><div class="exp-step-num">Post-1</div><p><strong>Assess patient harm immediately:</strong> Determine whether missed diagnoses occurred in South Asian patients during deployment. If patients received incorrect screening results, MDR adverse event reporting may be triggered under 21 CFR Part 803.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Post-2</div><p><strong>FDA notification and 510(k) supplement:</strong> The performance gap constitutes new safety information. A 510(k) supplement is likely required to update labeling with the known limitation, or to submit the retrained model if bias is corrected.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Post-3</div><p><strong>Corrective action — dataset expansion:</strong> Collect retinal images from South Asian clinical sites. Retrain and revalidate. If within an approved PCCP scope, deploy without new submission; if not, a supplement is required.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box amber">
+          <div class="ob-label amber">// Regulatory Determination</div>
+          <div class="ob-text">This case illustrates a pre-market bias analysis failure with serious post-market consequences. The manufacturer faces potential adverse event reporting obligations, a 510(k) supplement for labeling updates, and corrective action. Under EU AI Act Article 10, this bias would have been explicitly required to be identified and addressed before CE marking — demonstrating the added value of the AI Act's data governance requirements for patient safety.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">GMLP Principles 4,5,10</span><span class="ref-chip">FDA AI/ML Action Plan</span><span class="ref-chip">EU AI Act Art. 10</span><span class="ref-chip">MDCG 2025-6</span><span class="ref-chip">21 CFR Part 803</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "How should I conduct a pre-market bias analysis for my AI/ML SaMD and what documentation does FDA expect?"</span>
+          <a class="tp-btn" href="domain-aiml.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE 06 -->
+    <div class="case-card" data-domain="aiml" data-diff="adv" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-aiml"></span>
+          <span class="domain-tag t-aiml">AI/ML</span>
+          <span class="jur-tag j-eu">EU MDR + AI Act</span>
+          <span class="diff-badge d-adv">Advanced</span>
+        </div>
+        <div class="case-num">Case 06</div>
+        <div class="case-title">Dual Compliance Challenge: AI Pathology SaMD Under MDR and EU AI Act</div>
+        <div class="case-scenario">A digital pathology company has a CE-marked Class IIb AI system that analyzes histopathology slides for colorectal cancer detection. Following the EU AI Act entering into force, their regulatory counsel confirms the system qualifies as high-risk AI under Annex III. The product team believes their existing CE marking automatically satisfies the AI Act. Are they correct, and what additional work is required under MDCG 2025-6?</div>
+      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">Dual Compliance</span><span class="ltag">MDCG 2025-6</span><span class="ltag">AI Act Annex III</span><span class="ltag">Data Governance</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Device:</strong> AI histopathology SaMD for colorectal cancer — CE-marked Class IIb</p>
+            <p><strong>New obligation:</strong> High-risk AI under EU AI Act Annex III</p>
+            <p><strong>Belief to test:</strong> CE marking under MDR automatically satisfies EU AI Act</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>MDCG 2025-6:</strong> Explicitly states EU MDR compliance does NOT automatically satisfy EU AI Act. The AI Act adds cumulative, additive obligations.</p>
+            <p><strong>EU AI Act Art. 9–15, 72:</strong> Risk management, data governance, transparency, human oversight, robustness, cybersecurity, post-market monitoring — several go beyond MDR requirements.</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 Compliance Gaps: MDR vs MDR + AI Act</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">Gap 1</div><p><strong>Data Governance (Art. 10):</strong> MDR requires clinical evidence for intended use. AI Act requires formal documentation of training data examination for biases, data management practices for the full data lifecycle, and data quality governance. This documentation must be created and added to the Technical File.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Gap 2</div><p><strong>Transparency (Art. 13):</strong> MDR IFU covers intended use and instructions. AI Act Art. 13 requires the IFU to enable pathologists to interpret AI outputs appropriately — including the system's scope, limitations, performance on relevant subpopulations, and what it cannot do. The MDR IFU almost certainly needs supplementing.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Gap 3</div><p><strong>Human Oversight (Art. 14):</strong> MDR does not mandate specific human oversight design provisions. AI Act Art. 14 requires the system to be designed allowing pathologists to monitor, understand, and override AI output. This design and the IFU guidance on exercising oversight must be documented.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Gap 4</div><p><strong>AI-Specific Cybersecurity (Art. 15):</strong> Beyond MDR GSPR 17.2, the AI Act requires resilience against adversarial attacks on the AI model itself — such as adversarial image perturbations designed to fool the pathology classifier. AI-specific security testing is required.</p></div>
+            <div class="exp-step"><div class="exp-step-num">Gap 5</div><p><strong>Post-Market AI Monitoring (Art. 72):</strong> MDR requires a PMS system. AI Act additionally requires a system specifically tracking AI performance in real-world deployment — performance drift, subgroup performance over time, unexpected AI behavior patterns.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box">
+          <div class="ob-label">// Required Actions</div>
+          <div class="ob-text">The product team is incorrect. MDCG 2025-6 is explicit — CE marking under MDR does not satisfy EU AI Act. The manufacturer must conduct a gap analysis against Articles 9–15 and 72, update Technical Documentation with AI Act-specific sections, revise the IFU, conduct AI-specific security testing, and establish AI-specific post-market monitoring. Notified Body re-engagement may be required depending on the significance of Technical Documentation changes.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">MDCG 2025-6</span><span class="ref-chip">EU AI Act Art. 9–15, 72</span><span class="ref-chip">EU AI Act Annex III</span><span class="ref-chip">EU MDR 2017/745</span><span class="ref-chip">ISO/IEC 23894</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "What specific gaps exist between EU MDR Class IIb compliance and EU AI Act compliance for a medical AI device?"</span>
+          <a class="tp-btn" href="domain-aiml.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE 07 -->
+    <div class="case-card" data-domain="samd" data-diff="adv" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-samd"></span>
+          <span class="domain-tag t-samd">SaMD</span>
+          <span class="jur-tag j-fda">FDA</span>
+          <span class="diff-badge d-adv">Advanced</span>
+        </div>
+        <div class="case-num">Case 07</div>
+        <div class="case-title">De Novo vs 510(k): Novel Sepsis Prediction Algorithm</div>
+        <div class="case-scenario">A startup has developed a novel SaMD that uses machine learning to predict sepsis onset 6 hours before clinical diagnosis by analyzing EHR data streams. Their regulatory team debates whether to pursue a 510(k) with a qSOFA-based sepsis scoring tool as predicate, or a De Novo request. The legal team argues 510(k) is faster and cheaper. The regulatory team is uncertain about substantial equivalence. Who is right and how should the decision be made?</div>
+      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">De Novo</span><span class="ltag">510(k) Predicate</span><span class="ltag">Substantial Equivalence</span><span class="ltag">Novel Technology</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Device:</strong> ML-based SaMD predicting sepsis onset 6 hours in advance from EHR data streams</p>
+            <p><strong>Proposed predicate:</strong> qSOFA-based sepsis scoring software (existing 510(k))</p>
+            <p><strong>Legal team view:</strong> 510(k) — faster and cheaper</p>
+            <p><strong>Key question:</strong> Is substantial equivalence to qSOFA achievable for this ML device?</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>510(k) Substantial Equivalence:</strong> Requires same intended use AND either same technological characteristics OR different tech that does not raise new safety/effectiveness questions and performs at least as well.</p>
+            <p><strong>De Novo:</strong> For novel, low-to-moderate risk devices with no valid predicate. Creates a new classification with special controls. Future devices can use the De Novo as a 510(k) predicate.</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 Predicate Analysis and Pathway Determination</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">1</div><p><strong>Intended use comparison:</strong> qSOFA calculates a bedside score from 3 parameters for current sepsis screening. The proposed device predicts sepsis 6 hours in advance using ML on multi-modal EHR streams. The intended uses are similar (sepsis identification) but meaningfully different — prediction vs. screening, 6-hour advance warning vs. current status assessment.</p></div>
+            <div class="exp-step"><div class="exp-step-num">2</div><p><strong>Technological characteristics raise new questions:</strong> The ML algorithm, EHR multi-modal input, and 6-hour predictive horizon represent fundamentally different technology than qSOFA's simple scoring rules. FDA would likely determine this raises new questions of safety and effectiveness not addressed by the predicate — particularly around AI/ML validation, dataset representativeness, and performance consistency across hospital systems.</p></div>
+            <div class="exp-step"><div class="exp-step-num">3</div><p><strong>510(k) NSE risk is significant:</strong> If FDA determines Not Substantially Equivalent (NSE), the manufacturer must restart with De Novo or PMA — having lost filing fees and several months. This makes the "faster and cheaper" argument fragile.</p></div>
+            <div class="exp-step"><div class="exp-step-num">4</div><p><strong>De Novo is the appropriate pathway:</strong> This novel AI/ML sepsis prediction tool with no true predicate is a strong De Novo candidate. It will create a new classification with defined special controls (PCCP for algorithm updates, representative training data requirements, subgroup performance reporting) that benefits future entrants.</p></div>
+            <div class="exp-step"><div class="exp-step-num">5</div><p><strong>Pre-Sub meeting is essential:</strong> Before committing to either pathway, request a Pre-Submission (Q-Sub) meeting with FDA CDRH. FDA will provide definitive guidance on predicate acceptability and required evidence — avoiding expensive misdirection.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box">
+          <div class="ob-label">// Recommendation</div>
+          <div class="ob-text">De Novo is the more appropriate pathway. The legal team's "faster and cheaper" argument underestimates the substantial NSE risk given the technological differences from qSOFA. A failed 510(k) followed by De Novo is slower and more expensive than De Novo from the start. The manufacturer should request a Pre-Sub meeting with FDA to confirm the pathway before committing resources to a full submission package.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">21 CFR Part 807 (510k)</span><span class="ref-chip">21 CFR Part 860.260 (De Novo)</span><span class="ref-chip">FDA De Novo Guidance</span><span class="ref-chip">FDA Pre-Sub Guidance</span><span class="ref-chip">FDA AI/ML Action Plan</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "How does FDA evaluate substantial equivalence for AI/ML SaMD with traditional software predicates?"</span>
+          <a class="tp-btn" href="domain-samd.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASE 08 -->
+    <div class="case-card" data-domain="aiml" data-diff="intro" onclick="toggleCase(this)">
+      <div class="card-top">
+        <div class="ct-meta">
+          <span class="domain-dot dot-aiml"></span>
+          <span class="domain-tag t-aiml">AI/ML</span>
+          <span class="jur-tag j-fda">FDA</span>
+          <span class="diff-badge d-intro">Introductory</span>
+        </div>
+        <div class="case-num">Case 08</div>
+        <div class="case-title">Locked vs. Adaptive: Do I Need a New 510(k) to Update My AI Model?</div>
+        <div class="case-scenario">A company has a 510(k)-cleared AI dermatology SaMD that classifies skin lesions. The clinical team wants to retrain the model on 50,000 additional images from three new clinical sites to improve sensitivity. Engineering says "it's just improving the model — no new submission needed." The regulatory team is unsure. Who is right, and what process must be followed?</div>
+      </div>
+      <div class="card-footer">
+        <div class="learning-tags"><span class="ltag">Locked Algorithm</span><span class="ltag">PCCP</span><span class="ltag">510(k) Supplement</span><span class="ltag">Significant Change</span></div>
+        <button class="expand-btn">Expand Analysis ↓</button>
+      </div>
+      <div class="case-expanded">
+        <div class="exp-grid">
+          <div class="exp-section">
+            <h4>🔍 Key Facts</h4>
+            <p><strong>Device:</strong> 510(k)-cleared AI SaMD for skin lesion classification</p>
+            <p><strong>Proposed change:</strong> Retrain on 50,000 additional images from 3 new clinical sites</p>
+            <p><strong>Engineering claim:</strong> No submission needed — just improving the model</p>
+            <p><strong>PCCP status:</strong> No PCCP was included in the original 510(k)</p>
+          </div>
+          <div class="exp-section">
+            <h4>⚖️ Regulatory Framework Applied</h4>
+            <p><strong>Locked algorithm principle:</strong> The cleared 510(k) was for a specific locked version. All performance data submitted to FDA was for that version. Retraining changes model weights and therefore changes the cleared device.</p>
+            <p><strong>Significant change assessment:</strong> FDA guidance requires manufacturers to assess whether changes to cleared devices require new submissions. Algorithm retraining is a substantive modification.</p>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h4>📋 Analysis and Required Process</h4>
+          <div class="step-list">
+            <div class="exp-step"><div class="exp-step-num">1</div><p><strong>Retraining is a significant change requiring assessment:</strong> Retraining on new data changes the model's parameters and real-world behavior. This is not a minor bug fix — it is a substantive modification to the cleared device's core function. Engineering's assumption is incorrect without formal documented assessment.</p></div>
+            <div class="exp-step"><div class="exp-step-num">2</div><p><strong>No PCCP means no automatic pathway:</strong> Without an approved PCCP, every modification must be individually assessed. There is no pre-approved change control framework covering this retraining.</p></div>
+            <div class="exp-step"><div class="exp-step-num">3</div><p><strong>Change control assessment must be documented:</strong> Does this change affect intended use? Could it affect performance in a way impacting safety or effectiveness? Retraining on new site data could improve OR inadvertently degrade performance for the original population — unknown until validation is complete.</p></div>
+            <div class="exp-step"><div class="exp-step-num">4</div><p><strong>New 510(k) supplement is almost certainly required:</strong> A fundamental change to the AI algorithm through retraining on significantly different data from new sites requires a new 510(k) or supplement. The manufacturer cannot determine this without completing validation and comparing performance to the cleared version.</p></div>
+            <div class="exp-step"><div class="exp-step-num">5</div><p><strong>Lesson: include PCCP in initial submissions:</strong> Had the original 510(k) included a PCCP anticipating "retraining on additional clinical site data," the approved PCCP would allow this change — if performance criteria are met — without a new submission. This is the core value of PCCP planning.</p></div>
+          </div>
+        </div>
+        <div class="outcome-box">
+          <div class="ob-label">// Correct Process</div>
+          <div class="ob-text">The regulatory team is correct to be cautious — engineering's assumption is wrong. The manufacturer must complete validation, formally assess whether the change is significant (it almost certainly is for algorithm retraining), and submit a new 510(k) or supplement before deploying the updated model. Deploying an uncleared algorithm modification constitutes distribution of an uncleared device under 21 USC 331.</div>
+        </div>
+        <div class="refs-row">
+          <span class="ref-chip">FDA AI/ML Action Plan</span><span class="ref-chip">FDA PCCP Draft Guidance</span><span class="ref-chip">FDA 510(k) Change Guidance</span><span class="ref-chip">GMLP Principles</span>
+        </div>
+        <div class="tutor-prompt-row">
+          <span class="tp-text">Ask the AI Tutor: "What AI/ML algorithm changes require a new 510(k) versus being coverable by an approved PCCP?"</span>
+          <a class="tp-btn" href="domain-aiml.html#tutor-widget">Ask Tutor →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end cases-grid -->
+</div><!-- end main-content -->
+
+<script>
+let domainFilter = 'all';
+let diffFilter = 'all';
+
+function filterCases(val, btn, type) {
+  if (type === 'domain') {
+    domainFilter = val;
+    document.querySelectorAll('.filter-row .filter-btn').forEach(b => b.classList.remove('active','samd','cyber','aiml'));
+    btn.classList.add('active');
+    if (val !== 'all') btn.classList.add(val);
+  } else {
+    diffFilter = val;
+    document.querySelectorAll('.difficulty-row .diff-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  document.querySelectorAll('.case-card').forEach(card => {
+    const domainMatch = domainFilter === 'all' || card.dataset.domain === domainFilter;
+    const diffMatch = diffFilter === 'all' || card.dataset.diff === diffFilter;
+    const show = domainMatch && diffMatch;
+    card.classList.toggle('hidden', !show);
+    if (!show && card.classList.contains('open')) {
+      card.classList.remove('open');
+      card.querySelector('.expand-btn').textContent = 'Expand Analysis ↓';
+    }
+  });
+}
+
+function toggleCase(card) {
+  if (event.target.tagName === 'A') return;
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.case-card.open').forEach(c => {
+    c.classList.remove('open');
+    c.querySelector('.expand-btn').textContent = 'Expand Analysis ↓';
+  });
+  if (!isOpen) {
+    card.classList.add('open');
+    card.querySelector('.expand-btn').textContent = 'Collapse ↑';
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaMD & SiMD — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-primary:#0A0F1E;--bg-secondary:#0f1628;--bg-card:#141B2D;--bg-card-hover:#1a2340;--blue:#1E6FFF;--teal:#00D4C8;--amber:#F5A623;--white:#F0F4FF;--muted:#8A9BB8;--border:rgba(30,111,255,0.15);--domain:#1E6FFF;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--white);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;}
+.pulse-line{position:fixed;top:0;left:0;width:100%;height:2px;z-index:1000;overflow:hidden;}
+.pulse-line::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--blue),var(--teal),transparent);animation:ps 3s ease-in-out infinite;}
+@keyframes ps{0%{left:-100%}100%{left:100%}}
+nav{position:fixed;top:2px;left:0;width:100%;z-index:999;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,15,30,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--teal);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--white);}
+.nav-cta{background:transparent;border:1px solid var(--teal);color:var(--teal);padding:8px 20px;font-family:'IBM Plex Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all 0.2s;text-decoration:none;}
+.nav-cta:hover{background:var(--teal);color:var(--bg-primary);}
+
+/* HERO BANNER */
+.domain-hero{padding:100px 40px 60px;background:linear-gradient(180deg,rgba(30,111,255,0.06) 0%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.domain-hero::before{content:'';position:absolute;top:0;right:0;width:500px;height:500px;background:radial-gradient(circle,rgba(30,111,255,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start;}
+.domain-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(30,111,255,0.1);border:1px solid rgba(30,111,255,0.3);padding:5px 14px;border-radius:1px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--blue);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:20px;}
+.domain-title{font-family:'Chakra Petch',sans-serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.1;margin-bottom:16px;}
+.domain-title span{color:var(--blue);}
+.domain-desc{color:var(--muted);font-size:1rem;line-height:1.75;max-width:620px;margin-bottom:32px;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.htag{font-family:'JetBrains Mono',monospace;font-size:0.65rem;padding:4px 10px;background:rgba(30,111,255,0.1);border:1px solid rgba(30,111,255,0.25);color:var(--blue);border-radius:1px;letter-spacing:0.05em;text-transform:uppercase;}
+.hero-stats-box{background:var(--bg-card);border:1px solid var(--border);padding:28px;min-width:200px;border-top:2px solid var(--blue);}
+.hstat{margin-bottom:20px;}
+.hstat:last-child{margin-bottom:0;}
+.hstat-num{font-family:'Chakra Petch',sans-serif;font-size:1.8rem;font-weight:700;color:var(--blue);line-height:1;}
+.hstat-label{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
+
+/* LAYOUT */
+.page-layout{display:grid;grid-template-columns:260px 1fr;gap:0;max-width:1200px;margin:0 auto;padding:0 40px 80px;}
+.sidebar-nav{padding-top:40px;padding-right:32px;position:sticky;top:80px;height:fit-content;}
+.sidebar-nav h4{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;}
+.snav-item{display:block;padding:8px 12px;font-size:0.84rem;color:var(--muted);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;margin-bottom:2px;}
+.snav-item:hover{color:var(--white);border-left-color:rgba(30,111,255,0.4);}
+.snav-item.active{color:var(--blue);border-left-color:var(--blue);background:rgba(30,111,255,0.06);}
+.snav-sub{padding-left:24px;font-size:0.8rem;}
+.snav-divider{height:1px;background:var(--border);margin:12px 0;}
+
+.content-area{padding-top:40px;border-left:1px solid var(--border);padding-left:48px;}
+
+/* CONTENT SECTIONS */
+.content-section{margin-bottom:64px;scroll-margin-top:90px;}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--blue);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;}
+.sec-title{font-family:'Chakra Petch',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:16px;line-height:1.2;}
+.sec-body{color:rgba(240,244,255,0.88);font-size:0.95rem;line-height:1.8;margin-bottom:20px;}
+.sec-body strong{color:var(--white);font-weight:600;}
+.sec-body em{color:var(--teal);font-style:normal;}
+
+/* INFO CARDS */
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:24px 0;}
+.info-card{background:var(--bg-card);border:1px solid var(--border);padding:24px;border-radius:2px;}
+.info-card h4{font-family:'Chakra Petch',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:10px;color:var(--blue);}
+.info-card p{font-size:0.85rem;color:var(--muted);line-height:1.65;}
+
+/* FRAMEWORK TABLE */
+.fw-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:0.85rem;}
+.fw-table th{font-family:'JetBrains Mono',monospace;font-size:0.66rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;}
+.fw-table td{padding:14px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;line-height:1.6;}
+.fw-table tbody tr:hover{background:rgba(30,111,255,0.03);}
+.cat-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.65rem;padding:3px 9px;border-radius:1px;font-weight:700;}
+.cat-i{background:rgba(0,196,140,0.15);color:#00C48C;border:1px solid rgba(0,196,140,0.3);}
+.cat-ii{background:rgba(0,212,200,0.12);color:var(--teal);border:1px solid rgba(0,212,200,0.25);}
+.cat-iii{background:rgba(245,166,35,0.12);color:var(--amber);border:1px solid rgba(245,166,35,0.25);}
+.cat-iv{background:rgba(255,77,106,0.12);color:#FF4D6A;border:1px solid rgba(255,77,106,0.25);}
+
+/* STEP FLOW */
+.step-flow{margin:24px 0;}
+.step-item{display:flex;gap:20px;margin-bottom:24px;position:relative;}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:19px;top:44px;width:2px;height:calc(100% - 20px);background:linear-gradient(180deg,var(--blue),transparent);}
+.step-num{width:40px;height:40px;border-radius:2px;background:rgba(30,111,255,0.12);border:1px solid rgba(30,111,255,0.3);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:700;color:var(--blue);flex-shrink:0;}
+.step-content h4{font-family:'Chakra Petch',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:6px;}
+.step-content p{font-size:0.85rem;color:var(--muted);line-height:1.65;}
+
+/* STANDARDS LIST */
+.std-list{margin:20px 0;}
+.std-item{display:flex;align-items:flex-start;gap:16px;padding:16px;background:var(--bg-card);border:1px solid var(--border);margin-bottom:2px;transition:background 0.2s;}
+.std-item:hover{background:var(--bg-card-hover);}
+.std-ref{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--blue);font-weight:500;min-width:160px;flex-shrink:0;}
+.std-info h4{font-size:0.88rem;font-weight:500;margin-bottom:3px;}
+.std-info p{font-size:0.78rem;color:var(--muted);}
+.std-link-btn{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);border:1px solid var(--border);padding:4px 10px;border-radius:1px;text-decoration:none;transition:all 0.2s;flex-shrink:0;align-self:center;}
+.std-link-btn:hover{color:var(--teal);border-color:var(--teal);}
+
+/* CALLOUT BOX */
+.callout{background:rgba(30,111,255,0.06);border-left:3px solid var(--blue);padding:20px 24px;margin:24px 0;border-radius:0 2px 2px 0;}
+.callout.teal{background:rgba(0,212,200,0.06);border-left-color:var(--teal);}
+.callout.amber{background:rgba(245,166,35,0.06);border-left-color:var(--amber);}
+.callout h4{font-family:'Chakra Petch',sans-serif;font-size:0.88rem;font-weight:600;margin-bottom:8px;}
+.callout p{font-size:0.85rem;color:var(--muted);line-height:1.7;}
+
+/* AI TUTOR WIDGET */
+.tutor-widget{background:var(--bg-card);border:1px solid rgba(0,212,200,0.25);border-radius:3px;overflow:hidden;margin-top:48px;}
+.tw-header{background:rgba(0,212,200,0.06);border-bottom:1px solid rgba(0,212,200,0.2);padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.tw-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.tw-title{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--teal);letter-spacing:0.08em;}
+.tw-messages{padding:20px;min-height:200px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.tw-messages::-webkit-scrollbar{width:4px;}
+.tw-messages::-webkit-scrollbar-thumb{background:var(--border);}
+.msg{display:flex;gap:10px;align-items:flex-start;}
+.msg-av{width:26px;height:26px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;font-family:'Chakra Petch',sans-serif;}
+.msg-ai .msg-av{background:rgba(0,212,200,0.12);color:var(--teal);border:1px solid rgba(0,212,200,0.25);}
+.msg-user .msg-av{background:rgba(30,111,255,0.12);color:var(--blue);border:1px solid rgba(30,111,255,0.25);}
+.msg-user{flex-direction:row-reverse;}
+.msg-bub{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:2px;font-size:0.83rem;line-height:1.6;max-width:85%;}
+.msg-user .msg-bub{background:rgba(30,111,255,0.08);border-color:rgba(30,111,255,0.15);}
+.tw-prompts{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 14px;}
+.tw-prompt{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);border:1px solid var(--border);padding:4px 10px;border-radius:1px;cursor:pointer;transition:all 0.2s;background:transparent;}
+.tw-prompt:hover{color:var(--teal);border-color:rgba(0,212,200,0.4);}
+.tw-input-row{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;}
+.tw-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--white);padding:9px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:0.83rem;border-radius:2px;outline:none;transition:border-color 0.2s;}
+.tw-input:focus{border-color:var(--teal);}
+.tw-input::placeholder{color:var(--muted);}
+.tw-send{background:var(--teal);color:var(--bg-primary);border:none;padding:9px 16px;font-family:'IBM Plex Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;border-radius:2px;transition:all 0.2s;}
+.tw-send:hover{background:#00ffe9;}
+.tw-send:disabled{opacity:0.4;cursor:not-allowed;}
+.typing-ind{display:flex;gap:4px;padding:2px 0;}
+.td{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:tb 1.2s ease-in-out infinite;}
+.td:nth-child(2){animation-delay:0.2s;}
+.td:nth-child(3){animation-delay:0.4s;}
+@keyframes tb{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* MODULE CARDS */
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0;}
+.module-card{background:var(--bg-card);border:1px solid var(--border);padding:20px;border-radius:2px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:block;}
+.module-card:hover{background:var(--bg-card-hover);border-color:rgba(30,111,255,0.3);}
+.mc-num{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.mc-title{font-family:'Chakra Petch',sans-serif;font-size:0.88rem;font-weight:600;margin-bottom:6px;line-height:1.2;}
+.mc-desc{font-size:0.78rem;color:var(--muted);line-height:1.5;}
+
+/* DOMAIN NAV FOOTER */
+.domain-footer{border-top:1px solid var(--border);padding:40px 0 0;margin-top:40px;display:flex;gap:16px;flex-wrap:wrap;}
+.domain-link{display:flex;align-items:center;gap:10px;padding:16px 20px;background:var(--bg-card);border:1px solid var(--border);text-decoration:none;color:var(--white);border-radius:2px;transition:all 0.2s;flex:1;}
+.domain-link:hover{background:var(--bg-card-hover);}
+.dl-icon{font-size:1.3rem;}
+.dl-label{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+.dl-title{font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:600;margin-top:2px;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.hidden{display:none;}
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-stats-box{display:none;}
+  .page-layout{grid-template-columns:1fr;padding:0 20px 60px;}
+  .sidebar-nav{display:none;}
+  .content-area{border-left:none;padding-left:0;}
+  .info-grid,.module-grid{grid-template-columns:1fr;}
+  .domain-hero{padding:100px 20px 40px;}
+}
+</style>
+</head>
+<body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="index.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#pillars">Domains</a></li>
+    <li><a href="index.html#tutor">AI Tutor</a></li>
+    <li><a href="index.html#standards">Standards</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="pathway.html">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="cases.html">Cases</a></li>
+    <li><a href="studyplan.html">Study Plan</a></li>
+  </ul>
+  <a href="#tutor-widget" class="nav-cta">Ask AI Tutor</a>
+</nav>
+
+<div class="domain-hero">
+  <div class="hero-inner">
+    <div>
+      <div class="domain-badge">🔵 Domain 01 // SaMD & SiMD</div>
+      <h1 class="domain-title">Software as a<br><span>Medical Device</span></h1>
+      <p class="domain-desc">Master the complete regulatory framework for SaMD and SiMD — from initial classification through premarket submissions, clinical evaluation, and post-market obligations under FDA, EU MDR, and IMDRF guidance.</p>
+      <div class="hero-tags">
+        <span class="htag">IMDRF N10/N12/N41</span>
+        <span class="htag">FDA 510(k)</span>
+        <span class="htag">De Novo</span>
+        <span class="htag">PMA</span>
+        <span class="htag">EU MDR Rule 11</span>
+        <span class="htag">IEC 62304</span>
+        <span class="htag">ISO 14971</span>
+        <span class="htag">MDSW</span>
+      </div>
+    </div>
+    <div class="hero-stats-box">
+      <div class="hstat"><div class="hstat-num">4</div><div class="hstat-label">Risk Categories</div></div>
+      <div class="hstat"><div class="hstat-num">3</div><div class="hstat-label">FDA Pathways</div></div>
+      <div class="hstat"><div class="hstat-num">5</div><div class="hstat-label">Jurisdictions</div></div>
+      <div class="hstat"><div class="hstat-num">12+</div><div class="hstat-label">Key Standards</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-layout">
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar-nav">
+    <h4>Contents</h4>
+    <a class="snav-item active" href="#definition">What is SaMD?</a>
+    <a class="snav-item" href="#classification">Risk Classification</a>
+    <a class="snav-item snav-sub" href="#imdrf-framework">IMDRF Framework</a>
+    <a class="snav-item snav-sub" href="#fda-classes">FDA Classes</a>
+    <a class="snav-item snav-sub" href="#eu-rule11">EU MDR Rule 11</a>
+    <div class="snav-divider"></div>
+    <a class="snav-item" href="#lifecycle">Software Lifecycle</a>
+    <a class="snav-item" href="#clinical-eval">Clinical Evaluation</a>
+    <a class="snav-item" href="#pathways">Regulatory Pathways</a>
+    <div class="snav-divider"></div>
+    <a class="snav-item" href="#standards-list">Standards & Guidance</a>
+    <a class="snav-item" href="#modules">Learning Modules</a>
+    <a class="snav-item" href="#tutor-widget">AI Tutor</a>
+  </nav>
+
+  <div class="content-area">
+
+    <!-- DEFINITION -->
+    <div class="content-section" id="definition">
+      <div class="sec-label">// 01 — Foundation</div>
+      <h2 class="sec-title">What is SaMD?</h2>
+      <p class="sec-body"><strong>Software as a Medical Device (SaMD)</strong> is defined by IMDRF N10:2013 as <em>"software intended to be used for one or more medical purposes that perform these purposes without being part of a hardware medical device."</em> This definition is the globally adopted baseline used by FDA, EU, Health Canada, TGA, and MHRA.</p>
+      <p class="sec-body">SaMD is distinct from <strong>Software IN a Medical Device (SiMD)</strong> — software that is embedded in or controls a hardware medical device. Understanding this distinction is critical because it determines which regulatory framework applies to your product.</p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>SaMD Examples</h4>
+          <p>Mobile apps that analyze ECG data for arrhythmia detection. Cloud-based imaging algorithms that detect diabetic retinopathy. Clinical decision support software flagging sepsis risk. Software predicting patient deterioration from vital signs.</p>
+        </div>
+        <div class="info-card">
+          <h4>SiMD Examples</h4>
+          <p>Firmware embedded in an infusion pump controlling drug delivery. Software driving the imaging acquisition in an MRI scanner. Pacemaker algorithm software controlling cardiac stimulation. Ventilator control software managing respiratory therapy.</p>
+        </div>
+        <div class="info-card">
+          <h4>Non-Device Software</h4>
+          <p>Administrative hospital management software. General wellness apps (step counters, meditation). Software merely storing/transmitting clinical data without interpreting it. CDS meeting all four FDA non-device criteria under 21st Century Cures Act.</p>
+        </div>
+        <div class="info-card">
+          <h4>The MDSW Qualification Test (EU)</h4>
+          <p>EU MDR adds a qualification step per MDCG 2021-24: Does the software have a medical purpose AND does it create or modify medical information (vs. merely store/display/transmit it)? Both must be true to qualify as MDSW subject to CE marking.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <h4>Key Regulatory Principle</h4>
+        <p>The <strong>intended use</strong> of the software — not its technical architecture — determines whether it is a medical device. Software with identical technology may or may not be regulated depending entirely on the manufacturer's intended medical purpose claims in labeling and marketing.</p>
+      </div>
+    </div>
+
+    <!-- CLASSIFICATION -->
+    <div class="content-section" id="classification">
+      <div class="sec-label">// 02 — Risk Classification</div>
+      <h2 class="sec-title">Risk Classification Frameworks</h2>
+      <p class="sec-body">Risk classification drives every subsequent regulatory decision — submission pathway, required evidence, Notified Body involvement, and post-market obligations. Three major frameworks apply globally.</p>
+
+      <div id="imdrf-framework">
+        <h3 style="font-family:'Chakra Petch',sans-serif;font-size:1.15rem;margin:28px 0 12px;">IMDRF N12 Risk Categories</h3>
+        <p class="sec-body">The IMDRF N12:2014 framework uses two dimensions: <strong>(1) significance of information</strong> provided by SaMD to the healthcare decision, and <strong>(2) state of the healthcare situation</strong>. The intersection determines the risk category (I through IV).</p>
+        <table class="fw-table">
+          <thead><tr><th>Category</th><th>Information Significance</th><th>Healthcare Situation</th><th>Example</th><th>Risk</th></tr></thead>
+          <tbody>
+            <tr><td><span class="cat-badge cat-i">I</span></td><td>Inform clinical management</td><td>Non-serious</td><td>Chronic disease management coaching app</td><td>Lowest</td></tr>
+            <tr><td><span class="cat-badge cat-ii">II</span></td><td>Inform clinical management</td><td>Serious / Critical</td><td>Patient monitoring alerts in ICU (informational)</td><td>Low-Moderate</td></tr>
+            <tr><td><span class="cat-badge cat-ii">II</span></td><td>Drive clinical management</td><td>Non-serious</td><td>Software recommending specific therapy for chronic conditions</td><td>Low-Moderate</td></tr>
+            <tr><td><span class="cat-badge cat-iii">III</span></td><td>Drive clinical management</td><td>Serious</td><td>Software recommending specific drug dosing for serious disease</td><td>Moderate-High</td></tr>
+            <tr><td><span class="cat-badge cat-iv">IV</span></td><td>Treat / Diagnose</td><td>Critical</td><td>Software diagnosing conditions where no alternative exists; software controlling life support</td><td>Highest</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="fda-classes">
+        <h3 style="font-family:'Chakra Petch',sans-serif;font-size:1.15rem;margin:28px 0 12px;">FDA Classification System</h3>
+        <p class="sec-body">FDA classifies devices into three classes. For SaMD, classification is determined by the device type's product code in the FDA classification database. The risk-based class determines the required premarket pathway.</p>
+        <div class="info-grid">
+          <div class="info-card"><h4>Class I — General Controls</h4><p>Lowest risk. Most Class I devices exempt from premarket notification. Requires facility registration, device listing, and QSR compliance. Examples: some fitness/wellness tracking software with minor medical claims.</p></div>
+          <div class="info-card"><h4>Class II — Special Controls</h4><p>Moderate risk. Requires 510(k) premarket notification (or De Novo for novel devices). Special controls (performance standards, post-market surveillance) supplement general controls. Most SaMD falls here.</p></div>
+          <div class="info-card"><h4>Class III — PMA Required</h4><p>Highest risk. Life-sustaining or life-supporting software, implanted devices, novel high-risk uses. Requires Premarket Approval with clinical studies demonstrating safety and effectiveness. Most stringent pathway.</p></div>
+          <div class="info-card"><h4>CDS Exemption</h4><p>Under 21st Century Cures Act: CDS meeting all four criteria (not for serious/critical decisions, displays basis, allows independent review, clinician acts as intermediary) is exempt from device regulation entirely.</p></div>
+        </div>
+      </div>
+
+      <div id="eu-rule11">
+        <h3 style="font-family:'Chakra Petch',sans-serif;font-size:1.15rem;margin:28px 0 12px;">EU MDR Rule 11 Classification</h3>
+        <p class="sec-body">EU MDR Rule 11 applies specifically to software. Classification depends on the <strong>intended purpose</strong> of the software and the <strong>potential consequences of incorrect information</strong> on patient health.</p>
+        <table class="fw-table">
+          <thead><tr><th>EU MDR Class</th><th>Rule 11 Criteria</th><th>Conformity Route</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Class I</strong></td><td>Software with no serious injury risk; purely informational with no clinical impact on patient management decisions.</td><td>Self-certification by manufacturer</td></tr>
+            <tr><td><strong>Class IIa</strong></td><td>Software providing information used to make decisions with non-serious health impacts; or influencing management of non-serious conditions.</td><td>Notified Body QMS audit</td></tr>
+            <tr><td><strong>Class IIb</strong></td><td>Software providing information used to make decisions with serious health consequences; diagnostic/therapeutic decisions for serious conditions.</td><td>NB QMS + Technical Doc review</td></tr>
+            <tr><td><strong>Class III</strong></td><td>Software intended to control or influence medical devices used in life-sustaining/life-supporting therapy; decisions causing death or irreversible deterioration of health.</td><td>Full NB conformity assessment</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LIFECYCLE -->
+    <div class="content-section" id="lifecycle">
+      <div class="sec-label">// 03 — Software Lifecycle</div>
+      <h2 class="sec-title">Software Development Lifecycle (IEC 62304)</h2>
+      <p class="sec-body"><strong>IEC 62304</strong> is the core international standard for medical device software lifecycle processes. It defines activities for software development, maintenance, risk management integration, and configuration management. The standard applies to both SaMD and SiMD and is required or strongly expected by FDA, EU MDR, Health Canada, and TGA.</p>
+      <p class="sec-body">IEC 62304 assigns three <strong>Software Safety Classes (A, B, C)</strong> based on the severity of potential harm from software failure. The safety class determines the required rigor of development activities.</p>
+
+      <div class="info-grid">
+        <div class="info-card"><h4>Class A — No Injury</h4><p>Software failure cannot contribute to a hazardous situation. Minimal lifecycle requirements. Basic documentation, maintenance, and change management required.</p></div>
+        <div class="info-card"><h4>Class B — Non-Serious Injury</h4><p>Software failure may contribute to a hazardous situation but only with non-serious injury potential. Moderate lifecycle requirements including unit testing and architecture documentation.</p></div>
+        <div class="info-card"><h4>Class C — Serious Injury / Death</h4><p>Software failure could result in serious injury or death. Full lifecycle requirements: detailed design, unit testing, integration testing, system testing, traceability from requirements through testing.</p></div>
+        <div class="info-card"><h4>SOUP (Software of Unknown Provenance)</h4><p>Third-party software, open-source libraries, and COTS components are treated as SOUP. IEC 62304 requires identification, documented requirements for use, hazard analysis, and testing of all SOUP items.</p></div>
+      </div>
+
+      <div class="step-flow">
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><h4>Software Development Planning</h4><p>Define software development lifecycle model, standards to be used, activities, deliverables, and how IEC 62304 requirements will be satisfied. Risk management integration planning per ISO 14971.</p></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><h4>Software Requirements Analysis</h4><p>Define and document functional, performance, interface, and safety/security requirements. Requirements must be traceable through design, implementation, and testing.</p></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><h4>Software Architectural Design</h4><p>Identify software items, their interfaces, and safety class assignment. Architecture must be documented and reviewed. SOUP items identified and assessed.</p></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><h4>Detailed Design, Implementation & Verification</h4><p>Detailed design of software units. Coding to documented standards. Unit testing and integration testing per safety class requirements. Verification that outputs meet inputs.</p></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><h4>Software System Testing & Release</h4><p>System-level testing against software requirements. Regression testing. Documentation of known anomalies. Release procedures and configuration management. Software maintenance planning.</p></div></div>
+      </div>
+    </div>
+
+    <!-- CLINICAL EVALUATION -->
+    <div class="content-section" id="clinical-eval">
+      <div class="sec-label">// 04 — Clinical Evidence</div>
+      <h2 class="sec-title">Clinical Evaluation (IMDRF N41)</h2>
+      <p class="sec-body">Clinical evaluation for SaMD follows the <strong>IMDRF N41:2017</strong> framework, adopted by FDA, TGA, Health Canada, and MHRA. It defines three building blocks that must each be established with appropriate clinical evidence.</p>
+
+      <div class="step-flow">
+        <div class="step-item"><div class="step-num" style="background:rgba(0,212,200,0.12);border-color:rgba(0,212,200,0.3);color:var(--teal);">BB1</div><div class="step-content"><h4>Valid Clinical Association</h4><p>Establish that the relationship between the SaMD output and the targeted clinical condition is clinically meaningful and scientifically valid. Based on published literature, physiology, or new research. This is the foundation — without it, the SaMD has no clinical rationale.</p></div></div>
+        <div class="step-item"><div class="step-num" style="background:rgba(0,212,200,0.12);border-color:rgba(0,212,200,0.3);color:var(--teal);">BB2</div><div class="step-content"><h4>Analytical Validation</h4><p>Demonstrate that the SaMD correctly and accurately processes input data to generate reliable, precise output data. Includes testing the algorithm/model on representative data. For AI/ML: performance metrics on an independent locked test set (sensitivity, specificity, AUC, PPV, NPV).</p></div></div>
+        <div class="step-item"><div class="step-num" style="background:rgba(0,212,200,0.12);border-color:rgba(0,212,200,0.3);color:var(--teal);">BB3</div><div class="step-content"><h4>Clinical Validation</h4><p>Demonstrate that the SaMD's output leads to accurate diagnoses, informed treatment decisions, or improved health outcomes in the intended clinical context. May require clinical studies, retrospective data analysis, or post-market clinical follow-up depending on risk class.</p></div></div>
+      </div>
+
+      <div class="callout teal">
+        <h4>EU MDR Requirement</h4>
+        <p>EU MDR requires a formal <strong>Clinical Evaluation Report (CER)</strong> per Annex XIV — a structured document covering literature review, clinical data analysis, benefit-risk assessment, and SOTA review. The CER must be continuously updated with post-market clinical data throughout the device's lifecycle.</p>
+      </div>
+    </div>
+
+    <!-- REGULATORY PATHWAYS -->
+    <div class="content-section" id="pathways">
+      <div class="sec-label">// 05 — Regulatory Pathways</div>
+      <h2 class="sec-title">FDA Regulatory Pathways for SaMD</h2>
+
+      <div class="info-grid">
+        <div class="info-card" style="border-top:2px solid var(--blue);">
+          <h4>510(k) Premarket Notification</h4>
+          <p>Demonstrates substantial equivalence to a legally marketed predicate device. Most common SaMD pathway. Requires software documentation, predicate comparison, and performance data. No clinical study typically required unless needed for equivalence.</p>
+        </div>
+        <div class="info-card" style="border-top:2px solid var(--teal);">
+          <h4>De Novo Request</h4>
+          <p>For novel, low-to-moderate risk SaMD with no valid predicate. Creates a new classification with special controls. Future devices can use the De Novo as a 510(k) predicate. Requires safety/effectiveness demonstration and proposed special controls.</p>
+        </div>
+        <div class="info-card" style="border-top:2px solid var(--amber);">
+          <h4>Premarket Approval (PMA)</h4>
+          <p>For Class III, highest-risk SaMD. Requires valid scientific evidence — typically pivotal clinical studies — demonstrating reasonable assurance of safety and effectiveness. Most rigorous pathway with highest evidentiary bar.</p>
+        </div>
+        <div class="info-card" style="border-top:2px solid #00C48C;">
+          <h4>Pre-Submission (Q-Sub)</h4>
+          <p>Not a submission pathway but a critical early-stage tool. Allows manufacturers to get FDA feedback on classification, clinical study design, and submission requirements before investing in studies. Strongly recommended for novel or complex SaMD.</p>
+        </div>
+      </div>
+
+      <div class="callout amber">
+        <h4>AI/ML SaMD: The PCCP Approach</h4>
+        <p>For AI/ML SaMD that will require algorithm updates over time, FDA's <strong>Predetermined Change Control Plan (PCCP)</strong> allows pre-approval of anticipated algorithm modifications. With an approved PCCP, qualifying algorithm updates can be deployed without requiring a new 510(k) submission — enabling iterative AI improvement while maintaining regulatory compliance.</p>
+      </div>
+    </div>
+
+    <!-- STANDARDS -->
+    <div class="content-section" id="standards-list">
+      <div class="sec-label">// 06 — Standards & Guidance</div>
+      <h2 class="sec-title">Key Standards and Guidance Documents</h2>
+      <p class="sec-body">The following standards and guidance documents are directly applicable to SaMD and SiMD development, classification, and regulatory submissions.</p>
+
+      <div class="std-list">
+        <div class="std-item"><div class="std-ref">IMDRF N10:2013</div><div class="std-info"><h4>SaMD: Key Definitions</h4><p>Global foundational SaMD definition and scope — adopted worldwide</p></div><a class="std-link-btn" href="https://www.imdrf.org/documents/software-medical-device-samd-key-definitions" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">IMDRF N12:2014</div><div class="std-info"><h4>SaMD: Risk Categorization Framework</h4><p>Two-axis risk category system (I–IV) based on significance and clinical situation</p></div><a class="std-link-btn" href="https://www.imdrf.org/documents/software-medical-device-possible-framework-risk-categorization-and-corresponding-considerations" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">IMDRF N23:2015</div><div class="std-info"><h4>SaMD: Application of Quality Management System</h4><p>QMS requirements specific to SaMD lifecycle</p></div><a class="std-link-btn" href="https://www.imdrf.org/documents/software-medical-device-samd-application-quality-management-system" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">IMDRF N41:2017</div><div class="std-info"><h4>SaMD: Clinical Evaluation</h4><p>Three building blocks: valid clinical association, analytical validation, clinical validation</p></div><a class="std-link-btn" href="https://www.imdrf.org/documents/software-medical-device-samd-clinical-evaluation" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">FDA 2023</div><div class="std-info"><h4>Content of Premarket Submissions for Device Software Functions</h4><p>FDA's requirements for software documentation in 510(k), De Novo, PMA submissions</p></div><a class="std-link-btn" href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/content-premarket-submissions-device-software-functions" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">FDA CDS 2022</div><div class="std-info"><h4>Clinical Decision Support Software Guidance</h4><p>Defines non-device CDS criteria under 21st Century Cures Act</p></div><a class="std-link-btn" href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">EU MDR 2017/745</div><div class="std-info"><h4>EU Medical Device Regulation — Rule 11 & Annex I</h4><p>MDSW classification rules and General Safety and Performance Requirements</p></div><a class="std-link-btn" href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32017R0745" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">MDCG 2021-24</div><div class="std-info"><h4>Guidance on Classification of Medical Device Software</h4><p>MDSW qualification and Rule 11 classification guidance</p></div><a class="std-link-btn" href="https://health.ec.europa.eu/latest-updates/mdcg-2021-24-guidance-classification-medical-device-software-2021-10-13_en" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">IEC 62304</div><div class="std-info"><h4>Medical Device Software — Software Life Cycle Processes</h4><p>Core software lifecycle standard — Safety Classes A, B, C</p></div><a class="std-link-btn" href="https://www.iso.org/standard/38421.html" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">ISO 14971</div><div class="std-info"><h4>Application of Risk Management to Medical Devices</h4><p>Risk management throughout software lifecycle</p></div><a class="std-link-btn" href="https://www.iso.org/standard/72704.html" target="_blank">→ Open</a></div>
+        <div class="std-item"><div class="std-ref">ISO 13485:2016</div><div class="std-info"><h4>Quality Management Systems for Medical Devices</h4><p>QMS requirements for design, development, and maintenance of medical device software</p></div><a class="std-link-btn" href="https://www.iso.org/standard/59752.html" target="_blank">→ Open</a></div>
+      </div>
+    </div>
+
+    <!-- LEARNING MODULES -->
+    <div class="content-section" id="modules">
+      <div class="sec-label">// 07 — Learning Modules</div>
+      <h2 class="sec-title">Topic-Specific Learning Modules</h2>
+      <p class="sec-body">Explore focused deep-dives into each subtopic. Use the AI Tutor below for interactive explanations.</p>
+      <div class="module-grid">
+        <div class="module-card" onclick="tutorAsk('Explain SaMD classification under IMDRF N12 with examples for each category')"><div class="mc-num">Module 01</div><div class="mc-title">IMDRF N12 Risk Categorization</div><div class="mc-desc">Deep-dive into the two-axis risk matrix and how to correctly position your SaMD.</div></div>
+        <div class="module-card" onclick="tutorAsk('What is the FDA 510(k) process for SaMD? What documentation is required?')"><div class="mc-num">Module 02</div><div class="mc-title">FDA 510(k) for SaMD</div><div class="mc-desc">Step-by-step breakdown of 510(k) requirements, predicate strategy, and software documentation.</div></div>
+        <div class="module-card" onclick="tutorAsk('How does EU MDR Rule 11 classify software? Walk me through each class with examples.')"><div class="mc-num">Module 03</div><div class="mc-title">EU MDR Rule 11</div><div class="mc-desc">Classification rules for software under EU MDR and MDSW qualification per MDCG 2021-24.</div></div>
+        <div class="module-card" onclick="tutorAsk('Explain the three building blocks of SaMD clinical evaluation per IMDRF N41')"><div class="mc-num">Module 04</div><div class="mc-title">Clinical Evaluation (IMDRF N41)</div><div class="mc-desc">Valid clinical association, analytical validation, and clinical validation explained.</div></div>
+        <div class="module-card" onclick="tutorAsk('What does IEC 62304 require for Software Safety Class C SaMD?')"><div class="mc-num">Module 05</div><div class="mc-title">IEC 62304 Software Lifecycle</div><div class="mc-desc">Safety class determination and lifecycle activity requirements under IEC 62304.</div></div>
+        <div class="module-card" onclick="tutorAsk('When should a manufacturer use a De Novo request vs 510(k) vs PMA for SaMD?')"><div class="mc-num">Module 06</div><div class="mc-title">Pathway Selection Strategy</div><div class="mc-desc">Decision framework for choosing between 510(k), De Novo, and PMA pathways.</div></div>
+      </div>
+    </div>
+
+    <!-- AI TUTOR -->
+    <div id="tutor-widget">
+      <div class="sec-label">// 08 — AI Tutor</div>
+      <h2 class="sec-title" style="margin-bottom:20px;">Ask the SaMD Tutor</h2>
+      <div class="tutor-widget">
+        <div class="tw-header"><div class="tw-dot"></div><span class="tw-title">SaMD & SiMD Expert — Powered by Claude</span></div>
+        <div class="tw-messages" id="tw-messages">
+          <div class="msg msg-ai"><div class="msg-av">AI</div><div class="msg-bub">I'm your SaMD & SiMD specialist. I can explain classification frameworks, FDA submission pathways, EU MDR Rule 11, IEC 62304 lifecycle requirements, clinical evaluation, and more. What would you like to explore?</div></div>
+        </div>
+        <div class="tw-prompts">
+          <button class="tw-prompt" onclick="tutorAsk('Is my mobile app diagnosing heart disease a SaMD or SiMD?')">SaMD or SiMD?</button>
+          <button class="tw-prompt" onclick="tutorAsk('What IMDRF N12 category is software that recommends chemotherapy dosing?')">N12 Category</button>
+          <button class="tw-prompt" onclick="tutorAsk('What documents does FDA require in a 510(k) for SaMD software?')">510(k) docs</button>
+          <button class="tw-prompt" onclick="tutorAsk('What is the difference between SaMD Class IIa and IIb under EU MDR Rule 11?')">IIa vs IIb</button>
+          <button class="tw-prompt" onclick="tutorAsk('What is valid clinical association and how do I establish it for my SaMD?')">Valid clinical assoc.</button>
+        </div>
+        <div class="tw-input-row">
+          <input type="text" class="tw-input" id="tw-input" placeholder="Ask about SaMD classification, pathways, clinical evaluation..." onkeydown="if(event.key==='Enter')sendTW()">
+          <button class="tw-send" id="tw-send" onclick="sendTW()">Ask</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOMAIN FOOTER -->
+    <div class="domain-footer">
+      <a href="domain-cyber.html" class="domain-link">
+        <span class="dl-icon">🟡</span>
+        <div><div class="dl-label">Next Domain →</div><div class="dl-title">Medical Device Cybersecurity</div></div>
+      </a>
+      <a href="domain-aiml.html" class="domain-link">
+        <span class="dl-icon">🟢</span>
+        <div><div class="dl-label">Also Explore →</div><div class="dl-title">AI/ML & Datasets</div></div>
+      </a>
+      <a href="quiz.html" class="domain-link">
+        <span class="dl-icon">🎯</span>
+        <div><div class="dl-label">Test Knowledge →</div><div class="dl-title">SaMD Quiz & Flashcards</div></div>
+      </a>
+    </div>
+
+  </div><!-- end content-area -->
+</div><!-- end page-layout -->
+
+<script>
+const SAMD_SYSTEM = `You are a SaMD & SiMD regulatory specialist on the MedReg Academy platform. You are an expert in:
+- IMDRF SaMD framework (N10, N12, N23, N41) — definitions, risk categorization, clinical evaluation
+- FDA SaMD regulation: 510(k), De Novo, PMA pathways; software documentation requirements (2023 guidance); CDS exemptions under 21st Century Cures Act; PCCP for AI/ML
+- EU MDR Rule 11 MDSW classification; MDCG 2021-24 qualification guidance; CE marking pathways by class
+- IEC 62304 software lifecycle and safety classes (A, B, C); SOUP management
+- ISO 14971 risk management applied to software
+- SiMD vs SaMD distinctions and regulatory implications
+
+Always cite the specific guidance document or standard when making a regulatory claim. Be precise and technically accurate. Responses should be 150-300 words with clear structure.`;
+
+const messages = [];
+function tutorAsk(q) {
+  document.getElementById('tw-input').value = q;
+  sendTW();
+  document.getElementById('tutor-widget').scrollIntoView({behavior:'smooth'});
+}
+function appendMsg(role, text) {
+  const el = document.getElementById('tw-messages');
+  const div = document.createElement('div');
+  div.className = `msg msg-${role==='user'?'user':'ai'}`;
+  div.innerHTML = `<div class="msg-av">${role==='user'?'YOU':'AI'}</div><div class="msg-bub">${text.replace(/\n/g,'<br>')}</div>`;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+function showTyping() {
+  const el = document.getElementById('tw-messages');
+  const div = document.createElement('div');
+  div.className='msg msg-ai'; div.id='typing-tw';
+  div.innerHTML=`<div class="msg-av">AI</div><div class="msg-bub"><div class="typing-ind"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
+  el.appendChild(div); el.scrollTop=el.scrollHeight;
+}
+function removeTyping(){const el=document.getElementById('typing-tw');if(el)el.remove();}
+async function sendTW() {
+  const input = document.getElementById('tw-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  document.getElementById('tw-send').disabled = true;
+  appendMsg('user', text);
+  messages.push({role:'user',content:text});
+  showTyping();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SAMD_SYSTEM,messages})});
+    const data = await res.json();
+    removeTyping();
+    const reply = data.content?.[0]?.text || 'Sorry, I could not generate a response.';
+    messages.push({role:'assistant',content:reply});
+    appendMsg('ai', reply);
+  } catch(e) { removeTyping(); appendMsg('ai','Connection error. Please try again.'); }
+  document.getElementById('tw-send').disabled = false;
+}
+
+// Sidebar active tracking
+const sections = document.querySelectorAll('.content-section');
+const navItems = document.querySelectorAll('.snav-item');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navItems.forEach(n => { n.classList.toggle('active', n.getAttribute('href') === '#' + current); });
+});
+</script>
+</body>
+</html>

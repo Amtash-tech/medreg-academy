@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulatory News — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-primary:#0A0F1E;--bg-secondary:#0f1628;--bg-card:#141B2D;--bg-card-hover:#1a2340;--blue:#1E6FFF;--teal:#00D4C8;--amber:#F5A623;--green:#00C48C;--red:#FF4D6A;--white:#F0F4FF;--muted:#8A9BB8;--border:rgba(30,111,255,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--white);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;}
+.pulse-line{position:fixed;top:0;left:0;width:100%;height:2px;z-index:1000;overflow:hidden;}
+.pulse-line::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--teal),var(--blue),transparent);animation:ps 3s ease-in-out infinite;}
+@keyframes ps{0%{left:-100%}100%{left:100%}}
+nav{position:fixed;top:2px;left:0;width:100%;z-index:999;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,15,30,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--teal);}
+.nav-links{display:flex;gap:24px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--white);}
+.nav-cta{background:transparent;border:1px solid var(--teal);color:var(--teal);padding:8px 20px;font-family:'IBM Plex Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all 0.2s;text-decoration:none;}
+.nav-cta:hover{background:var(--teal);color:var(--bg-primary);}
+
+/* PAGE HEADER */
+.page-header{padding:100px 40px 48px;max-width:1200px;margin:0 auto;}
+.page-label{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--teal);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;}
+.page-title{font-family:'Chakra Petch',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin-bottom:12px;}
+.page-desc{color:var(--muted);font-size:1rem;line-height:1.7;max-width:600px;}
+
+/* LAYOUT */
+.main-layout{max-width:1200px;margin:0 auto;padding:0 40px 80px;display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start;}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
+.filter-btn{padding:7px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border-radius:1px;transition:all 0.2s;}
+.filter-btn:hover{color:var(--white);border-color:rgba(255,255,255,0.3);}
+.filter-btn.active{color:var(--white);border-color:var(--blue);background:rgba(30,111,255,0.1);}
+.filter-btn.fda.active{border-color:var(--blue);color:var(--blue);background:rgba(30,111,255,0.08);}
+.filter-btn.eu.active{border-color:#FFD700;color:#FFD700;background:rgba(255,215,0,0.06);}
+.filter-btn.imdrf.active{border-color:var(--teal);color:var(--teal);background:rgba(0,212,200,0.06);}
+.filter-btn.iso.active{border-color:var(--amber);color:var(--amber);background:rgba(245,166,35,0.06);}
+
+/* NEWS ITEMS */
+.news-list{display:flex;flex-direction:column;gap:3px;}
+.news-item{background:var(--bg-card);border:1px solid var(--border);padding:28px;transition:background 0.2s;cursor:pointer;position:relative;}
+.news-item:hover{background:var(--bg-card-hover);}
+.news-item.featured{border-left:3px solid var(--teal);}
+.news-item.breaking{border-left:3px solid var(--red);}
+.news-item.hidden{display:none;}
+
+.ni-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.ni-source{font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:2px 8px;border-radius:1px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;}
+.src-fda{background:rgba(30,111,255,0.12);color:var(--blue);border:1px solid rgba(30,111,255,0.25);}
+.src-eu{background:rgba(255,215,0,0.1);color:#FFD700;border:1px solid rgba(255,215,0,0.25);}
+.src-imdrf{background:rgba(0,212,200,0.1);color:var(--teal);border:1px solid rgba(0,212,200,0.2);}
+.src-iso{background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.2);}
+.src-multi{background:rgba(138,155,184,0.1);color:var(--muted);border:1px solid rgba(138,155,184,0.2);}
+
+.ni-domain-tag{font-family:'JetBrains Mono',monospace;font-size:0.6rem;padding:2px 7px;border-radius:1px;text-transform:uppercase;letter-spacing:0.05em;}
+.d-samd{background:rgba(30,111,255,0.08);color:rgba(30,111,255,0.8);border:1px solid rgba(30,111,255,0.15);}
+.d-cyber{background:rgba(245,166,35,0.08);color:rgba(245,166,35,0.8);border:1px solid rgba(245,166,35,0.15);}
+.d-aiml{background:rgba(0,212,200,0.08);color:rgba(0,212,200,0.8);border:1px solid rgba(0,212,200,0.15);}
+
+.ni-badge{font-family:'JetBrains Mono',monospace;font-size:0.6rem;padding:2px 7px;border-radius:1px;text-transform:uppercase;}
+.badge-new{background:rgba(0,196,140,0.15);color:var(--green);border:1px solid rgba(0,196,140,0.3);}
+.badge-final{background:rgba(30,111,255,0.15);color:var(--blue);border:1px solid rgba(30,111,255,0.3);}
+.badge-draft{background:rgba(245,166,35,0.12);color:var(--amber);border:1px solid rgba(245,166,35,0.25);}
+.badge-alert{background:rgba(255,77,106,0.12);color:var(--red);border:1px solid rgba(255,77,106,0.25);}
+
+.ni-date{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-left:auto;}
+.ni-title{font-family:'Chakra Petch',sans-serif;font-size:1.05rem;font-weight:600;line-height:1.3;margin-bottom:10px;}
+.ni-summary{color:var(--muted);font-size:0.87rem;line-height:1.7;margin-bottom:14px;}
+.ni-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.ni-impact{font-size:0.78rem;color:rgba(240,244,255,0.6);}
+.ni-impact strong{color:var(--white);}
+.ni-link{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--teal);text-decoration:none;border:1px solid rgba(0,212,200,0.2);padding:4px 10px;border-radius:1px;transition:all 0.2s;}
+.ni-link:hover{background:rgba(0,212,200,0.08);border-color:rgba(0,212,200,0.4);}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:20px;position:sticky;top:84px;}
+.s-card{background:var(--bg-card);border:1px solid var(--border);border-radius:2px;padding:24px;}
+.s-card h3{font-family:'Chakra Petch',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:16px;}
+
+/* CALENDAR */
+.cal-item{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start;}
+.cal-date{background:rgba(30,111,255,0.1);border:1px solid rgba(30,111,255,0.2);padding:6px 10px;text-align:center;min-width:48px;border-radius:1px;}
+.cal-month{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--blue);text-transform:uppercase;letter-spacing:0.08em;}
+.cal-day{font-family:'Chakra Petch',sans-serif;font-size:1.1rem;font-weight:700;color:var(--blue);line-height:1;}
+.cal-info{}
+.cal-title{font-size:0.82rem;font-weight:500;margin-bottom:3px;line-height:1.3;}
+.cal-sub{font-size:0.73rem;color:var(--muted);}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-box{background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:14px;text-align:center;border-radius:1px;}
+.stat-num{font-family:'Chakra Petch',sans-serif;font-size:1.4rem;font-weight:700;color:var(--teal);line-height:1;}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:3px;}
+
+/* SEARCH */
+.search-wrap{margin-bottom:24px;}
+.news-search{width:100%;background:var(--bg-card);border:1px solid var(--border);color:var(--white);padding:12px 18px;font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;transition:border-color 0.2s;}
+.news-search:focus{border-color:var(--teal);}
+.news-search::placeholder{color:var(--muted);}
+.results-count{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin-top:8px;}
+
+@media(max-width:960px){nav{padding:0 20px;}.nav-links{display:none;}.page-header,.main-layout{padding-left:20px;padding-right:20px;}.main-layout{grid-template-columns:1fr;}.sidebar{position:static;}}
+</style>
+</head>
+<body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="index.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#pillars">Domains</a></li>
+    <li><a href="index.html#tutor">AI Tutor</a></li>
+    <li><a href="index.html#standards">Standards</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="pathway.html">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+    <li><a href="news.html" class="active">News</a></li>
+  </ul>
+  <a href="index.html#tutor" class="nav-cta">AI Tutor</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-label">// regulatory intelligence feed</div>
+  <h1 class="page-title">Regulatory News & Updates</h1>
+  <p class="page-desc">Curated updates from FDA, MDCG, IMDRF, and international standards bodies — covering SaMD, cybersecurity, and AI/ML regulatory developments.</p>
+</div>
+
+<div class="main-layout">
+  <div>
+    <div class="search-wrap">
+      <input type="text" class="news-search" id="news-search" placeholder="Search updates, guidance documents, topics..." oninput="filterNews()">
+      <div class="results-count" id="results-count"></div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterBySource('all',this)">All Sources</button>
+      <button class="filter-btn fda" onclick="filterBySource('fda',this)">🇺🇸 FDA</button>
+      <button class="filter-btn eu" onclick="filterBySource('eu',this)">🇪🇺 EU / MDCG</button>
+      <button class="filter-btn imdrf" onclick="filterBySource('imdrf',this)">🌐 IMDRF</button>
+      <button class="filter-btn iso" onclick="filterBySource('iso',this)">📋 ISO / IEC</button>
+    </div>
+
+    <div class="news-list" id="news-list">
+
+      <!-- ITEM 1 -->
+      <div class="news-item featured" data-source="eu" data-domain="aiml" data-text="mdcg 2025-6 ai act mdr ivdr dual compliance medical device artificial intelligence">
+        <div class="ni-top">
+          <span class="ni-source src-eu">EU / MDCG</span>
+          <span class="ni-domain-tag d-aiml">AI/ML</span>
+          <span class="ni-badge badge-new">New</span>
+          <span class="ni-date">April 2025</span>
+        </div>
+        <div class="ni-title">MDCG 2025-6 Published: Guidance on Medical Device AI Under MDR/IVDR and EU AI Act</div>
+        <div class="ni-summary">The Medical Device Coordination Group released MDCG 2025-6, providing the most comprehensive guidance to date on how AI-enabled medical devices must comply with both EU MDR/IVDR and the EU AI Act simultaneously. The guidance addresses dual compliance architecture, data governance obligations, bias examination, transparency requirements, human oversight design, and cybersecurity testing for AI systems. Manufacturers with AI/ML medical devices targeting EU markets must review this document immediately.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> High — Affects all AI/ML medical device CE marking strategies from 2025 forward</div>
+          <a class="ni-link" href="https://health.ec.europa.eu/latest-updates/mdcg-2025-6-guidance-medical-device-ai-2025-04-02_en" target="_blank">→ Full Guidance</a>
+        </div>
+      </div>
+
+      <!-- ITEM 2 -->
+      <div class="news-item" data-source="fda" data-domain="cyber" data-text="fda cybersecurity premarket submissions sbom software bill of materials 2023 final guidance">
+        <div class="ni-top">
+          <span class="ni-source src-fda">FDA</span>
+          <span class="ni-domain-tag d-cyber">Cybersecurity</span>
+          <span class="ni-badge badge-final">Final Guidance</span>
+          <span class="ni-date">Sept 2023</span>
+        </div>
+        <div class="ni-title">FDA Finalizes Cybersecurity Premarket Guidance — SBOM Now Required</div>
+        <div class="ni-summary">FDA issued its final guidance on cybersecurity in medical devices, replacing the 2014 draft. The guidance formally requires a machine-readable Software Bill of Materials (SBOM), threat model, cybersecurity architecture documentation, security testing evidence, and a coordinated vulnerability disclosure policy in all premarket submissions for cyber devices. This guidance implements the statutory requirements under Section 524B of the FD&C Act, giving FDA authority to refuse-to-file submissions lacking cybersecurity documentation.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> Critical — All 510(k), PMA, and De Novo submissions for cyber devices must include SBOM and full cybersecurity package</div>
+          <a class="ni-link" href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/cybersecurity-medical-devices-quality-system-considerations-and-content-premarket-submissions" target="_blank">→ Full Guidance</a>
+        </div>
+      </div>
+
+      <!-- ITEM 3 -->
+      <div class="news-item" data-source="fda" data-domain="aiml" data-text="fda pccp predetermined change control plan ai ml artificial intelligence machine learning draft guidance 2023">
+        <div class="ni-top">
+          <span class="ni-source src-fda">FDA</span>
+          <span class="ni-domain-tag d-aiml">AI/ML</span>
+          <span class="ni-badge badge-draft">Draft Guidance</span>
+          <span class="ni-date">April 2023</span>
+        </div>
+        <div class="ni-title">FDA Issues Draft Guidance on PCCP for AI/ML-Enabled Devices</div>
+        <div class="ni-summary">FDA published draft guidance on Predetermined Change Control Plans (PCCPs) for AI/ML-enabled medical devices, providing detailed recommendations on the structure and content required. The guidance describes the three PCCP components: description of anticipated modifications, modification protocol specifying validation methodology, and impact assessment. PCCPs enable manufacturers to make pre-approved AI algorithm updates without submitting new 510(k) applications for each change — a critical pathway for iterative AI improvement.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> High — Defines the regulatory pathway for all AI/ML medical devices requiring algorithm updates post-clearance</div>
+          <a class="ni-link" href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial" target="_blank">→ Draft Guidance</a>
+        </div>
+      </div>
+
+      <!-- ITEM 4 -->
+      <div class="news-item featured" data-source="eu" data-domain="aiml" data-text="eu ai act artificial intelligence regulation annex III high risk medical devices 2024 in force">
+        <div class="ni-top">
+          <span class="ni-source src-eu">EU</span>
+          <span class="ni-domain-tag d-aiml">AI/ML</span>
+          <span class="ni-badge badge-final">In Force</span>
+          <span class="ni-date">August 2024</span>
+        </div>
+        <div class="ni-title">EU AI Act Enters Into Force — Medical Device AI Classified as High-Risk</div>
+        <div class="ni-summary">The EU Artificial Intelligence Act entered into force on August 1, 2024, with phased application periods. Medical device AI systems listed in Annex III are classified as high-risk, triggering mandatory compliance with Articles 9–15 and 72 — covering risk management, data governance, transparency, human oversight, accuracy/robustness, and post-market monitoring. The Act applies cumulatively with EU MDR/IVDR obligations, creating a dual-compliance requirement comprehensively addressed in MDCG 2025-6.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> Critical — All AI-enabled medical devices for EU market require dual MDR + AI Act compliance strategy</div>
+          <a class="ni-link" href="https://digital-strategy.ec.europa.eu/en/policies/european-approach-artificial-intelligence" target="_blank">→ EU AI Act</a>
+        </div>
+      </div>
+
+      <!-- ITEM 5 -->
+      <div class="news-item" data-source="fda" data-domain="samd" data-text="fda qmsr quality management system regulation 21 cfr 820 iso 13485 harmonization 2024">
+        <div class="ni-top">
+          <span class="ni-source src-fda">FDA</span>
+          <span class="ni-domain-tag d-samd">SaMD</span>
+          <span class="ni-badge badge-final">Final Rule</span>
+          <span class="ni-date">Feb 2024</span>
+        </div>
+        <div class="ni-title">FDA QMSR Final Rule: 21 CFR Part 820 Harmonized with ISO 13485</div>
+        <div class="ni-summary">FDA published the final Quality Management System Regulation (QMSR), amending 21 CFR Part 820 to align with ISO 13485:2016. Effective February 2026, the QMSR replaces the legacy Quality System Regulation. Manufacturers currently certified to ISO 13485:2016 by an accredited certification body will substantially meet QMSR requirements. SaMD manufacturers should assess their QMS against the new regulation and update procedures for design controls, risk management integration, and software lifecycle documentation.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> Moderate — SaMD manufacturers must update QMS documentation to align with QMSR by February 2026</div>
+          <a class="ni-link" href="https://www.fda.gov/medical-devices/quality-and-compliance-medical-devices/quality-management-system-regulation-qmsr" target="_blank">→ QMSR Info</a>
+        </div>
+      </div>
+
+      <!-- ITEM 6 -->
+      <div class="news-item" data-source="eu" data-domain="cyber" data-text="nis2 directive network information security healthcare essential entities 2024 implementation">
+        <div class="ni-top">
+          <span class="ni-source src-eu">EU</span>
+          <span class="ni-domain-tag d-cyber">Cybersecurity</span>
+          <span class="ni-badge badge-final">In Effect</span>
+          <span class="ni-date">Oct 2024</span>
+        </div>
+        <div class="ni-title">NIS2 Directive Implementation Deadline Passed — Healthcare Now "Essential"</div>
+        <div class="ni-summary">The EU NIS2 Directive (2022/2555) implementation deadline of October 17, 2024 has passed. Healthcare organizations are classified as "essential entities" and must now comply with mandatory cybersecurity risk management measures and incident reporting. Significant cyber incidents must be reported to national competent authorities within 24 hours (early warning) and 72 hours (full report). Medical device manufacturers operating in the EU healthcare supply chain should assess their NIS2 exposure and align cybersecurity governance accordingly.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> High — EU healthcare organizations and their supply chains face new mandatory cybersecurity and incident reporting obligations</div>
+          <a class="ni-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32022L2555" target="_blank">→ NIS2 Text</a>
+        </div>
+      </div>
+
+      <!-- ITEM 7 -->
+      <div class="news-item" data-source="imdrf" data-domain="samd" data-text="imdrf samd clinical evaluation n41 N12 framework update guidance">
+        <div class="ni-top">
+          <span class="ni-source src-imdrf">IMDRF</span>
+          <span class="ni-domain-tag d-samd">SaMD</span>
+          <span class="ni-badge badge-final">Guidance</span>
+          <span class="ni-date">2023</span>
+        </div>
+        <div class="ni-title">IMDRF Reaffirms SaMD Clinical Evaluation Framework — N41 Remains Foundational</div>
+        <div class="ni-summary">IMDRF confirmed that the N41:2017 SaMD Clinical Evaluation framework remains the primary international reference for SaMD clinical evidence requirements. FDA, Health Canada, TGA, and MHRA all reference N41 in their national guidance and submission expectations. The three building blocks — valid clinical association, analytical validation, and clinical validation — continue to define the minimum evidentiary standard for SaMD submissions globally. IMDRF is monitoring AI/ML-specific clinical evaluation needs that may require updates to N41.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> Informational — N41 framework confirmed as global standard; AI/ML update may follow</div>
+          <a class="ni-link" href="https://www.imdrf.org/documents/software-medical-device-samd-clinical-evaluation" target="_blank">→ IMDRF N41</a>
+        </div>
+      </div>
+
+      <!-- ITEM 8 -->
+      <div class="news-item" data-source="fda" data-domain="aiml" data-text="fda gmlp good machine learning practice health canada mhra joint principles 2021">
+        <div class="ni-top">
+          <span class="ni-source src-multi">FDA / HC / MHRA</span>
+          <span class="ni-domain-tag d-aiml">AI/ML</span>
+          <span class="ni-badge badge-final">Joint Statement</span>
+          <span class="ni-date">2021 / Ongoing</span>
+        </div>
+        <div class="ni-title">GMLP Principles: FDA, Health Canada, and MHRA International Harmonization</div>
+        <div class="ni-summary">The joint statement on Good Machine Learning Practice (GMLP) for medical device development, issued by FDA, Health Canada, and MHRA, represents the most significant international harmonization effort in AI medical device regulation. The 10 GMLP principles cover multi-disciplinary expertise, data management, training-test independence, representativeness, transparency, human-AI teaming, and post-market monitoring. Manufacturers targeting any of these three jurisdictions should treat GMLP compliance as a baseline requirement.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> High — GMLP defines the minimum expected standard for AI/ML SaMD across three major jurisdictions</div>
+          <a class="ni-link" href="https://www.fda.gov/medical-devices/software-medical-device-samd/good-machine-learning-practice-medical-device-development-guiding-principles" target="_blank">→ GMLP Principles</a>
+        </div>
+      </div>
+
+      <!-- ITEM 9 -->
+      <div class="news-item" data-source="iso" data-domain="cyber" data-text="iec 81001-5-1 health software cybersecurity engineering security standard 2021">
+        <div class="ni-top">
+          <span class="ni-source src-iso">IEC</span>
+          <span class="ni-domain-tag d-cyber">Cybersecurity</span>
+          <span class="ni-badge badge-final">Published</span>
+          <span class="ni-date">2021</span>
+        </div>
+        <div class="ni-title">IEC 81001-5-1 Published: Security Standard for Health Software</div>
+        <div class="ni-summary">IEC 81001-5-1:2021 established the first dedicated cybersecurity engineering standard for health software and health IT systems. The standard defines security activities throughout the software lifecycle, complementing IEC 62304 for development process. It is referenced by FDA, MDCG, Health Canada, and TGA as the appropriate technical standard for demonstrating security engineering rigor. Manufacturers should integrate IEC 81001-5-1 into their QMS alongside IEC 62304 as the combined standard for SaMD development.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> High — Defines the cybersecurity engineering lifecycle for all health software globally</div>
+          <a class="ni-link" href="https://www.iso.org/standard/72704.html" target="_blank">→ IEC 81001-5-1</a>
+        </div>
+      </div>
+
+      <!-- ITEM 10 -->
+      <div class="news-item" data-source="eu" data-domain="samd" data-text="mdcg 2021-24 mdsw qualification classification medical device software rule 11 guidance eu mdr">
+        <div class="ni-top">
+          <span class="ni-source src-eu">EU / MDCG</span>
+          <span class="ni-domain-tag d-samd">SaMD</span>
+          <span class="ni-badge badge-final">Guidance</span>
+          <span class="ni-date">Oct 2021</span>
+        </div>
+        <div class="ni-title">MDCG 2021-24: Definitive Guidance on MDSW Qualification and Classification Under MDR</div>
+        <div class="ni-summary">MDCG published its comprehensive guidance on the qualification and classification of Medical Device Software (MDSW) under EU MDR and IVDR. The guidance establishes the two-step qualification process: first determining whether software qualifies as MDSW (medical purpose + creates/modifies information), then classifying under MDR Rule 11 or IVDR rules. The guidance includes a decision tree, examples, and clarification on edge cases including AI-powered software. This remains the primary EU reference document for software classification.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> Critical — Primary EU reference for all software classification decisions under MDR and IVDR</div>
+          <a class="ni-link" href="https://health.ec.europa.eu/latest-updates/mdcg-2021-24-guidance-classification-medical-device-software-2021-10-13_en" target="_blank">→ MDCG 2021-24</a>
+        </div>
+      </div>
+
+      <!-- ITEM 11 -->
+      <div class="news-item" data-source="fda" data-domain="samd" data-text="fda content premarket submissions device software functions 2023 guidance documentation">
+        <div class="ni-top">
+          <span class="ni-source src-fda">FDA</span>
+          <span class="ni-domain-tag d-samd">SaMD</span>
+          <span class="ni-badge badge-final">Final Guidance</span>
+          <span class="ni-date">June 2023</span>
+        </div>
+        <div class="ni-title">FDA Updates Content of Premarket Submissions for Device Software Functions</div>
+        <div class="ni-summary">FDA released updated final guidance on the content required in premarket submissions for device software functions, superseding the 2005 guidance. The new guidance reflects modern software development practices, AI/ML considerations, and cybersecurity integration. It defines documentation tiers based on software device risk — Level of Concern (LOC) replaced with a risk-based framework. Documentation requirements now explicitly address AI/ML, SOUP management, and cybersecurity within the software submission package.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> High — All FDA software submissions must now follow updated documentation framework</div>
+          <a class="ni-link" href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/content-premarket-submissions-device-software-functions" target="_blank">→ FDA Guidance</a>
+        </div>
+      </div>
+
+      <!-- ITEM 12 -->
+      <div class="news-item" data-source="iso" data-domain="aiml" data-text="iso iec 23894 risk management ai artificial intelligence 2023 standard published">
+        <div class="ni-top">
+          <span class="ni-source src-iso">ISO / IEC</span>
+          <span class="ni-domain-tag d-aiml">AI/ML</span>
+          <span class="ni-badge badge-final">Published</span>
+          <span class="ni-date">Feb 2023</span>
+        </div>
+        <div class="ni-title">ISO/IEC 23894:2023 Published — Risk Management Guidance for AI Systems</div>
+        <div class="ni-summary">ISO/IEC 23894:2023 provides guidance on how organizations can manage risks specific to AI systems, complementing ISO 14971 for medical devices. The standard addresses AI-specific risk concepts including emergent behavior, performance degradation, bias, explainability challenges, and risks from data quality issues. For medical device manufacturers, ISO/IEC 23894 provides the AI risk management framework to integrate with their existing ISO 14971 risk management processes, as referenced in MDCG 2025-6.</div>
+        <div class="ni-footer">
+          <div class="ni-impact"><strong>Impact:</strong> Moderate — Recommended integration with ISO 14971 for all AI/ML medical device risk management programs</div>
+          <a class="ni-link" href="https://www.iso.org/standard/77304.html" target="_blank">→ ISO/IEC 23894</a>
+        </div>
+      </div>
+
+    </div><!-- end news-list -->
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="s-card">
+      <h3>📊 Feed Overview</h3>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num">12</div><div class="stat-label">Total Updates</div></div>
+        <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">FDA Items</div></div>
+        <div class="stat-box"><div class="stat-num">4</div><div class="stat-label">EU / MDCG</div></div>
+        <div class="stat-box"><div class="stat-num">3</div><div class="stat-label">ISO / IMDRF</div></div>
+      </div>
+    </div>
+
+    <div class="s-card">
+      <h3>📅 Key Upcoming Dates</h3>
+      <div class="cal-item">
+        <div class="cal-date"><div class="cal-month">Feb</div><div class="cal-day">26</div></div>
+        <div class="cal-info"><div class="cal-title">FDA QMSR Effective Date</div><div class="cal-sub">21 CFR Part 820 harmonized with ISO 13485</div></div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date"><div class="cal-month">Aug</div><div class="cal-day">25</div></div>
+        <div class="cal-info"><div class="cal-title">EU AI Act — GPAI Rules Apply</div><div class="cal-sub">General Purpose AI model obligations begin</div></div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date"><div class="cal-month">Aug</div><div class="cal-day">26</div></div>
+        <div class="cal-info"><div class="cal-title">EU AI Act — High-Risk Rules Apply</div><div class="cal-sub">Full Annex III compliance required including MDAI</div></div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date"><div class="cal-month">May</div><div class="cal-day">26</div></div>
+        <div class="cal-info"><div class="cal-title">EU MDR Eudamed UDI Module</div><div class="cal-sub">Full UDI database functionality deadline</div></div>
+      </div>
+    </div>
+
+    <div class="s-card">
+      <h3>🔗 Quick Links</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="https://www.fda.gov/medical-devices/digital-health-center-excellence/digital-health-guidances" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--teal);text-decoration:none;padding:8px 12px;background:rgba(0,212,200,0.06);border:1px solid rgba(0,212,200,0.15);border-radius:1px;transition:all 0.2s;display:block;">→ FDA Digital Health Guidances</a>
+        <a href="https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#FFD700;text-decoration:none;padding:8px 12px;background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.15);border-radius:1px;transition:all 0.2s;display:block;">→ MDCG Guidance Documents</a>
+        <a href="https://www.imdrf.org/documents" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--teal);text-decoration:none;padding:8px 12px;background:rgba(0,212,200,0.04);border:1px solid rgba(0,212,200,0.12);border-radius:1px;transition:all 0.2s;display:block;">→ IMDRF Documents</a>
+        <a href="https://www.iso.org/committee/54960.html" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--amber);text-decoration:none;padding:8px 12px;background:rgba(245,166,35,0.04);border:1px solid rgba(245,166,35,0.12);border-radius:1px;transition:all 0.2s;display:block;">→ ISO TC 210 (Medical Devices)</a>
+      </div>
+    </div>
+
+    <div class="s-card">
+      <h3>🤖 Ask the AI Tutor</h3>
+      <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:16px;">Have questions about any of these regulatory updates? Ask the AI Tutor for a deeper explanation.</p>
+      <a href="index.html#tutor" style="display:block;text-align:center;background:var(--teal);color:var(--bg-primary);padding:12px;font-family:'IBM Plex Sans',sans-serif;font-size:0.85rem;font-weight:700;text-decoration:none;border-radius:2px;transition:all 0.2s;">Launch AI Tutor →</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let currentSource = 'all';
+
+function filterBySource(source, btn) {
+  currentSource = source;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active','fda','eu','imdrf','iso'));
+  btn.classList.add('active');
+  if (source !== 'all') btn.classList.add(source);
+  applyFilters();
+}
+
+function filterNews() { applyFilters(); }
+
+function applyFilters() {
+  const q = document.getElementById('news-search').value.toLowerCase();
+  const items = document.querySelectorAll('.news-item');
+  let count = 0;
+  items.forEach(item => {
+    const sourceMatch = currentSource === 'all' || item.dataset.source === currentSource;
+    const textMatch = !q || item.dataset.text.includes(q) || item.querySelector('.ni-title').textContent.toLowerCase().includes(q) || item.querySelector('.ni-summary').textContent.toLowerCase().includes(q);
+    const show = sourceMatch && textMatch;
+    item.classList.toggle('hidden', !show);
+    if (show) count++;
+  });
+  document.getElementById('results-count').textContent = q || currentSource !== 'all' ? `${count} result${count !== 1 ? 's' : ''} shown` : '';
+}
+</script>
+</body>
+</html>

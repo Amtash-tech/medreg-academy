@@ -1403,18 +1403,7 @@ CONSULTING PRINCIPLES:
 
 JURISDICTIONS: FDA (USA), EU MDR/AI Act, IMDRF, Health Canada, TGA (Australia), MHRA (UK)`;
 
-const OR_KEY = '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';
-const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
-// 7-model free cascade — rotates through models if any are at capacity
-const FREE_MODELS = [
-  'deepseek/deepseek-r1-0528:free',
-  'deepseek/deepseek-chat-v3-0324:free',
-  'google/gemma-3-27b-it:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'qwen/qwen3-14b:free',
-  'mistralai/mistral-small-3.1-24b-instruct:free',
-  'nousresearch/deephermes-3-llama-3-8b:free'
-];
+const WORKER_URL = 'https://medreg-tutor.amit-hananel.workers.dev';
 
 const messagesEl = document.getElementById('chat-messages');
 const inputEl = document.getElementById('chat-input');
@@ -1452,37 +1441,22 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-// Cascade through all free models — skips any at capacity, returns first success
+// Route all AI requests through Cloudflare Worker (key stays server-side)
 async function tryAllModels() {
   const messages = [{ role: 'system', content: SYSTEM_PROMPT }, ...chatHistory];
-  for (const model of FREE_MODELS) {
-    try {
-      console.log('[MedReg Tutor] Trying:', model);
-      const res = await fetch(OR_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OR_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://amtash-tech.github.io/medreg-academy/',
-          'X-Title': 'MedReg Academy AI Tutor'
-        },
-        body: JSON.stringify({ model, messages, max_tokens: 800 })
-      });
-      console.log('[MedReg Tutor]', model, '→ HTTP', res.status);
-      // 429 = rate limit, 502/503/5xx = server busy — skip to next model
-      if (res.status === 429 || res.status === 503 || res.status === 502 || res.status >= 500) continue;
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (data.error) { console.log('[MedReg Tutor] API err:', data.error?.message || data.error); continue; }
-      const reply = data.choices?.[0]?.message?.content;
-      if (!reply || reply.trim() === '') continue;
-      console.log('[MedReg Tutor] ✅ Success with:', model);
-      return reply;
-    } catch(e) {
-      console.log('[MedReg Tutor] Exception on', model, ':', e.message);
-    }
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.reply || null;
+  } catch(e) {
+    console.log('[MedReg Tutor] Worker error:', e.message);
+    return null;
   }
-  return null; // all models exhausted
 }
 
 async function sendMessage() {
@@ -1501,7 +1475,7 @@ async function sendMessage() {
       appendMsg('ai', reply);
     } else {
       chatHistory.pop();
-      appendMsg('ai', '⚠️ All free AI models are temporarily at capacity. Please wait 30–60 seconds and try again — limits reset quickly. You can also try a shorter question.');
+      appendMsg('ai', '⚠️ AI tutor is temporarily unavailable. Please try again in a moment.');
     }
   } catch(e) {
     removeTyping();

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Building a — AI/ML Module 01 — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-primary:#0A0F1E;--bg-secondary:#0f1628;--bg-card:#141B2D;--bg-card-hover:#1a2340;--blue:#1E6FFF;--teal:#00D4C8;--amber:#F5A623;--white:#F0F4FF;--muted:#8A9BB8;--accent:var(--teal);--accent-hex:#00D4C8;--accent-bg:rgba(0,212,200,0.06);--accent-bg-strong:rgba(0,212,200,0.09);--accent-border:rgba(0,212,200,0.15);--accent-border-med:rgba(0,212,200,0.3);--accent-faint:rgba(0,212,200,0.4);--badge-bg:rgba(0,212,200,0.1);--badge-border:rgba(0,212,200,0.3);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--white);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;}
+.pulse-line{position:fixed;top:0;left:0;width:100%;height:2px;z-index:1000;overflow:hidden;}
+.pulse-line::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--teal),var(--blue),transparent);animation:ps 3s ease-in-out infinite;}
+@keyframes ps{0%{left:-100%}100%{left:100%}}
+nav{position:fixed;top:2px;left:0;width:100%;z-index:999;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,15,30,0.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,212,200,0.15);}
+.nav-logo{font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);text-decoration:none;}.nav-logo span{color:var(--teal);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s;}.nav-links a:hover{color:var(--white);}
+.nav-cta{background:transparent;border:1px solid var(--teal);color:var(--teal);padding:8px 20px;font-family:'IBM Plex Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all 0.2s;text-decoration:none;}.nav-cta:hover{background:var(--teal);color:var(--bg-primary);}
+.mod-hero{padding:100px 40px 50px;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(0,212,200,0.05) 0%,transparent 100%);border-bottom:1px solid var(--accent-border);}
+.mod-hero::before{content:'';position:absolute;top:0;right:0;width:600px;height:400px;background:radial-gradient(circle,rgba(0,212,200,0.07) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start;}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.06em;margin-bottom:16px;}
+.breadcrumb a{color:var(--muted);text-decoration:none;transition:color 0.2s;}.breadcrumb a:hover{color:var(--white);}.breadcrumb span{color:var(--teal);}
+.mod-badge{display:inline-flex;align-items:center;gap:8px;background:var(--badge-bg);border:1px solid var(--badge-border);padding:5px 14px;border-radius:1px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--teal);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;}
+.mod-title{font-family:'Chakra Petch',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;line-height:1.1;margin-bottom:12px;}.mod-title span{color:var(--teal);}
+.mod-desc{color:var(--muted);font-size:0.98rem;line-height:1.75;max-width:620px;margin-bottom:24px;}
+.mod-meta{display:flex;gap:24px;flex-wrap:wrap;}
+.meta-item{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.06em;}.meta-item span{color:var(--teal);}
+.hero-stats-box{background:var(--bg-card);border:1px solid var(--badge-border);padding:24px;min-width:190px;border-top:2px solid var(--teal);}
+.hstat{margin-bottom:18px;}.hstat:last-child{margin-bottom:0;}
+.hstat-num{font-family:'Chakra Petch',sans-serif;font-size:1.6rem;font-weight:700;color:var(--teal);line-height:1;}
+.hstat-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
+.page-layout{display:grid;grid-template-columns:260px 1fr;gap:0;max-width:1200px;margin:0 auto;padding:0 40px 80px;align-items:start;}
+.sidebar-nav{width:100%;padding-top:40px;padding-right:32px;position:sticky;top:80px;align-self:start;display:flex;flex-direction:column;gap:0;}
+.sidebar-nav h4{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;}
+.snav-item{display:block;width:100%;box-sizing:border-box;padding:9px 14px;font-size:0.83rem;line-height:1.3;color:var(--muted);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;margin-bottom:1px;}
+.snav-item:hover{color:var(--white);border-left-color:var(--accent-faint);}
+.snav-item.active{color:var(--teal);border-left-color:var(--teal);background:var(--accent-bg);}
+.snav-sub{padding-left:24px;font-size:0.79rem;}
+.snav-divider{height:1px;background:var(--accent-border);margin:10px 0;}
+.mod-nav-row{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-top:1px solid var(--accent-border);margin-top:8px;}
+.mod-nav-btn{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);text-decoration:none;border:1px solid rgba(255,255,255,0.08);padding:7px 14px;border-radius:2px;transition:all 0.2s;}
+.mod-nav-btn:hover{color:var(--teal);border-color:var(--teal);}
+.content-area{padding-top:40px;border-left:1px solid var(--accent-border);padding-left:48px;}
+.content-section{margin-bottom:64px;scroll-margin-top:90px;}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--teal);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;}
+.sec-title{font-family:'Chakra Petch',sans-serif;font-size:1.55rem;font-weight:700;margin-bottom:16px;line-height:1.2;}
+.sec-body{color:rgba(240,244,255,0.88);font-size:0.95rem;line-height:1.85;margin-bottom:20px;}
+.sec-body strong{color:var(--white);font-weight:600;}.sec-body em{color:var(--teal);font-style:normal;}
+.sec-body ul{margin:12px 0 12px 20px;}.sec-body ul li{margin-bottom:8px;}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:24px 0;}
+.info-card{background:var(--bg-card);border:1px solid var(--accent-border);padding:24px;border-radius:2px;}
+.info-card h4{font-family:'Chakra Petch',sans-serif;font-size:0.93rem;font-weight:600;margin-bottom:10px;color:var(--teal);}
+.info-card p{font-size:0.84rem;color:var(--muted);line-height:1.65;}
+.info-card ul{font-size:0.84rem;color:var(--muted);line-height:1.65;margin:8px 0 0 16px;}.info-card ul li{margin-bottom:5px;}
+.fw-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:0.85rem;}
+.fw-table th{font-family:'JetBrains Mono',monospace;font-size:0.64rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--accent-border);text-align:left;}
+.fw-table td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;line-height:1.65;}
+.fw-table tbody tr:hover{background:var(--accent-bg);}
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.63rem;padding:3px 9px;border-radius:1px;font-weight:700;}
+.badge-green{background:rgba(0,196,140,0.15);color:#00C48C;border:1px solid rgba(0,196,140,0.3);}
+.badge-teal{background:rgba(0,212,200,0.12);color:var(--teal);border:1px solid rgba(0,212,200,0.25);}
+.badge-amber{background:rgba(245,166,35,0.12);color:var(--amber);border:1px solid rgba(245,166,35,0.25);}
+.badge-red{background:rgba(255,77,106,0.12);color:#FF4D6A;border:1px solid rgba(255,77,106,0.25);}
+.badge-blue{background:rgba(30,111,255,0.12);color:var(--blue);border:1px solid rgba(30,111,255,0.25);}
+.step-flow{margin:24px 0;}
+.step-item{display:flex;gap:20px;margin-bottom:24px;position:relative;}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:19px;top:44px;width:2px;height:calc(100% - 20px);background:linear-gradient(180deg,var(--teal),transparent);}
+.step-num{width:40px;height:40px;border-radius:2px;background:var(--accent-bg);border:1px solid var(--accent-border-med);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:700;color:var(--teal);flex-shrink:0;}
+.step-content h4{font-family:'Chakra Petch',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:6px;}
+.step-content p{font-size:0.85rem;color:var(--muted);line-height:1.65;}
+.callout{padding:20px 24px;margin:24px 0;border-radius:0 2px 2px 0;}
+.callout.primary{background:var(--accent-bg-strong);border-left:3px solid var(--teal);}
+.callout.blue{background:rgba(30,111,255,0.06);border-left:3px solid var(--blue);}
+.callout.amber{background:rgba(245,166,35,0.06);border-left:3px solid var(--amber);}
+.callout.red{background:rgba(255,77,106,0.06);border-left:3px solid #FF4D6A;}
+.callout h4{font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:600;margin-bottom:8px;}
+.callout p{font-size:0.85rem;color:var(--muted);line-height:1.7;}
+.gmlp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:24px 0;}
+.gmlp-card{background:var(--bg-card);border:1px solid var(--accent-border);padding:18px 20px;border-radius:2px;border-left:3px solid var(--teal);}
+.gmlp-num{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;}
+.gmlp-title{font-family:'Chakra Petch',sans-serif;font-size:0.88rem;font-weight:600;margin-bottom:7px;}
+.gmlp-desc{font-size:0.82rem;color:var(--muted);line-height:1.6;}
+.drift-meter{background:var(--bg-card);border:1px solid var(--accent-border);padding:24px;margin:24px 0;border-radius:2px;}
+.drift-bar-wrap{margin:10px 0;}
+.drift-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.06em;margin-bottom:6px;display:flex;justify-content:space-between;}
+.drift-bar{height:8px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden;}
+.drift-fill{height:100%;border-radius:2px;}
+.df-green{background:linear-gradient(90deg,#00C48C,rgba(0,196,140,0.4));width:20%;}
+.df-teal{background:linear-gradient(90deg,var(--teal),rgba(0,212,200,0.4));width:45%;}
+.df-amber{background:linear-gradient(90deg,var(--amber),rgba(245,166,35,0.4));width:72%;}
+.df-red{background:linear-gradient(90deg,#FF4D6A,rgba(255,77,106,0.4));width:90%;}
+.takeaway-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:24px 0;}
+.takeaway-item{background:var(--bg-card);border:1px solid var(--accent-border);border-left:3px solid var(--teal);padding:18px 20px;}
+.takeaway-item h4{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--teal);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+.takeaway-item p{font-size:0.84rem;color:var(--muted);line-height:1.6;}
+.next-step-box{background:var(--bg-card);border:1px solid var(--accent-border-med);padding:28px;margin:24px 0;border-top:2px solid var(--teal);}
+.next-step-box h4{font-family:'Chakra Petch',sans-serif;font-size:1rem;font-weight:600;margin-bottom:12px;color:var(--teal);}
+.next-step-box p{font-size:0.88rem;color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.tw-widget{background:var(--bg-card);border:1px solid rgba(0,212,200,0.25);border-radius:3px;overflow:hidden;margin-top:48px;}
+.tw-header{background:rgba(0,212,200,0.06);border-bottom:1px solid rgba(0,212,200,0.2);padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.tw-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.tw-title{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--teal);letter-spacing:0.08em;}
+.tw-msgs{padding:20px;min-height:180px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.tw-msgs::-webkit-scrollbar{width:4px;}.tw-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);}
+.msg{display:flex;gap:10px;align-items:flex-start;}
+.msg-av{width:26px;height:26px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;font-family:'Chakra Petch',sans-serif;}
+.msg-ai .msg-av{background:rgba(0,212,200,0.12);color:var(--teal);border:1px solid rgba(0,212,200,0.25);}
+.msg-user .msg-av{background:rgba(0,212,200,0.1);color:var(--teal);border:1px solid rgba(0,212,200,0.2);}
+.msg-user{flex-direction:row-reverse;}
+.msg-bub{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:2px;font-size:0.83rem;line-height:1.6;max-width:85%;}
+.msg-user .msg-bub{background:rgba(0,212,200,0.07);border-color:rgba(0,212,200,0.15);}
+.tw-prompts{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 14px;}
+.tw-prompt{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:1px;cursor:pointer;transition:all 0.2s;background:transparent;}
+.tw-prompt:hover{color:var(--teal);border-color:rgba(0,212,200,0.4);}
+.tw-input-row{padding:14px 20px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;}
+.tw-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);padding:9px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:0.83rem;border-radius:2px;outline:none;transition:border-color 0.2s;}
+.tw-input:focus{border-color:var(--teal);}.tw-input::placeholder{color:var(--muted);}
+.tw-send{background:var(--teal);color:var(--bg-primary);border:none;padding:9px 16px;font-family:'IBM Plex Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;border-radius:2px;transition:all 0.2s;}
+.tw-send:hover{background:#00ffe9;}.tw-send:disabled{opacity:0.4;cursor:not-allowed;}
+.typing-ind{display:flex;gap:4px;padding:2px 0;}
+.td-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:tb 1.2s ease-in-out infinite;}
+.td-dot:nth-child(2){animation-delay:0.2s;}.td-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes tb{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+@media(max-width:900px){nav{padding:0 20px;}.nav-links{display:none;}.hero-inner{grid-template-columns:1fr;}.hero-stats-box{display:none;}.page-layout{grid-template-columns:1fr;padding:0 20px 60px;}.sidebar-nav{display:none;}.content-area{border-left:none;padding-left:0;}.info-grid,.takeaway-grid,.gmlp-grid{grid-template-columns:1fr;}.mod-hero{padding:90px 20px 40px;}}
+
+/* DO / DON'T COMPARISON BOXES */
+.do-dont-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 28px;}
+.do-box{background:rgba(0,196,140,0.05);border:1px solid rgba(0,196,140,0.25);border-top:3px solid #00C48C;padding:18px 20px;border-radius:2px;}
+.dont-box{background:rgba(255,77,106,0.05);border:1px solid rgba(255,77,106,0.2);border-top:3px solid #FF4D6A;padding:18px 20px;border-radius:2px;}
+.do-label{font-family:'JetBrains Mono',monospace;font-size:0.63rem;color:#00C48C;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;font-weight:700;}
+.dont-label{font-family:'JetBrains Mono',monospace;font-size:0.63rem;color:#FF4D6A;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;font-weight:700;}
+.do-box p,.dont-box p{font-size:0.84rem;color:var(--muted);line-height:1.7;margin-bottom:8px;}
+.do-box p:last-child,.dont-box p:last-child{margin-bottom:0;}
+.do-box strong{color:#00C48C;}
+.dont-box strong{color:#FF4D6A;}
+.do-box em,.dont-box em{font-style:italic;color:rgba(240,244,255,0.6);font-size:0.8rem;}
+.example-intro{font-family:'JetBrains Mono',monospace;font-size:0.66rem;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin:24px 0 8px;}
+
+</style></head><body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="index.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#pillars">Domains</a></li>
+    <li><a href="index.html#tutor">AI Tutor</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="pathway.html">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="cases.html">Cases</a></li>
+  </ul>
+  <a href="#tutor-widget" class="nav-cta">Ask AI Tutor</a>
+</nav>
+<div class="mod-hero"><div class="hero-inner"><div>
+  <div class="breadcrumb"><a href="index.html">Home</a> › <a href="domain-aiml.html">AI / ML</a> › <span>Module 01</span></div>
+  <div class="mod-badge">🟢 AI / ML Domain · Module 01 of 06</div>
+  <h1 class="mod-title">Building a <span>PCCP</span></h1><p class="mod-desc">Complete guide to drafting a Predetermined Change Control Plan for FDA AI/ML device submissions — the three mandatory PCCP components, what modifications can and cannot be covered, and practical submission strategy.</p>
+</div><div class="hero-stats-box"><div class="hstat"><div class="hstat-num">PCCP</div><div class="hstat-label">Change Control Plan</div></div><div class="hstat"><div class="hstat-num">3</div><div class="hstat-label">Required Components</div></div><div class="hstat"><div class="hstat-num">2023</div><div class="hstat-label">Draft Guidance</div></div><div class="hstat"><div class="hstat-num">Q-Sub</div><div class="hstat-label">Recommended First</div></div></div></div></div>
+<div class="page-layout">
+  <nav class="sidebar-nav"><h4>Module Contents</h4>
+    <a class="snav-item active" href="#why-pccp">Why PCCP Exists</a>
+    <a class="snav-item" href="#structure">Three PCCP Components</a>
+    <a class="snav-item" href="#scope-limits">Scope & Limits</a>
+    <a class="snav-item" href="#submission-tips">Submission Strategy</a>
+    <div class="snav-divider"></div>
+    <a class="snav-item" href="#key-takeaways">Key Takeaways</a>
+    <a class="snav-item" href="#tutor-widget">Ask AI Tutor</a>
+    <div class="snav-divider"></div>
+    <div class="mod-nav-row"><span></span><a href="aiml-module-02.html" class="mod-nav-btn">Module 02 →</a></div></nav>
+  <div class="content-area">
+
+    <div class="content-section" id="why-pccp">
+      <div class="sec-label">// 01 — Foundation</div>
+      <h2 class="sec-title">The Problem PCCP Solves</h2>
+      <p class="sec-body">Traditional FDA premarket clearance creates a regulatory bottleneck for AI/ML devices: every time the algorithm changes — even a beneficial retraining on new data — the manufacturer technically must return to FDA for a new submission. For a continuously learning AI system processing millions of patient encounters per year, this is operationally unworkable.</p>
+      <p class="sec-body">The <strong>Predetermined Change Control Plan (PCCP)</strong> solves this by allowing manufacturers to describe, in advance, the types of algorithm changes they anticipate making and the controls they will apply when making those changes. FDA reviews the PCCP as part of the original submission and, if approved, the manufacturer can make the specified changes post-clearance without a new 510(k) — provided they follow the PCCP exactly.</p>
+      <div class="callout primary">
+        <h4>Legal Basis: 21st Century Cures Act + FDA Guidance</h4>
+        <p>Section 3308 of the 21st Century Cures Act gave FDA authority to approve PCCPs as part of device authorisations. FDA's draft guidance "Marketing Submission Recommendations for a Predetermined Change Control Plan for Artificial Intelligence-Enabled Devices" (April 2023) provides the detailed framework. The final guidance, expected in 2025, will be the binding reference. Until then, the draft guidance is FDA's stated position and must be followed.</p>
+      </div>
+    </div>
+
+    <div class="content-section" id="structure">
+      <div class="sec-label">// 02 — PCCP Structure</div>
+      <h2 class="sec-title">The Three Required PCCP Components</h2>
+      <p class="sec-body">FDA's draft PCCP guidance requires three specific components, each of which must be fully developed before submission. Missing or incomplete components will trigger an Additional Information (AI) request.</p>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Description of Planned Device Modifications</h4>
+            <p>A precise, bounded description of the algorithm changes the manufacturer anticipates making. Vague descriptions ("improving algorithm performance") are rejected — FDA requires specificity. Acceptable modification types include: <strong>performance improvements</strong> (retraining on additional data of the same type to improve sensitivity/specificity within defined bounds); <strong>input expansion</strong> (adding new imaging modalities or patient demographics that are substantially equivalent to those already validated); <strong>output refinement</strong> (adjusting confidence thresholds within pre-specified ranges). Each modification type must be described with enough precision that an FDA reviewer can determine whether a future change falls within or outside the PCCP scope.</p>
+            <div class="example-intro">✦ Examples — Component 1: Modification Description</div>
+            <div class="do-dont-grid">
+              <div class="do-box">
+                <div class="do-label">✓ Do — FDA-Acceptable Language</div>
+                <p><strong>"Retraining the algorithm on additional chest CT data from the same intended use population (adult patients, ≥18 years, non-contrast CT) to maintain or improve sensitivity for pulmonary nodule detection, within the following bounds: sensitivity shall remain ≥92% and specificity ≥85% on the locked reference test set."</strong></p>
+                <p><em>Why this works: specific population, specific modality, specific performance bounds, locked reference set. An FDA reviewer can determine in 30 seconds whether any future change is in-scope.</em></p>
+              </div>
+              <div class="dont-box">
+                <div class="dont-label">✗ Don't — Will Be Rejected</div>
+                <p><strong>"Improving algorithm performance over time as new data becomes available to enhance diagnostic accuracy across a broad range of clinical scenarios."</strong></p>
+                <p><em>Why this fails: no population definition, no modality constraint, no performance bounds, no test set specification. FDA cannot assess whether any given change is within scope — this is not a PCCP, it is a blank check. Expect an AI request.</em></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Methodology for Implementing Modifications</h4>
+            <p>For each modification type, a detailed description of the process that will be followed when making that change. This must cover: <strong>dataset requirements</strong> (minimum size, diversity requirements, data quality standards, labelling methodology); <strong>training process</strong> (algorithm architecture constraints, training hyperparameters, validation split strategy); <strong>performance evaluation</strong> (metrics to be calculated, acceptance criteria that must be met before deployment, subgroup analysis requirements); <strong>change documentation</strong> (what records will be created and retained). The methodology section is essentially a standing operating procedure for algorithm updates — FDA uses it to assess whether the manufacturer has adequate quality controls.</p>
+            <div class="example-intro">✦ Examples — Component 2: Implementation Methodology</div>
+            <div class="do-dont-grid">
+              <div class="do-box">
+                <div class="do-label">✓ Do — Complete Methodology</div>
+                <p><strong>Dataset requirements:</strong> "Minimum 500 additional cases meeting inclusion criteria. Labelled by two board-certified radiologists; discordant cases adjudicated by a third. Cases sourced from ≥3 institutions not represented in original training data. Demographic distribution to be documented and compared to training set."</p>
+                <p><strong>Training:</strong> "Architecture unchanged (ResNet-50 backbone). Hyperparameters held constant except learning rate, which shall be tuned using the validation set only. Training data shall not include any cases from the locked test set."</p>
+                <p><em>This gives FDA a complete picture of the quality system governing updates.</em></p>
+              </div>
+              <div class="dont-box">
+                <div class="dont-label">✗ Don't — Incomplete Methodology</div>
+                <p><strong>"New training data will be collected from clinical sites and the model will be retrained using our standard ML pipeline. Performance will be evaluated before deployment."</strong></p>
+                <p><em>Problems: no minimum dataset size, no labelling standard, no architecture constraints, no hyperparameter controls, no subgroup analysis requirement, no documentation specification. FDA cannot assess whether the quality controls are adequate — this will trigger an AI request requesting all missing details.</em></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Impact Assessment Protocol</h4>
+            <p>A pre-specified framework for assessing whether a proposed modification meets the PCCP criteria before deployment. Must address: <strong>comparison to baseline</strong> (how will performance be compared to the cleared algorithm — same test set? new prospective data?); <strong>subgroup performance</strong> (explicit criteria for acceptable performance across demographic subgroups); <strong>regression testing</strong> (confirming the modification does not degrade performance on cases the original algorithm handled correctly); <strong>safety signal monitoring</strong> (how potential patient harm from algorithm changes will be detected post-deployment). Modifications that fail the impact assessment must be submitted to FDA as a new 510(k), not deployed under the PCCP.</p>
+            <div class="example-intro">✦ Examples — Component 3: Impact Assessment Protocol</div>
+            <div class="do-dont-grid">
+              <div class="do-box">
+                <div class="do-label">✓ Do — Pre-Specified Impact Protocol</div>
+                <p><strong>Baseline comparison:</strong> "New model version evaluated on the locked reference test set (n=1,200 cases). Deployment approved only if: sensitivity ≥92% AND specificity ≥85% AND performance in female patients within 3 percentage points of male patients AND performance in patients ≥75 years within 5 percentage points of patients 18–74 years."</p>
+                <p><strong>Regression gate:</strong> "New model must correctly classify ≥95% of cases correctly classified by the cleared model on the regression test set (n=300 edge cases)."</p>
+                <p><em>All criteria are quantitative, pre-specified, and measurable before deployment decision.</em></p>
+              </div>
+              <div class="dont-box">
+                <div class="dont-label">✗ Don't — Vague Assessment Criteria</div>
+                <p><strong>"Before deployment, the updated model will be evaluated to confirm it performs at least as well as the current cleared version. If performance is acceptable, it will be deployed. If concerns are identified, the team will decide whether to submit to FDA."</strong></p>
+                <p><em>Problems: "at least as well" is not a measurable criterion; "acceptable" is undefined; "concerns are identified" has no threshold; the deployment decision is discretionary rather than protocol-driven. FDA will not accept this — it provides no assurance that a non-conforming update would be caught before deployment.</em></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section" id="scope-limits">
+      <div class="sec-label">// 03 — Scope & Limits</div>
+      <h2 class="sec-title">What Can and Cannot Be Covered by a PCCP</h2>
+      <table class="fw-table">
+        <thead><tr><th>Modification Type</th><th>PCCP Eligible?</th><th>Rationale</th></tr></thead>
+        <tbody>
+          <tr><td>Retraining on additional data of same type/population</td><td><span class="badge badge-green">Yes</span></td><td>Bounded change; controls defined at submission; no new intended use</td></tr>
+          <tr><td>Adjusting output confidence thresholds within pre-defined range</td><td><span class="badge badge-green">Yes</span></td><td>Quantitatively bounded; impact assessable against cleared performance specs</td></tr>
+          <tr><td>Expanding validated input modalities (e.g. adding CT to existing MRI-validated device)</td><td><span class="badge badge-teal">Possibly</span></td><td>Requires strong comparability argument; FDA scrutiny is high; Pre-Sub recommended</td></tr>
+          <tr><td>Extending intended use to new patient population (e.g. paediatric from adult)</td><td><span class="badge badge-red">No</span></td><td>Change of intended use requires new submission; PCCP cannot cover intended use changes</td></tr>
+          <tr><td>Changing algorithm architecture (CNN to transformer)</td><td><span class="badge badge-red">No</span></td><td>Different technological characteristics; raises new safety questions; new 510(k) required</td></tr>
+          <tr><td>Adding a new clinical output type not in original clearance</td><td><span class="badge badge-red">No</span></td><td>New intended use/function; cannot be predetermined at time of original submission</td></tr>
+          <tr><td>Bug fixes that do not affect algorithm performance</td><td><span class="badge badge-green">Yes</span></td><td>Not a PCCP matter — handled under IEC 62304 software maintenance; no new submission needed</td></tr>
+        </tbody>
+      </table>
+      <div class="callout amber">
+        <h4>The Locked vs Adaptive Algorithm Distinction</h4>
+        <p>FDA distinguishes between <strong>locked algorithms</strong> (output is fully determined by inputs — no post-deployment learning) and <strong>adaptive algorithms</strong> (algorithm continues to change based on real-world data after deployment). A PCCP does not make a locked algorithm adaptive — it authorises specific, bounded, manufacturer-controlled modifications to a locked algorithm. Truly adaptive algorithms that continuously retrain on real-world data without human review remain a significant unsolved regulatory challenge; FDA is actively developing frameworks for this through its AI/ML Action Plan.</p>
+      </div>
+    </div>
+
+    <div class="content-section" id="submission-tips">
+      <div class="sec-label">// 04 — Submission Strategy</div>
+      <h2 class="sec-title">Practical PCCP Submission Strategy</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Pre-Submission Meeting First</h4>
+          <p>A Q-Sub (Pre-Submission) meeting to discuss your PCCP scope with FDA before filing is strongly recommended. PCCPs are novel — FDA reviewer interpretation varies. Getting written FDA feedback on your proposed modification types and impact assessment methodology before submission saves an AI request cycle (typically 3+ months of delay).</p>
+        </div>
+        <div class="info-card">
+          <h4>Be Conservative in Scope</h4>
+          <p>A narrow, well-defined PCCP is far more likely to be accepted than an ambitious one. Start with the modifications you are most confident you will make within 2 years. An accepted narrow PCCP is more valuable than a rejected comprehensive one — you can always submit a supplemental PCCP expansion later.</p>
+        </div>
+        <div class="info-card">
+          <h4>Document Every PCCP-Covered Change</h4>
+          <p>After clearance, every modification made under the PCCP must be fully documented: impact assessment results, dataset documentation, performance metrics, subgroup analysis, approval decision. This documentation is subject to FDA inspection and must be retained. If FDA audits your PCCP implementation and finds undocumented changes, the consequences are equivalent to an unauthorised algorithm modification — a major regulatory violation.</p>
+        </div>
+        <div class="info-card">
+          <h4>Annual PCCP Summary Report</h4>
+          <p>FDA's draft guidance recommends (and may require in final guidance) an annual summary report of all modifications made under the PCCP, submitted to FDA. This gives FDA visibility into real-world algorithm evolution and serves as an early warning mechanism for performance drift. Build this reporting process into your post-market quality system from the start.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section" id="key-takeaways">
+      <div class="sec-label">// 05 — Summary</div>
+      <h2 class="sec-title">Key Takeaways</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-item"><h4>PCCP Is Pre-Approval of Future Changes</h4><p>The PCCP is reviewed and approved as part of the initial submission. Changes made under it post-clearance do not require a new 510(k) — but they must follow the PCCP methodology exactly. Deviation from the approved methodology means the change is not covered and requires a new submission.</p></div>
+        <div class="takeaway-item"><h4>Three Sections, All Substantive</h4><p>The Modification Description, Implementation Methodology, and Impact Assessment Protocol are all substantive technical documents — not brief summaries. Each section will be scrutinised by FDA reviewers with AI/ML expertise. Budget significant technical writing effort for each.</p></div>
+        <div class="takeaway-item"><h4>Intended Use Changes Are Never Covered</h4><p>No PCCP can authorise an intended use change. If your roadmap includes extending to a new indication, disease, or patient population, that requires a separate submission. Attempting to characterise an intended use change as an algorithm performance improvement is a common and serious error.</p></div>
+        <div class="takeaway-item"><h4>Document Every Post-Market Change</h4><p>Every modification made under the PCCP must be documented with full impact assessment records. FDA inspection of PCCP implementation is increasingly common. Undocumented changes made under an approved PCCP are treated as unauthorised modifications — with all associated enforcement risk.</p></div>
+      </div>
+      <div class="next-step-box">
+        <h4>Next Step Recommendation</h4>
+        <p>If your AI/ML device roadmap includes algorithm updates post-clearance, include a PCCP in your initial 510(k). Draft all three PCCP sections alongside your main submission sections — do not treat them as an afterthought. Request a Pre-Submission meeting to validate your modification scope with FDA before filing. Module 02 covers dataset documentation, which is the foundation of your PCCP Impact Assessment Protocol.</p>
+      </div>
+    </div>
+    <div id="tutor-widget" class="tw-widget">
+      <div class="tw-header"><div class="tw-dot"></div><span class="tw-title">MedReg AI Tutor — Building a</span></div>
+      <div class="tw-msgs" id="tw-msgs"></div>
+      <div class="tw-prompts"><button class="tw-prompt" onclick="setQ('What modifications can a PCCP cover post-clearance?')">PCCP-eligible modifications</button><button class="tw-prompt" onclick="setQ('Can a PCCP cover extending my AI to a new patient population?')">Intended use and PCCP</button><button class="tw-prompt" onclick="setQ('What must the Impact Assessment Protocol contain?')">Impact assessment requirements</button><button class="tw-prompt" onclick="setQ('Should I request a Pre-Sub before filing a PCCP?')">Pre-Sub for PCCP</button></div>
+      <div class="tw-input-row">
+        <input type="text" class="tw-input" id="tw-input" placeholder="Ask about this module..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="tw-send" id="tw-send" onclick="sendMsg()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+const WORKER_URL='https://medreg-tutor.amit-hananel.workers.dev';
+const M1='google/gemma-3-27b-it:free',M2='meta-llama/llama-3.3-70b-instruct:free',M3='mistralai/mistral-small-3.1-24b-instruct:free';
+
+const SYS=`You are a Senior Medical Device AI/ML Regulatory Consultant with 20+ years expertise. Student studies Building a. Cite specific documents (FDA AI/ML Action Plan, GMLP, PCCP guidance, MDCG 2025-6, EU AI Act). 150-350 words, well-structured.`;
+const msgsEl=document.getElementById('tw-msgs'),inputEl=document.getElementById('tw-input'),sendBtn=document.getElementById('tw-send');
+let history=[];function setQ(t){inputEl.value=t;inputEl.focus();}
+
+function appendMsg(role,text){
+  const d=document.createElement('div');d.className='msg msg-'+(role==='user'?'user':'ai');
+  const fmt=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  d.innerHTML='<div class="msg-av">'+(role==='user'?'YOU':'AI')+'</div><div class="msg-bub">'+fmt+'</div>';
+  msgsEl.appendChild(d);msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+function showTyping(){const d=document.createElement('div');d.className='msg msg-ai';d.id='typing';d.innerHTML='<div class="msg-av">AI</div><div class="msg-bub"><div class="typing-ind"><div class="td-dot"></div><div class="td-dot"></div><div class="td-dot"></div></div></div>';msgsEl.appendChild(d);msgsEl.scrollTop=msgsEl.scrollHeight;}
+function removeTyping(){const e=document.getElementById('typing');if(e)e.remove();}
+async function tryModel(m){try{const r=await fetch(OR_URL,{method:'POST',headers:{'Authorization':'Bearer '+OR_KEY,'Content-Type':'application/json','HTTP-Referer':'https://amtash-tech.github.io/medreg-academy/','X-Title':'MedReg Academy'},body:JSON.stringify({model:m,messages:[{role:'system',content:SYS},...history],max_tokens:600})});console.log('[Tutor]',m,r.status);if(r.status===429||r.status>=500)return null;if(!r.ok)return null;const d=await r.json();if(d.error)return null;return d.choices?.[0]?.message?.content||null;}catch(e){return null;}}
+async function sendMsg(){
+  const text=inputEl.value.trim();if(!text||sendBtn.disabled)return;
+  inputEl.value='';sendBtn.disabled=true;appendMsg('user',text);history.push({role:'user',content:text});showTyping();
+  const msgs=[{role:'system',content:SYS},...history];
+  const reply=await callWorker(msgs);
+  removeTyping();
+  if(reply){history.push({role:'assistant',content:reply});appendMsg('ai',reply);}
+  else{history.pop();appendMsg('ai','⚠️ AI tutor is temporarily unavailable. Please try again in a moment.');}
+  sendBtn.disabled=false;inputEl.focus();
+}
+appendMsg('ai',"Welcome to Module 01 on building a PCCP. Ask me about the three required PCCP sections, what algorithm changes can be covered, how to scope your PCCP conservatively, the locked vs adaptive algorithm distinction, or what FDA reviewers focus on in PCCP submissions.");
+const sections=document.querySelectorAll('.content-section[id]');
+const navLinks=document.querySelectorAll('.snav-item[href^="#"]');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id;});navLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+cur);});},{passive:true});
+
+</script></body></html>

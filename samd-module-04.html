@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinical Evaluation — SaMD Module 04 — MedReg Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-primary:#0A0F1E;--bg-secondary:#0f1628;--bg-card:#141B2D;--bg-card-hover:#1a2340;--blue:#1E6FFF;--teal:#00D4C8;--amber:#F5A623;--white:#F0F4FF;--muted:#8A9BB8;--accent:var(--blue);--accent-bg:rgba(30,111,255,0.06);--accent-bg-strong:rgba(30,111,255,0.09);--accent-border:rgba(30,111,255,0.15);--accent-border-med:rgba(30,111,255,0.3);--accent-faint:rgba(30,111,255,0.4);--hero-glow:rgba(30,111,255,0.08);--badge-bg:rgba(30,111,255,0.1);--badge-border:rgba(30,111,255,0.3);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--white);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;}
+.pulse-line{position:fixed;top:0;left:0;width:100%;height:2px;z-index:1000;overflow:hidden;}
+.pulse-line::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--blue),var(--teal),transparent);animation:ps 3s ease-in-out infinite;}
+@keyframes ps{0%{left:-100%}100%{left:100%}}
+nav{position:fixed;top:2px;left:0;width:100%;z-index:999;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,15,30,0.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(30,111,255,0.15);}
+.nav-logo{font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--teal);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-cta{background:transparent;border:1px solid var(--teal);color:var(--teal);padding:8px 20px;font-family:'IBM Plex Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all 0.2s;text-decoration:none;}
+.nav-cta:hover{background:var(--teal);color:var(--bg-primary);}
+.mod-hero{padding:100px 40px 50px;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(30,111,255,0.06) 0%,transparent 100%);border-bottom:1px solid var(--accent-border);}
+.mod-hero::before{content:'';position:absolute;top:0;right:0;width:600px;height:400px;background:radial-gradient(circle,rgba(30,111,255,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start;}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.06em;margin-bottom:16px;}
+.breadcrumb a{color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.breadcrumb a:hover{color:var(--white);}
+.breadcrumb span{color:var(--blue);}
+.mod-badge{display:inline-flex;align-items:center;gap:8px;background:var(--badge-bg);border:1px solid var(--badge-border);padding:5px 14px;border-radius:1px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--blue);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;}
+.mod-title{font-family:'Chakra Petch',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;line-height:1.1;margin-bottom:12px;}
+.mod-title span{color:var(--blue);}
+.mod-desc{color:var(--muted);font-size:0.98rem;line-height:1.75;max-width:620px;margin-bottom:24px;}
+.mod-meta{display:flex;gap:24px;flex-wrap:wrap;}
+.meta-item{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.06em;}
+.meta-item span{color:var(--blue);}
+.hero-stats-box{background:var(--bg-card);border:1px solid var(--badge-border);padding:24px;min-width:190px;border-top:2px solid var(--blue);}
+.hstat{margin-bottom:18px;}.hstat:last-child{margin-bottom:0;}
+.hstat-num{font-family:'Chakra Petch',sans-serif;font-size:1.6rem;font-weight:700;color:var(--blue);line-height:1;}
+.hstat-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
+.page-layout{display:grid;grid-template-columns:260px 1fr;gap:0;max-width:1200px;margin:0 auto;padding:0 40px 80px;align-items:start;}
+.sidebar-nav{width:100%;padding-top:40px;padding-right:32px;position:sticky;top:80px;align-self:start;display:flex;flex-direction:column;gap:0;}
+.sidebar-nav h4{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;}
+.snav-item{display:block;width:100%;box-sizing:border-box;padding:9px 14px;font-size:0.83rem;line-height:1.3;color:var(--muted);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;margin-bottom:1px;}
+.snav-item:hover{color:var(--white);border-left-color:rgba(30,111,255,0.4);}
+.snav-item.active{color:var(--blue);border-left-color:var(--blue);background:var(--accent-bg);}
+.snav-sub{padding-left:24px;font-size:0.79rem;}
+.snav-divider{height:1px;background:var(--accent-border);margin:10px 0;}
+.mod-nav-row{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-top:1px solid var(--accent-border);margin-top:8px;}
+.mod-nav-btn{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);text-decoration:none;border:1px solid rgba(255,255,255,0.08);padding:7px 14px;border-radius:2px;transition:all 0.2s;}
+.mod-nav-btn:hover{color:var(--blue);border-color:var(--blue);}
+.content-area{padding-top:40px;border-left:1px solid var(--accent-border);padding-left:48px;}
+.content-section{margin-bottom:64px;scroll-margin-top:90px;}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--blue);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;}
+.sec-title{font-family:'Chakra Petch',sans-serif;font-size:1.55rem;font-weight:700;margin-bottom:16px;line-height:1.2;}
+.sec-body{color:rgba(240,244,255,0.88);font-size:0.95rem;line-height:1.85;margin-bottom:20px;}
+.sec-body strong{color:var(--white);font-weight:600;}
+.sec-body em{color:var(--teal);font-style:normal;}
+.sec-body ul{margin:12px 0 12px 20px;}
+.sec-body ul li{margin-bottom:8px;}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:24px 0;}
+.info-card{background:var(--bg-card);border:1px solid var(--accent-border);padding:24px;border-radius:2px;}
+.info-card h4{font-family:'Chakra Petch',sans-serif;font-size:0.93rem;font-weight:600;margin-bottom:10px;color:var(--blue);}
+.info-card p{font-size:0.84rem;color:var(--muted);line-height:1.65;}
+.info-card ul{font-size:0.84rem;color:var(--muted);line-height:1.65;margin:8px 0 0 16px;}
+.info-card ul li{margin-bottom:5px;}
+.fw-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:0.85rem;}
+.fw-table th{font-family:'JetBrains Mono',monospace;font-size:0.64rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--accent-border);text-align:left;}
+.fw-table td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;line-height:1.65;}
+.fw-table tbody tr:hover{background:var(--accent-bg);}
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.63rem;padding:3px 9px;border-radius:1px;font-weight:700;}
+.badge-green{background:rgba(0,196,140,0.15);color:#00C48C;border:1px solid rgba(0,196,140,0.3);}
+.badge-teal{background:rgba(0,212,200,0.12);color:var(--teal);border:1px solid rgba(0,212,200,0.25);}
+.badge-amber{background:rgba(245,166,35,0.12);color:var(--amber);border:1px solid rgba(245,166,35,0.25);}
+.badge-red{background:rgba(255,77,106,0.12);color:#FF4D6A;border:1px solid rgba(255,77,106,0.25);}
+.badge-blue{background:rgba(30,111,255,0.12);color:var(--blue);border:1px solid rgba(30,111,255,0.25);}
+.risk-matrix{display:grid;grid-template-columns:auto repeat(3,1fr);gap:2px;margin:24px 0;}
+.rm-header{background:var(--bg-card);border:1px solid var(--accent-border);padding:12px;font-family:'JetBrains Mono',monospace;font-size:0.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;text-align:center;}
+.rm-row-label{background:var(--bg-card);border:1px solid var(--accent-border);padding:12px;font-family:'JetBrains Mono',monospace;font-size:0.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:flex;align-items:center;justify-content:center;text-align:center;writing-mode:horizontal-tb;}
+.rm-cell{padding:20px 14px;border-radius:2px;text-align:center;}
+.rm-I{background:rgba(0,196,140,0.12);border:1px solid rgba(0,196,140,0.25);}
+.rm-II{background:rgba(0,212,200,0.1);border:1px solid rgba(0,212,200,0.2);}
+.rm-III{background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);}
+.rm-IV{background:rgba(255,77,106,0.1);border:1px solid rgba(255,77,106,0.2);}
+.rm-cat{font-family:'Chakra Petch',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.rm-I .rm-cat{color:#00C48C;}.rm-II .rm-cat{color:var(--teal);}.rm-III .rm-cat{color:var(--amber);}.rm-IV .rm-cat{color:#FF4D6A;}
+.rm-desc{font-size:0.72rem;color:var(--muted);}
+.step-flow{margin:24px 0;}
+.step-item{display:flex;gap:20px;margin-bottom:24px;position:relative;}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:19px;top:44px;width:2px;height:calc(100% - 20px);background:linear-gradient(180deg,var(--blue),transparent);}
+.step-num{width:40px;height:40px;border-radius:2px;background:var(--accent-bg);border:1px solid var(--accent-border-med);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:700;color:var(--blue);flex-shrink:0;}
+.step-content h4{font-family:'Chakra Petch',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:6px;}
+.step-content p{font-size:0.85rem;color:var(--muted);line-height:1.65;}
+.callout{padding:20px 24px;margin:24px 0;border-radius:0 2px 2px 0;}
+.callout.primary{background:var(--accent-bg-strong);border-left:3px solid var(--blue);}
+.callout.teal{background:rgba(0,212,200,0.06);border-left:3px solid var(--teal);}
+.callout.amber{background:rgba(245,166,35,0.06);border-left:3px solid var(--amber);}
+.callout.red{background:rgba(255,77,106,0.06);border-left:3px solid #FF4D6A;}
+.callout h4{font-family:'Chakra Petch',sans-serif;font-size:0.9rem;font-weight:600;margin-bottom:8px;}
+.callout p{font-size:0.85rem;color:var(--muted);line-height:1.7;}
+.takeaway-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:24px 0;}
+.takeaway-item{background:var(--bg-card);border:1px solid var(--accent-border);border-left:3px solid var(--blue);padding:18px 20px;}
+.takeaway-item h4{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--blue);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+.takeaway-item p{font-size:0.84rem;color:var(--muted);line-height:1.6;}
+.next-step-box{background:var(--bg-card);border:1px solid var(--accent-border-med);padding:28px;margin:24px 0;border-top:2px solid var(--blue);}
+.next-step-box h4{font-family:'Chakra Petch',sans-serif;font-size:1rem;font-weight:600;margin-bottom:12px;color:var(--blue);}
+.next-step-box p{font-size:0.88rem;color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.tw-widget{background:var(--bg-card);border:1px solid rgba(0,212,200,0.25);border-radius:3px;overflow:hidden;margin-top:48px;}
+.tw-header{background:rgba(0,212,200,0.06);border-bottom:1px solid rgba(0,212,200,0.2);padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.tw-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.tw-title{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--teal);letter-spacing:0.08em;}
+.tw-msgs{padding:20px;min-height:180px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.tw-msgs::-webkit-scrollbar{width:4px;}
+.tw-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);}
+.msg{display:flex;gap:10px;align-items:flex-start;}
+.msg-av{width:26px;height:26px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;font-family:'Chakra Petch',sans-serif;}
+.msg-ai .msg-av{background:rgba(0,212,200,0.12);color:var(--teal);border:1px solid rgba(0,212,200,0.25);}
+.msg-user .msg-av{background:rgba(30,111,255,0.12);color:var(--blue);border:1px solid rgba(30,111,255,0.25);}
+.msg-user{flex-direction:row-reverse;}
+.msg-bub{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:2px;font-size:0.83rem;line-height:1.6;max-width:85%;}
+.msg-user .msg-bub{background:rgba(30,111,255,0.08);border-color:rgba(30,111,255,0.15);}
+.tw-prompts{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 14px;}
+.tw-prompt{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);border:1px solid rgba(255,255,255,0.08);padding:4px 10px;border-radius:1px;cursor:pointer;transition:all 0.2s;background:transparent;}
+.tw-prompt:hover{color:var(--teal);border-color:rgba(0,212,200,0.4);}
+.tw-input-row{padding:14px 20px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;}
+.tw-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);padding:9px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:0.83rem;border-radius:2px;outline:none;transition:border-color 0.2s;}
+.tw-input:focus{border-color:var(--teal);}
+.tw-input::placeholder{color:var(--muted);}
+.tw-send{background:var(--teal);color:var(--bg-primary);border:none;padding:9px 16px;font-family:'IBM Plex Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;border-radius:2px;transition:all 0.2s;}
+.tw-send:hover{background:#00ffe9;}
+.tw-send:disabled{opacity:0.4;cursor:not-allowed;}
+.typing-ind{display:flex;gap:4px;padding:2px 0;}
+.td-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:tb 1.2s ease-in-out infinite;}
+.td-dot:nth-child(2){animation-delay:0.2s;}.td-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes tb{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+@media(max-width:900px){nav{padding:0 20px;}.nav-links{display:none;}.hero-inner{grid-template-columns:1fr;}.hero-stats-box{display:none;}.page-layout{grid-template-columns:1fr;padding:0 20px 60px;}.sidebar-nav{display:none;}.content-area{border-left:none;padding-left:0;}.info-grid,.takeaway-grid{grid-template-columns:1fr;}.mod-hero{padding:90px 20px 40px;}}
+</style>
+</head>
+<body>
+<div class="pulse-line"></div>
+<nav>
+  <a href="index.html" class="nav-logo">MedReg<span>Academy</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#pillars">Domains</a></li>
+    <li><a href="index.html#tutor">AI Tutor</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="pathway.html">Pathway</a></li>
+    <li><a href="compare.html">Compare</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="cases.html">Cases</a></li>
+  </ul>
+  <a href="#tutor-widget" class="nav-cta">Ask AI Tutor</a>
+</nav>
+<div class="mod-hero">
+  <div class="hero-inner">
+    <div>
+      <div class="breadcrumb"><a href="index.html">Home</a> › <a href="domain-samd.html">SaMD & SiMD</a> › <span>Module 04</span></div>
+      <div class="mod-badge">🔵 SaMD Domain · Module 04 of 06</div>
+      <h1 class="mod-title">Clinical Evaluation <span>(IMDRF N41)</span></h1>
+      <p class="mod-desc">Master the three-building-block clinical evaluation framework for SaMD under IMDRF N41:2017 — valid clinical association, analytical validation, and clinical validation — and how this maps to EU MDR Annex XIV requirements.</p>
+    </div>
+    <div class="hero-stats-box"><div class="hstat"><div class="hstat-num">3</div><div class="hstat-label">N41 Building Blocks</div></div><div class="hstat"><div class="hstat-num">N41</div><div class="hstat-label">IMDRF Framework</div></div><div class="hstat"><div class="hstat-num">CER</div><div class="hstat-label">Required EU MDR</div></div><div class="hstat"><div class="hstat-num">PMCF</div><div class="hstat-label">Continuous Process</div></div></div>
+  </div>
+</div>
+<div class="page-layout">
+  <nav class="sidebar-nav"><h4>Module Contents</h4>
+    <a class="snav-item active" href="#overview">Why SaMD CE Is Different</a>
+    <a class="snav-item" href="#building-blocks">Three Building Blocks</a>
+    <a class="snav-item" href="#evidence">Evidence Sources</a>
+    <a class="snav-item" href="#eu-requirements">EU MDR Requirements</a>
+    <div class="snav-divider"></div>
+    <a class="snav-item" href="#key-takeaways">Key Takeaways</a>
+    <a class="snav-item" href="#tutor-widget">Ask AI Tutor</a>
+    <div class="snav-divider"></div>
+    <div class="mod-nav-row"><a href="samd-module-03.html" class="mod-nav-btn">← Module 03</a><a href="samd-module-05.html" class="mod-nav-btn">Module 05 →</a></div></nav>
+  <div class="content-area">
+
+    <div class="content-section" id="overview">
+      <div class="sec-label">// 01 — Foundation</div>
+      <h2 class="sec-title">Clinical Evaluation for SaMD: Why It's Different</h2>
+      <p class="sec-body">Clinical evaluation for SaMD is fundamentally different from clinical evaluation for physical devices. A physical device's safety is largely determined by biocompatibility, mechanical testing, and sterility. For SaMD, safety and effectiveness depend on <strong>whether the software's outputs correctly reflect clinical reality</strong> — and whether acting on those outputs produces the intended clinical benefit.</p>
+      <p class="sec-body">IMDRF N41:2017 "Software as a Medical Device: Clinical Evaluation" provides the internationally recognised framework. It is adopted by FDA as a reference, and underpins the EU MDR Clinical Evaluation requirements (Annex XIV) for SaMD. The framework is built on three sequential building blocks that must all be established.</p>
+    </div>
+
+    <div class="content-section" id="building-blocks">
+      <div class="sec-label">// 02 — The Three Building Blocks</div>
+      <h2 class="sec-title">IMDRF N41's Three Building Blocks</h2>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Valid Clinical Association (VCA)</h4>
+            <p>Is there a clinically valid relationship between the software's output and the targeted clinical condition? This is the scientific foundation — establishing that what the software measures or predicts is genuinely linked to the disease/condition. VCA is typically established through peer-reviewed literature, clinical studies, or well-accepted physiological principles. <strong>Example:</strong> For an AF detection ECG app, VCA = the established relationship between specific ECG waveform patterns and atrial fibrillation, documented in cardiology literature.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Analytical Validation (AV)</h4>
+            <p>Does the software accurately, reliably, and consistently produce its intended technical output from the input data? This is technical performance testing — demonstrating the algorithm works correctly. For SaMD, this includes: accuracy metrics (sensitivity, specificity, PPV, NPV, AUC), robustness testing across input variability, and performance under edge cases and failure modes. <strong>Example:</strong> For the AF detection app, AV = testing the algorithm on a large dataset of ECG recordings with known ground truth, measuring sensitivity/specificity, testing performance across different ECG device types, signal qualities, and patient demographics.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Clinical Validation (CV)</h4>
+            <p>In the intended clinical environment, with the intended users, for the intended patient population, does the SaMD achieve the intended clinical benefit? This is real-world clinical performance. It requires demonstrating that patients/clinicians using the SaMD achieve better outcomes (or at least equivalent outcomes) compared to the current standard of care. <strong>Example:</strong> For the AF detection app, CV = a clinical study showing that patients using the app have improved AF detection rates, earlier treatment initiation, or reduced stroke incidence compared to standard monitoring.</p>
+          </div>
+        </div>
+      </div>
+      <div class="callout amber">
+        <h4>All Three Must Be Established — In Sequence</h4>
+        <p>VCA, AV, and CV are not optional — all three must be addressed. Moreover, they are logically sequential: you cannot have AV without VCA (because you need to know what you're measuring is clinically meaningful), and CV without AV (because clinical validity requires technical accuracy). Regulators will reject Clinical Evaluation Reports that skip building blocks or present them out of sequence.</p>
+      </div>
+    </div>
+
+    <div class="content-section" id="evidence">
+      <div class="sec-label">// 03 — Evidence Sources</div>
+      <h2 class="sec-title">Evidence Sources for Each Building Block</h2>
+      <table class="fw-table">
+        <thead><tr><th>Building Block</th><th>Acceptable Evidence Sources</th><th>Quality Hierarchy</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>VCA</strong></td>
+            <td>Peer-reviewed literature; clinical guidelines (e.g., ACC/AHA, ESC); physiology textbooks; epidemiological studies</td>
+            <td>Systematic reviews > RCTs > cohort studies > expert consensus</td>
+          </tr>
+          <tr>
+            <td><strong>AV</strong></td>
+            <td>Bench testing on curated datasets; validation against gold-standard clinical measurements; published performance benchmarks; independent validation studies</td>
+            <td>Prospective multi-site > retrospective multi-site > single-site validation; external > internal validation</td>
+          </tr>
+          <tr>
+            <td><strong>CV</strong></td>
+            <td>Clinical investigations (trials); real-world evidence from post-market studies; equivalent device data; published literature on predicate or equivalent SaMD</td>
+            <td>RCT > prospective observational > retrospective study > expert opinion</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="content-section" id="eu-requirements">
+      <div class="sec-label">// 04 — EU MDR Requirements</div>
+      <h2 class="sec-title">EU MDR Clinical Evaluation Requirements for SaMD</h2>
+      <p class="sec-body">Under EU MDR Annex XIV, Clinical Evaluation is a <strong>continuous process</strong> — not a one-time pre-market activity. The Clinical Evaluation Report (CER) must be updated throughout the device lifecycle. For SaMD, this means:</p>
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Clinical Evaluation Plan (CEP)</h4>
+          <p>Required before starting clinical evaluation. Defines: intended purpose, target population, clinical claims, applicable standards, evaluation methods, and acceptance criteria. The CEP is living document updated with each CER revision.</p>
+        </div>
+        <div class="info-card">
+          <h4>Clinical Evaluation Report (CER)</h4>
+          <p>Documents all three N41 building blocks with evidence. Must include: literature search methodology and results, clinical data analysis, residual risk assessment, benefit-risk determination. For Class IIb and III devices, Notified Body scrutinises the CER in detail.</p>
+        </div>
+        <div class="info-card">
+          <h4>Post-Market Clinical Follow-up (PMCF)</h4>
+          <p>Mandatory under Annex XIV Part B. For SaMD: real-world performance data collection, post-market registry participation, customer feedback analysis, literature monitoring. PMCF results feed back into CER updates. Cannot be waived for Class IIa and above.</p>
+        </div>
+        <div class="info-card">
+          <h4>Summary of Safety and Clinical Performance (SSCP)</h4>
+          <p>Publicly available document required for Class III and implantable devices. For Class III SaMD: must summarise clinical evidence, performance data, and benefit-risk conclusion in lay-accessible language. Published on EUDAMED.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section" id="key-takeaways">
+      <div class="sec-label">// 05 — Summary</div>
+      <h2 class="sec-title">Key Takeaways</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-item"><h4>Three Blocks, All Mandatory</h4><p>Valid Clinical Association, Analytical Validation, and Clinical Validation are all required. Each feeds into the next. Missing any one block will result in an incomplete Clinical Evaluation — and likely a major non-conformity in EU audits or an AI request from FDA.</p></div>
+        <div class="takeaway-item"><h4>Clinical Evaluation Is Continuous</h4><p>Under EU MDR, the CER is a living document. Plan your PMCF data collection strategy at the same time as your pre-market clinical evaluation. They share the same evidence framework.</p></div>
+        <div class="takeaway-item"><h4>Literature Search Is Not Enough for CV</h4><p>For Category III/IV SaMD, analytical validation alone will not satisfy Clinical Validation. A clinical study on your specific device in your specific intended patient population is almost always required by regulators.</p></div>
+        <div class="takeaway-item"><h4>Representativeness Is Scrutinised</h4><p>Regulators — especially FDA for AI/ML — closely examine whether your validation dataset represents the intended use population. Single-site, single-demographics validation is consistently flagged. Plan multi-site, diverse-population clinical studies from the start.</p></div>
+      </div>
+      <div class="next-step-box">
+        <h4>Next Step Recommendation</h4>
+        <p>Develop your Clinical Evaluation Plan before starting any validation study. The CEP defines your acceptance criteria — without it, you don't know whether your study results are sufficient. For novel high-risk SaMD, engage FDA via Pre-Submission or a Notified Body via a preliminary review to agree on the clinical evidence standard before committing to an expensive clinical investigation.</p>
+      </div>
+    </div>
+    <div id="tutor-widget" class="tw-widget">
+      <div class="tw-header"><div class="tw-dot"></div><span class="tw-title">MedReg AI Tutor — Clinical Evaluation</span></div>
+      <div class="tw-msgs" id="tw-msgs"></div>
+      <div class="tw-prompts"><button class="tw-prompt" onclick="setQ('What clinical evidence does FDA require for a novel SaMD?')">FDA clinical evidence standard</button><button class="tw-prompt" onclick="setQ('Can I use literature to satisfy Clinical Validation?')">Literature for CV</button><button class="tw-prompt" onclick="setQ('What must a PMCF plan contain for software?')">PMCF plan for SaMD</button><button class="tw-prompt" onclick="setQ('How do I establish VCA for an AI diagnostic tool?')">VCA for AI diagnostics</button></div>
+      <div class="tw-input-row">
+        <input type="text" class="tw-input" id="tw-input" placeholder="Ask about this module..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="tw-send" id="tw-send" onclick="sendMsg()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+const WORKER_URL='https://medreg-tutor.amit-hananel.workers.dev';
+const M1='google/gemma-3-27b-it:free',M2='meta-llama/llama-3.3-70b-instruct:free',M3='mistralai/mistral-small-3.1-24b-instruct:free';
+
+const SYS=`You are a Senior Medical Device Regulatory Consultant with 20+ years expertise. Student is studying Clinical Evaluation. Be direct, cite specific documents. 150-350 words, structured.`;
+const msgsEl=document.getElementById('tw-msgs'),inputEl=document.getElementById('tw-input'),sendBtn=document.getElementById('tw-send');
+let history=[];
+function setQ(t){inputEl.value=t;inputEl.focus();}
+
+function appendMsg(role,text){
+  const d=document.createElement('div');d.className='msg msg-'+(role==='user'?'user':'ai');
+  const fmt=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  d.innerHTML='<div class="msg-av">'+(role==='user'?'YOU':'AI')+'</div><div class="msg-bub">'+fmt+'</div>';
+  msgsEl.appendChild(d);msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+function showTyping(){const d=document.createElement('div');d.className='msg msg-ai';d.id='typing';d.innerHTML='<div class="msg-av">AI</div><div class="msg-bub"><div class="typing-ind"><div class="td-dot"></div><div class="td-dot"></div><div class="td-dot"></div></div></div>';msgsEl.appendChild(d);msgsEl.scrollTop=msgsEl.scrollHeight;}
+function removeTyping(){const e=document.getElementById('typing');if(e)e.remove();}
+async function tryModel(m){try{const r=await fetch(OR_URL,{method:'POST',headers:{'Authorization':'Bearer '+OR_KEY,'Content-Type':'application/json','HTTP-Referer':'https://amtash-tech.github.io/medreg-academy/','X-Title':'MedReg Academy'},body:JSON.stringify({model:m,messages:[{role:'system',content:SYS},...history],max_tokens:600})});console.log('[Tutor]',m,r.status);if(r.status===429||r.status>=500)return null;if(!r.ok)return null;const d=await r.json();if(d.error)return null;return d.choices?.[0]?.message?.content||null;}catch(e){return null;}}
+async function sendMsg(){
+  const text=inputEl.value.trim();if(!text||sendBtn.disabled)return;
+  inputEl.value='';sendBtn.disabled=true;appendMsg('user',text);history.push({role:'user',content:text});showTyping();
+  const msgs=[{role:'system',content:SYS},...history];
+  const reply=await callWorker(msgs);
+  removeTyping();
+  if(reply){history.push({role:'assistant',content:reply});appendMsg('ai',reply);}
+  else{history.pop();appendMsg('ai','⚠️ AI tutor is temporarily unavailable. Please try again in a moment.');}
+  sendBtn.disabled=false;inputEl.focus();
+}
+appendMsg('ai',"Welcome to Module 04 on Clinical Evaluation for SaMD. I can help with the three N41 building blocks, evidence requirements for each, EU MDR CER obligations, PMCF planning, or how to determine what clinical study your device needs.");
+
+const sections=document.querySelectorAll('.content-section[id]');
+const navLinks=document.querySelectorAll('.snav-item[href^="#"]');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id;});navLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+cur);});},{passive:true});
+
+</script></body></html>
